@@ -1,0 +1,6 @@
+.DS_Store
+*/main.pdf
+*/.DS_Store
+.aux
+*.aux
+*.DS_Store

@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.7.31)  25 OCT 2023 08:56
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.7.31)  16 APR 2024 21:34
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**"/Users/zhaojiaxi/zjx@NUS/project/My Slide/Scientific ML/main.tex"
-(/Users/zhaojiaxi/zjx@NUS/project/My Slide/Scientific ML/main.tex
+**"/Users/zhaojiaxi/zjx@NUS/project/slide/Scientific ML/main.tex"
+(/Users/zhaojiaxi/zjx@NUS/project/slide/Scientific ML/main.tex
 LaTeX2e <2018-12-01>
 (/usr/local/texlive/2019/texmf-dist/tex/latex/beamer/beamer.cls
 Document Class: beamer 2018/12/02 v3.55 A class for typesetting presentations
@@ -586,7 +586,7 @@ Package: soul 2003/11/17 v2.4 letterspacing/underlining (mf)
 \SOUL@ulht=\dimen194
 )) (/usr/local/texlive/2019/texmf-dist/tex/latex/comment/comment.sty
 \CommentStream=\write5
- Excluding comment 'comment') (/Users/zhaojiaxi/zjx@NUS/project/My Slide/Scientific ML/.aux/main.aux
+ Excluding comment 'comment') (/Users/zhaojiaxi/zjx@NUS/project/slide/Scientific ML/.aux/main.aux
 
 LaTeX Warning: Label `l2-mfd' multiply defined.
 
@@ -682,7 +682,7 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 15.
 LaTeX Info: Redefining \pageref on input line 15.
 LaTeX Info: Redefining \nameref on input line 15.
- (/Users/zhaojiaxi/zjx@NUS/project/My Slide/Scientific ML/.aux/main.out) (/Users/zhaojiaxi/zjx@NUS/project/My Slide/Scientific ML/.aux/main.out)
+ (/Users/zhaojiaxi/zjx@NUS/project/slide/Scientific ML/.aux/main.out) (/Users/zhaojiaxi/zjx@NUS/project/slide/Scientific ML/.aux/main.out)
 \@outlinefile=\write6
 \openout6 = `main.out'.
 
@@ -749,7 +749,7 @@ Dictionary: translator-numbers-dictionary, Language: English
 Dictionary: translator-theorem-dictionary, Language: English 
 )
 \c@lstlisting=\count184
- (/Users/zhaojiaxi/zjx@NUS/project/My Slide/Scientific ML/.aux/main.nav) [1
+ (/Users/zhaojiaxi/zjx@NUS/project/slide/Scientific ML/.aux/main.nav) [1
 
 {/usr/local/texlive/2019/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] Excluding 'comment' comment.
 <fig/alphafold.png, id=46, 2165.08875pt x 1387.1825pt>
@@ -956,7 +956,7 @@ Overfull \vbox (7.3733pt too high) detected at line 545
 
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 572.
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 572.
- (/Users/zhaojiaxi/zjx@NUS/project/My Slide/Scientific ML/.aux/main.aux)
+ (/Users/zhaojiaxi/zjx@NUS/project/slide/Scientific ML/.aux/main.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 572.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 572.
 Package rerunfilecheck Info: File `main.out' has not changed.
@@ -968,14 +968,14 @@ LaTeX Warning: There were multiply-defined labels.
  ) 
 Here is how much of TeX's memory you used:
  19953 strings out of 492616
- 368914 string characters out of 6129481
+ 368866 string characters out of 6129481
  450771 words of memory out of 5000000
  23307 multiletter control sequences out of 15000+600000
  37184 words of font info for 124 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 56i,19n,55p,848b,601s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 56i,19n,55p,845b,601s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi10.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi8.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/euler/eusm10.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on "/Users/zhaojiaxi/zjx@NUS/project/My Slide/Scientific ML/.aux/main.pdf" (30 pages, 11248160 bytes).
+Output written on "/Users/zhaojiaxi/zjx@NUS/project/slide/Scientific ML/.aux/main.pdf" (30 pages, 11248160 bytes).
 PDF statistics:
  941 PDF objects out of 1000 (max. 8388607)
  842 compressed objects within 9 object streams
