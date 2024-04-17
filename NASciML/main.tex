@@ -31,10 +31,12 @@
 \end{frame}
 
 \begin{frame}{Steady-state simulations \& inverse problems}
+	%#TODO: The RANS equation here does not exactly fit into the framework given here,
+	% maybe it is better to use the inverse scattering problem (Calderon problem) as an example.
 	Most of the steady-state simulations and inverse problems can be formulated as 
 	\begin{equation*}
 		\begin{aligned}
-			\mcL(\mfu, \mfy) = 0, 	\quad \mfy= \phi_{\theta}(\mfu, t).
+			\mcL(\mfu, \mfy) = 0, 	\quad \mfy= \phi_{\theta}(\mfu).
 		\end{aligned}
 	\end{equation*}
 	One example of special interests is the \textbf{Reynolds-averaged Navier-Stokes equation}:
@@ -44,11 +46,15 @@
 	\nabla \cdot \la \mfU \ra &= 0.
 	\end{aligned}
 	\end{equation*}
-	Great flexibility to choose the scheme for solving these problems: pseudo transient, Gauss-Newton,
+	Great flexibility to choose the scheme for solving these problems: pseudo transient, Newton method,
 	iterative methods, etc.
 \end{frame}
 
 \begin{frame}{Unsteady (transient) simulations}
+	%#TODO: Qianxiao mentioned the structure stability here, which is different from the numerical stability of the numerical PDE we discussed. 
+	% In other words, when doing the simulation the data-driven surrogate may not respect the structure of the dynamics or destroy the structure of the original dynamics
+	% if the original one is marginally stable or contains metastability. I think this is a good point as a theoretical question but can hardly be a question which
+	% is of practical importance. At least I do not say any important application.
 	Two leading applications are \textbf{Large eddy simulation} and \textbf{Molecular dynamics}.
 	\bequn\label{non-linear}
 		\begin{aligned}
@@ -67,7 +73,7 @@
 		\begin{equation*}
 			E = E_{\mathrm{Kin}}[\{\psi_{i}^\sigma\}] + E_{\mathrm{Har}}[\rho] + E_{\mathrm{Ext}}[\rho] + E_{\mathrm{XC}}[\rho]
 		\end{equation*}
-		\item \textbf{Quantum many-body problem}
+		\item \textbf{Quantum many-body problem (Quantum Monte Carlo)}
 		\begin{equation*}
 			\min_{\theta} \frac{\la \psi_{\theta}(\mfr_1, \cdots, \mfr_n)|\wht H| \psi_{\theta}(\mfr_1, \cdots, \mfr_n)\ra}{\la \psi_{\theta}(\mfr_1, \cdots, \mfr_n)| \psi_{\theta}(\mfr_1, \cdots, \mfr_n)\ra}
 		\end{equation*}
