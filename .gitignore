@@ -4,3 +4,10 @@
 .aux
 *.aux
 *.DS_Store
+
+*.log
+*.nav
+*.synctex.gz
+*.snm
+*.toc
+*.out
