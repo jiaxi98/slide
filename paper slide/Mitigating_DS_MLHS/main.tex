@@ -116,6 +116,17 @@ The most important features are:
 \begin{frame}{Different from classical numerical stability}
 	This is different from the classical numerical stability issue. For the ablation study, we add {\color{red}noises of the same scale to the numerical solver}
 	(without the data-driven part) and compare the simulations.
+	\JX{Make sure this part is understandable for the audience.}
+	\begin{equation*}
+		\begin{aligned}
+			\text{Data-driven model:} \phi_{\theta} s.t. \mbE\norml \mfu - \phi_{\theta}(\mfx, t) \normr = e,	\\
+			\text{Perturbed numerical solver:} \phi_{\Delta x} + eN
+		\end{aligned}
+	\end{equation*}
+	where $e$ is the magnitude of the statistical error of the data-driven model and $\Delta x$ is the discretization of the solver small enough.
+\end{frame}
+
+\begin{frame}{Different from classical numerical stability}
 	\begin{figure}[ht]
 		\centering
 			\centering
