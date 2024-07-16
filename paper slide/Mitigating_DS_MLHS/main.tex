@@ -15,7 +15,7 @@
 \geometry{left=1cm,right=1cm}
     \title[Mitigating DS in SciML]{Mitigating distribution shift in machine learning-augmented hybrid simulation\footnotemark}
 \author[J. Zhao]{Jiaxi Zhao (NUS) \\ \small joint work with Prof. Qianxiao Li (NUS)}
-\date[\today]{The 13th Symposium of the SIAM Student Chapter@NUS \\ \today}
+\date[\today]{SciCADE2024 @ Singapore \\ \today}
 \begin{document}
 \par \setlength{\parindent}{2em}
 
@@ -26,6 +26,7 @@
 
 
 \begin{frame}{Practical scientific problems}
+	%#NOTE: try to explain to the audience that these two problems are very important and subject to a lot improvment based on data-driven model
 	\begin{figure}[ht]
 		\centering
 		\begin{subfigure}{0.5\linewidth} % Adjust the width as needed
@@ -108,40 +109,38 @@ The most important features are:
 	\begin{figure}[ht]
 		\centering
 			\centering
-			\includegraphics[width=\linewidth]{fig/dilemma.png}
-			\caption{Distribution shift illustration}
+			\includegraphics[width=1.1\linewidth]{fig/dilemma.jpg}
 	\end{figure}
 \end{frame}
 
-\begin{frame}{Different from classical numerical stability}
-	This is different from the classical numerical stability issue. For the ablation study, we add {\color{red}noises of the same scale to the numerical solver}
+\begin{frame}{Comparison with classical numerical stability}
+	This is different from the classical numerical stability issue. For the ablation study, we add {\color{red}noises of the same scale to the ground truth}
 	(without the data-driven part) and compare the simulations.
-	\JX{Make sure this part is understandable for the audience.}
 	\begin{equation*}
 		\begin{aligned}
-			\text{Data-driven model:} \phi_{\theta} s.t. \mbE\norml \mfu - \phi_{\theta}(\mfx, t) \normr = e,	\\
-			\text{Perturbed numerical solver:} \phi_{\Delta x} + eN
+			\text{Data-driven model:} \quad & \phi_{\theta},	\\
+			\text{Perturbed ground truth:} \quad & \phi_* + \mbE\norml \mfu - \phi_{\theta}(\mfx, t) \normr \epsilon, \ \epsilon \sim \mcN(\mathbf{0}, \mfI)
 		\end{aligned}
 	\end{equation*}
-	where $e$ is the magnitude of the statistical error of the data-driven model and $\Delta x$ is the discretization of the solver small enough.
+	where $\phi_*$ can be replaced by $\phi^{\Delta x}$, a fine-grid numerical solver.
 \end{frame}
 
-\begin{frame}{Different from classical numerical stability}
+\begin{frame}{Comparison with classical numerical stability}
 	\begin{figure}[ht]
 		\centering
 			\centering
-			\includegraphics[width=.6\linewidth]{fig/RD-ds.pdf}
-			\caption{Distribution shift in reaction-diffusion equation}
+			\includegraphics[width=.8\linewidth]{fig/RD-ds.pdf}
 	\end{figure}
 \end{frame}
 
 \begin{frame}{An heuristic solution}
 	\begin{figure}[H]
 		\centering
-		\centerline{\includegraphics[width=0.9\linewidth]{fig/mfd.png}}
+		\centerline{\includegraphics[width=0.8\linewidth]{fig/mfd.png}}
 	  \end{figure}
 	  We design an algorithm that {\color{red}favors $\mfu_2$ than $\mfu_1$} by adding some regularization.
-\end{frame}
+	  This is very similar to the {\color{red}Dirac-Frenkel variational principle} in dynamical low-rank approximation.
+	\end{frame}
 
 \begin{frame}{Linear dynamics}
 	We consider the following the \text{\color{red}linear} hybrid simulation problem
@@ -180,6 +179,7 @@ The most important features are:
 
 \begin{frame}{Linear theory}
 	The tangent-space regularized estimator has {\color{red}slower error scaling for large $\lambda$}:
+	%#TODO: still need to think about how to present this part
 	\begin{Thm}
 		With $Q_m(r, T)$ defined by $m^2\int_0^T (2 + t^{m-1})e^{r t}dt$ and
 		\begin{equation*}
@@ -204,49 +204,53 @@ The most important features are:
 	\begin{figure}[ht]\label{fig:linear-cmp}
 		\centering
 		\centerline{\includegraphics[width=.8\linewidth]{fig/exp2-1.pdf}}
-		\caption{Linear synthetic dynamics}
 	\end{figure}
 \end{frame}
 
-\begin{frame}{Overall algorithm}
-	\textbf{Use an autoencoder to parametrize the nonlinear data-manifold.}
-	\begin{figure}
-		\centering
-		\centerline{\includegraphics[width=\linewidth]{fig/alg.jpg}}
-		\caption{Algorithm pseudocode}
-	  \end{figure}
-\end{frame}
-
-\begin{frame}{Network architecture}
-	We choose U-net for 
+\begin{frame}{Nonlinear dynamics}
+	\textcolor{red}{Use an autoencoder to parametrize the nonlinear data manifold.} We choose U-net\footnotemark as our autoencoder architecture trained via $\min_{D, E}\mbE\norml \mfu - D(E(\mfu))\normr^2$.
+	Moreover, one can use $F(\mfu) = \norml \mfu - D(E(\mfu))\normr^2$ to quantify the distribution shift and $\nabla F(\mfu)$ as 
+	{\color{red} a normal vector}! But there is a small caveat.
 	\begin{figure}[H]
           \centering
           \centerline{\includegraphics[width=1.1\linewidth]{fig/Unet.png}}
-          \caption{U-net structure for flow prediction\footnotemark}
 \end{figure}
 \footnotetext{Thuerey, Nils, et al. "Deep learning methods for Reynolds-averaged Navier–Stokes simulations of airfoil flows." AIAA Journal 58.1 (2020): 25-36.}
 \end{frame}
 
+\begin{frame}{Overall algorithm}
+	%#TODO: the algorithm itself is hard to present, think about how to simplify it
+	\begin{figure}
+		\centering
+		\centerline{\includegraphics[width=\linewidth]{fig/alg.jpg}}
+	  \end{figure}
+\end{frame}
+
 \begin{frame}{Performance comparison}
 	\begin{figure}[H]
           \centering
-          \centerline{\includegraphics[width=.7\linewidth]{fig/RD-TR.pdf}}
-          \caption{Comparison of our method and naive method}
+          \centerline{\includegraphics[width=.75\linewidth]{fig/RD-TR.pdf}}
 \end{figure}
 \end{frame}
 
 \begin{frame}{Performance comparison}
 	\begin{figure}[H]
           \centering
-          \centerline{\includegraphics[width=.7\linewidth]{fig/NS-TR.pdf}}
+          \centerline{\includegraphics[width=.75\linewidth]{fig/NS-TR.pdf}}
           \caption{Comparison of our method and naive method}
 \end{figure}
 \end{frame}
 
-\begin{frame}{Future work}
+\begin{frame}{Future on-going work}
 	\begin{itemize}
 		\item 1. Deploy to practical problems: Subgrid-scale modeling in large eddy simulation of the
 		urban environment.
+		\begin{equation*}
+			\begin{aligned}
+			\frac{\p \overline{u}_i}{\p t} + \frac{\p}{\p x_j}(\overline{u}_i\overline{u}_j) & \ = -\frac{\p \overline{p}}{\p x_i} + \nu\Delta \overline{u}_i - \frac{\p \tau_{ij}}{\p x_j},   \\
+			\frac{\p \overline{u}_i}{\p x_i} & \ = 0.
+			\end{aligned}
+		  \end{equation*}
 		\item 2. Extend the framework to solve the inverse problem via surrogate modeling.
 		\item 3. Theoretical analysis of the proposed framework, a.k.a. numerical analysis for SciML.
 	\end{itemize}
