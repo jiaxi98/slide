@@ -13,20 +13,20 @@
 \usepackage{algpseudocode}
 \usepackage{algorithmicx}
 \geometry{left=1cm,right=1cm}
-    \title[Mitigating DS in SciML]{Mitigating distribution shift in machine learning-augmented hybrid simulation\footnotemark}
-\author[J. Zhao]{Jiaxi Zhao (NUS) \\ \small joint work with Prof. Qianxiao Li (NUS)}
-\date[\today]{SciCADE2024 @ Singapore \\ \today}
+    \title[Mitigating DS in SciML]{Mitigating distribution shift in machine learning-augmented hybrid fluid simulation}%\footnotemark}
+\author[J. Zhao]{Jiaxi Zhao (NUS) \\ \small joint work with Sohei Arisaka and Prof. Qianxiao Li (NUS)}
+\date[\today]{AMSS, CAS \\ \today}
 \begin{document}
 \par \setlength{\parindent}{2em}
 
 \begin{frame}
 \titlepage
-\footnotetext[1]{https://arxiv.org/abs/2401.09259}
+%\footnotetext[1]{https://arxiv.org/abs/2401.09259}
 \end{frame}
 
 
 \begin{frame}{Practical scientific problems}
-	%#NOTE: try to explain to the audience that these two problems are very important and subject to a lot improvment based on data-driven model
+	%#NOTE: try to explain to the audience that these two problems are very important and subject to a lot improvement based on data-driven model
 	\begin{figure}[ht]
 		\centering
 		\begin{subfigure}{0.5\linewidth} % Adjust the width as needed
@@ -61,23 +61,23 @@
 	Simulating the dynamics:
 	\bequn
 		\begin{aligned}
-			\p_t \mfx & = \mcL(\mfx, \mfu, t), \quad \mfx \in \mcX, \mfu \in \mcU, \mcL: \mcX \times \mcU \times \mbR_+ \rightarrow T\mcX,			\\
-			\mfu & = \phi(\mfx, t), \quad \phi: \mcX \times \mbR_+ \rightarrow \mfu.
+			\p_t \mfu & = \mcL(\mfu, \mfy, t), \quad \mfu \in \mcU, \mfy \in \mcY, \mcL: \mcU \times \mcY \times \mbR_+ \rightarrow T\mcU,			\\
+			\mfy & = \phi(\mfu, t), \quad \phi: \mcU \times \mbR_+ \rightarrow \mcY.
 		\end{aligned}
 	\eequn
 	\begin{itemize}
 		\item 1. $\mcL$ is known, possibly non-linear.
 		\item 2. $\phi$ is un-known.
-		\item 3. A set of data pairs $\lbb (\mfx_1, \mfu_1, t_1), (\mfx_2, \mfu_2, t_2), \cdots, (\mfx_N, \mfu_N, t_N )\rbb. $
+		\item 3. A set of data pairs $\lbb (\mfu_1, \mfy_1, t_1), (\mfu_2, \mfy_2, t_2), \cdots, (\mfu_N, \mfy_N, t_N )\rbb. $
 		\item 4. {\color{red}Benchmark algorithm solves the ordinary least square:
 		\bequn
-			\arg\min_{\theta} \mbE \norml \mfu - \phi_{\theta}(\mfx, t) \normr^2.
+			\arg\min_{\theta} \mbE \norml \mfy - \phi_{\theta}(\mfu, t) \normr^2.
 		\eequn}
 	\end{itemize}
 		{\color{red}Why surrogate models? The dynamics are unknown, nonlinear, computationally expensive etc.}
 \end{frame}
 
-\begin{frame}{An example}
+\begin{frame}{An example: projection scheme}
 	Let us use the incompressible NS equation as an example
 	\begin{equation*}
     \begin{aligned}
@@ -89,12 +89,31 @@ Consider solving it using the projection method, in each step, we need to solve 
 \bequn
 \begin{aligned}
 	\mfu_{k+1} 	& = \mfu_k +
-	\Delta t (\nu \Delta \mfu_k
+	\Delta t \ (\nu \Delta \mfu_k
 	- (\mfu_k \cdot \nabla)\mfu_k - \nabla p_{k}),    \\
 	p_{k} & = \phi(\mfu_k) = \Delta^{-1}(\nabla \cdot \lp \nu \Delta \mfu_k
 	- (\mfu_k \cdot \nabla)\mfu_k\rp),   \\
 \end{aligned}
 \eequn
+
+\end{frame}
+
+\begin{frame}{An example: coarse-fine grid}
+	Suppose we have a fine grid with size $2n \times 2n$ and a coarse grid with size $n \times n$.
+	We want to learn a correction term between the numerical simulation in these two grid sizes.
+	Fix an interpolation and a restriction operator:
+	\bequn
+		\begin{aligned}
+			\operatorname{I}_n^{2n}: \mbR^{n \times n} \rightarrow \mbR^{2n \times 2n}, \quad \operatorname{R}_{2n}^{n}: \mbR^{2n \times 2n} \rightarrow \mbR^{n \times n}.
+		\end{aligned}
+	\eequn
+	Now, we can state the second hybrid simulation problem as follows:
+	\bequn\label{coarse-fine}
+		\lbb\begin{aligned}
+			\mfu_{k+1}^{2n} & = \operatorname{I}_n^{2n} \circ f_n(\operatorname{R}_{2n}^{n}(\mfu_k^{2n})) + \mfy_k^{2n},		\\
+			\mfy_k^{2n} & = \phi(\mfu_k^{2n}).
+		\end{aligned}\right.
+	\eequn
 
 The most important features are: 
 \begin{itemize}
@@ -119,10 +138,27 @@ The most important features are:
 	\begin{equation*}
 		\begin{aligned}
 			\text{Data-driven model:} \quad & \phi_{\theta},	\\
-			\text{Perturbed ground truth:} \quad & \phi_* + \mbE\norml \mfu - \phi_{\theta}(\mfx, t) \normr \epsilon, \ \epsilon \sim \mcN(\mathbf{0}, \mfI)
+			\text{Perturbed ground truth:} \quad & \phi_* + \mbE\norml \mfy - \phi_{\theta}(\mfu, t) \normr \epsilon, \ \epsilon \sim \mcN(\mathbf{0}, \mfI)
 		\end{aligned}
 	\end{equation*}
 	where $\phi_*$ can be replaced by $\phi^{\Delta x}$, a fine-grid numerical solver.
+\end{frame}
+
+\begin{frame}{Reaction-diffusion equation}
+	Consider the following FitzHugh-Nagumo reaction-diffusion equation:
+	\begin{equation}
+    \begin{aligned}
+        	\frac{\p \mfu}{\p t} & = \gamma \Delta \mfu + \mfR(\mfu), \quad T \in [0, 1], 	\\
+		\mfR(\mfu) & = \mfR(u, v) = \begin{pmatrix}
+			u - u^3 - v - \alpha	\\
+			\beta(u - v)
+		\end{pmatrix},
+    \end{aligned}
+	\end{equation}
+	The initial data is given by $\mfu_0$ is a random field and generated by i.i.d. sampling from a normal distribution and $\alpha = 0.001, \beta=1.0, \gamma = \begin{pmatrix}
+		0.05 & 0	\\
+		0 & 0.1
+	\end{pmatrix}$. We use mesh size $128 \times 128$ for the whole problem. Computational domain is given by $[0, 6.4]\times[0, 6.4]$.
 \end{frame}
 
 \begin{frame}{Comparison with classical numerical stability}
@@ -140,7 +176,21 @@ The most important features are:
 	  \end{figure}
 	  We design an algorithm that {\color{red}favors $\mfu_2$ than $\mfu_1$} by adding some regularization.
 	  This is very similar to the {\color{red}Dirac-Frenkel variational principle} in dynamical low-rank approximation.
-	\end{frame}
+\end{frame}
+
+\begin{frame}{Dirac-Frenkel variational principle}
+	The Dirac-Frenkel variational principle is originally developed for the Schrodinger equation 
+	$\frac{d\psi}{dt} & = \frac{1}{i\hbar}H\psi$,
+	\begin{equation}
+		\begin{aligned}
+			P\frac{d\psi}{dt} \in T_{\psi}\mcM, s.t. \la v \Big| P\frac{d\psi}{dt} - \frac{1}{i\hbar}H\psi \ra = 0, \forall v \in T_{\psi}\mcM.
+		\end{aligned}
+	\end{equation}
+	\begin{figure}[H]
+		\centering
+		\centerline{\includegraphics[width=0.6\linewidth]{fig/Dirac-Frenkel.jpg}}
+	  \end{figure}
+\end{frame}
 
 \begin{frame}{Linear dynamics}
 	We consider the following the \text{\color{red}linear} hybrid simulation problem
@@ -156,7 +206,7 @@ The most important features are:
 	\end{equation*}
 	while the proposed estimator minimizes
 	\begin{equation*}
-		l_{\text{TR}}(C) := \mbE_{(\mfu, \mfy)} \lp \norml (\wht C - C^*) \mfu\normr_2^2 + \lambda \norml P_{V^{\perp}}(A + BC)\mfu \normr_2^2 \rp,
+		l_{\text{TR}}(\wht C) := \mbE_{(\mfu, \mfy)} \lp \norml (\wht C - C^*) \mfu\normr_2^2 + \lambda \norml P_{V^{\perp}}(A + B\wht C)\mfu \normr_2^2 \rp,
 	\end{equation*}
 \end{frame}
 
@@ -223,7 +273,8 @@ The most important features are:
 	\begin{figure}
 		\centering
 		\centerline{\includegraphics[width=\linewidth]{fig/alg.jpg}}
-	  \end{figure}
+	\end{figure}
+	{\color{red} Our method is non-intrusive.}
 \end{frame}
 
 \begin{frame}{Performance comparison}
@@ -241,36 +292,172 @@ The most important features are:
 \end{figure}
 \end{frame}
 
-\begin{frame}{Future on-going work}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%    below starts the discussion on the LES project
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Subgrid-scale stress modeling based on NN}
+	\begin{equation*}
+		\begin{aligned}
+		\frac{\p \overline{u}_i}{\p t} + \frac{\p}{\p x_j}(\overline{u}_i\overline{u}_j) & \ = -\frac{\p \overline{p}}{\p x_i} + \nu\Delta \overline{u}_i - \frac{\p \tau_{ij}}{\p x_j},   \\
+		\frac{\p \overline{u}_i}{\p x_i} & \ = 0.
+		\end{aligned}
+	  \end{equation*}
 	\begin{itemize}
-		\item 1. Deploy to practical problems: Subgrid-scale modeling in large eddy simulation of the
-		urban environment.
+		\item 1. Performing DNS is unaffordable, even a LES with 50M grids of length 1000s takes several days.
+		\item 2. Cheap simulations such as RANS and coarse-grid LES can not obtain accurate quantities such as peak pressure.
+	\end{itemize}
+	\textit{Can we {\color{red}design or learn better SGS models} based on the LES data so that it can achieve accurate
+	results even {\color{red}on coarse grid LES?}}
+\end{frame}
+
+\begin{frame}{SGS stress modeling}
+	There are three main issues for stress modeling:
+	\begin{itemize}
+		\item 1. The mapping from the input features. e.g. filtered velocity to the stress tensor is {\color{red}non-deterministic} while
+		most classical turbulence models and data-driven models are deterministic.
 		\begin{equation*}
-			\begin{aligned}
-			\frac{\p \overline{u}_i}{\p t} + \frac{\p}{\p x_j}(\overline{u}_i\overline{u}_j) & \ = -\frac{\p \overline{p}}{\p x_i} + \nu\Delta \overline{u}_i - \frac{\p \tau_{ij}}{\p x_j},   \\
-			\frac{\p \overline{u}_i}{\p x_i} & \ = 0.
-			\end{aligned}
-		  \end{equation*}
-		\item 2. Extend the framework to solve the inverse problem via surrogate modeling.
-		\item 3. Theoretical analysis of the proposed framework, a.k.a. numerical analysis for SciML.
+			\overline{\mfU}, \nabla \overline{\mfU}, \overline{p} \overset{\text{NOT DETERMINISTIC}}{\Longrightarrow} \tau, \quad \min_{\phi}\norml \tau - \phi(\overline{\mfU}) \normr^2.
+		\end{equation*}
+		\JX{We could try to mention that we can include a larger region of the
+		filtered information so that the mapping may become deterministic.}
+		\item 2. The discrepancy between {\color{red}a-priori error and a-posteriori error}.
+		\begin{equation*}
+			\norml \wht\tau - \tau \normr^2, \quad \norml \overline{\wht\mfU}(T) - \overline{\mfU}(T) \normr^2
+		\end{equation*}
+		\item 3. Difficult to combine the OpenFOAM solver with gradient-based optimization algorithms.
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{Reaction-diffusion equation}
-	Consider the following FitzHugh-Nagumo reaction-diffusion equation:
-	\begin{equation}
-    \begin{aligned}
-        	\frac{\p \mfu}{\p t} & = \gamma \Delta \mfu + \mfR(\mfu), \quad T \in [0, 1], 	\\
-		\mfR(\mfu) & = \mfR(u, v) = \begin{pmatrix}
-			u - u^3 - v - \alpha	\\
-			\beta(u - v)
-		\end{pmatrix},
-    \end{aligned}
-	\end{equation}
-	The initial data is given by $\mfu_0$ is a random field and generated by i.i.d. sampling from a normal distribution and $\alpha = 0.001, \beta=1.0, \gamma = \begin{pmatrix}
-		0.05 & 0	\\
-		0 & 0.1
-	\end{pmatrix}$. We use mesh size $128 \times 128$ for the whole problem. Computational domain is given by $[0, 6.4]\times[0, 6.4]$.
+\begin{frame}{Learning the SGS stress model}
+	We test the following three approaches:
+	\begin{itemize}
+		\item 1. {\color{red}Directly predict} the stress tensor from the input features.
+		\begin{equation}
+			\tau = \text{NN}(\overline{\mfU}, \nabla \overline{\mfU}, \overline{p}).
+		\end{equation}
+		\item 2.  {\color{red}Learn a correction} of the constants to the Smagorinsky model.
+		\begin{equation}
+			\wtd C = \text{NN}(\overline{\mfU}, \nabla \overline{\mfU}, \overline{p}) + C, \quad \nu_t = \wtd C \Delta^2 \lv \bar{S} \rv.
+		\end{equation}
+		\item 3. Learn a  {\color{red}conditional generative model} from the input features.
+	\end{itemize}
+	\begin{itemize}
+		\item The first approach usually provides a much better a-priori error estimate than the second approach.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Probabilistic SGS stress modeling}
+	While the first two deterministic stress models can not capture the statistical behavior of the SGS stress,
+	our probabilistic stress model manages this:
+	\begin{figure}[ht]
+		\centering
+		\includegraphics[width=.6\linewidth]{fig/stress_hist.jpg}
+	\end{figure}
+	\begin{figure}[ht]
+		\centering
+		\includegraphics[width=1.2\linewidth]{fig/heatmap_tau.pdf}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{A-priori and a-posteriori discrepancy}
+	The inconsistency between the a priori error and a posteriori error arises because the {\color{red}training algorithm does not take the solver dynamics into account}.
+	\begin{figure}
+		\includegraphics[width=.6\textwidth]{fig/dilemma.png}
+		\label{fig:dilemma}
+	\end{figure}
+	The a-priori and a-posteriori performance are not consistent.
+	\begin{figure}
+		\includegraphics[width=.8\textwidth]{fig/dichotomy.jpg}
+		\label{fig:dichotomy}
+	\end{figure}
+\end{frame}
+
+%TODO: this is not my contribution, try to modify this, we may directly delete this part
+\begin{comment}
+\begin{frame}{Problem: Non-automatic-differentiable Solver}
+    To directly minimize a posteriori error,
+    we need to incorporate OpenFOAM solvers into the neural network training.
+ 
+    However, they are not automatic-differentiable,
+    and computing gradients through them is not trivial.
+ 
+    \begin{figure}
+        \includegraphics[width=\linewidth]{fig/of_problem.jpg}
+    \end{figure}
+    
+\end{frame}
+ 
+\begin{frame}{Solution: Non-intrusive Wrapper}
+    To enable joint training with neural networks and such solvers,
+    we developed a non-intrusive methodology that wraps the solvers
+    to be compatible with neural network training.
+ 
+    The key idea\footnotemark is to construct an unbiased and low-variance gradient estimator
+    using a surrogate model that mimics the solver's behavior.
+ 
+    \begin{figure}
+        \includegraphics[width=\linewidth]{fig/of_solution.jpg}
+    \end{figure}
+    \footnotetext{S. Arisaka and Q. Li (2024) Accelerating Legacy Numerical Solvers by Non-intrusive Gradient-based Meta-solving}
+    
+\end{frame}
+
+
+\begin{frame}{Preliminary result}
+    We have applied the methodology to PETSc linear solver for Poisson equations by learning initial guesses
+    and reduced the number of iterations by 74\%.
+ 
+    We plan to apply it to learning turbulence models in OpenFOAM beyond linear solvers.
+ 
+    \begin{figure}
+        \includegraphics[width=0.4\linewidth]{fig/poisson_eq.jpg}
+    \end{figure}    
+    
+\end{frame}
+\end{comment}
+ 
+\begin{frame}{Dateset preparation and preprocessing}
+	Judging the quality of the dataset is crucial for our application, which is also very different from
+	the numerical PDE cases as grid convergence tests are inapplicable.
+	\begin{figure}
+        \includegraphics[width=0.7\linewidth]{fig/velocity_profile.pdf}
+    \end{figure}    
+\end{frame}
+
+\begin{frame}{Future work}
+	\begin{itemize}
+		\item 1. Generate a systematical dataset of the flow around bluffs; train SGS models within the dataset and design algorithms
+		which improves the a-posteriori performance.
+		\item 2. Deploy to practical problems: Subgrid-scale modeling in large eddy simulation of the
+		urban environment.
+		\item 3. Investigate the statistical and numerical properties of the data-driven turbulence modeling, with
+		special focus on the dataset characteristic and the relation between data with different resolutions.
+	\end{itemize}
+\end{frame}
+
+\begin{frame} % Use [allowframebreaks] to allow automatic splitting across slides if the content is too long
+    \frametitle{References}
+ 
+    \begin{thebibliography}{99} % Beamer does not support BibTeX so references must be inserted manually as below, you may need to use multiple columns and/or reduce the font size further if you have many references
+        \footnotesize % Reduce the font size in the bibliography
+ 
+		\bibitem[BDI]{bdi}
+		M. Benjamin, S. Domino, and G. Iaccarino
+		\newblock Neural Networks for Large Eddy Simulations of Wall-bounded Turbulence: Numerical Experiments and Challenges
+		\newblock \emph{The European Physical Journal E}
+
+		\bibitem[Zhao 2024]{ds}
+        J. Zhao and Q. Li (2024)
+        \newblock Mitigating Distribution Shift in Machine Learning-augmented Hybrid Simulation
+        \newblock \emph{Arxiv preprint https://arxiv.org/pdf/2401.09259}
+
+        \bibitem[S.A. and Q.L., 2024]{nigbms}
+        S. Arisaka and Q. Li (2024)
+        \newblock Accelerating Legacy Numerical Solvers by Non-intrusive Gradient-based Meta-solving
+        \newblock \emph{International Conference on Machine Learning 2024}
+ 
+        
+    \end{thebibliography}
 \end{frame}
 
 \end{document}
