@@ -1,0 +1,102 @@
+\documentclass[paper slide]{beamer}
+\usetheme{Boadilla}
+\usepackage{essay-def}
+\usepackage{bm}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{comment}
+\usepackage{subcaption}
+\usepackage{geometry}
+\usepackage{algorithmic}
+\usepackage{algpseudocode}
+\usepackage{algorithmicx}
+\geometry{left=1cm,right=1cm}
+    \title[Data-driven SGS modeling]{Data-driven subgrid-scale modeling for wall-bounded turbulence}
+\author[J. Zhao]{Jiaxi Zhao \\ \small joint with S. Arisaka, Q. Li, T. Hasama, N. Ikegaya, W. Wang \\
+\small NUS \& Kajima \& KU}
+\date[\today]{The 19th OpenFOAM Workshop \\ \today}
+\begin{document}
+\par \setlength{\parindent}{2em}
+
+\begin{frame}
+\titlepage
+% \begin{figure}[ht]
+% 	\centering
+% 	\begin{subfigure}[b]{0.32\textwidth}
+% 		\includegraphics[width=.8\textwidth]{fig/nus-logo-horizon.png}
+% 	\end{subfigure}
+% 	\begin{subfigure}[b]{0.32\textwidth}
+% 		\includegraphics[width=.8\textwidth]{fig/kajima-logo.jpg}
+% 	\end{subfigure}
+% 	\begin{subfigure}[b]{0.32\textwidth}
+% 		\includegraphics[width=.8\textwidth]{fig/ku_logo.jpg}
+% 	\end{subfigure}
+% \end{figure}
+\end{frame}
+
+\begin{frame}{Motivation}
+	The effect cutoff used by the plane-wave method to solve large system is
+	unaffordable. Moreover, given the nature of the electron density which will
+	be concentrated around the nucleus, while away from the nucleus which is the
+	case of majority of the computational region, the electron density is
+	relatively smooth, the plane-wave method is not efficient.
+	\JX{We need to survey the literature for some multiscale basis such as
+	the wavelet basis.}
+
+\end{frame}
+
+\begin{frame}{Literature}
+	In literature, there has been lots of work on exploring the adaptive basis for
+	solving DFT. 
+	\begin{itemize}
+		\item Use fixed analytic transformation mapping depending on the position of the
+		atom. (Similar to the r type mesh refinement in numerical PDE.)
+		\item Solve some OT-type problems to predetermine the basis before the SCF
+		loop.
+	\end{itemize}
+	However, our method is different from the above method in several aspects:
+	\begin{itemize}
+		\item Our basis is continuously optimized during the optimization porcess of
+		DFT.
+		\item We use Monte-Carlo method to estimate the density related energy,
+		differs from the traditional PDE solving method.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Advantages}
+	There are several advantages of using the distorted plane-wave method.
+	\begin{itemize}
+		\item The orthognormality of the basis is preserved.
+		\item Calculation of the density related energy can be estimated 
+		efficiently by the Monte-Carlo method instead of solving the PDE.
+	\end{itemize}
+\end{frame}
+
+\begin{frame} % Use [allowframebreaks] to allow automatic splitting across slides if the content is too long
+    \frametitle{References}
+ 
+    \begin{thebibliography}{99} % Beamer does not support BibTeX so references must be inserted manually as below, you may need to use multiple columns and/or reduce the font size further if you have many references
+        \footnotesize % Reduce the font size in the bibliography
+ 
+		\bibitem[BDI]{bdi}
+		M. Benjamin, S. Domino, and G. Iaccarino
+		\newblock Neural Networks for Large Eddy Simulations of Wall-bounded Turbulence: Numerical Experiments and Challenges
+		\newblock \emph{The European Physical Journal E}
+
+		\bibitem[Zhao 2024]{ds}
+        J. Zhao and Q. Li (2024)
+        \newblock Mitigating Distribution Shift in Machine Learning-augmented Hybrid Simulation
+        \newblock \emph{Arxiv preprint https://arxiv.org/pdf/2401.09259}
+
+        \bibitem[S.A. and Q.L., 2024]{nigbms}
+        S. Arisaka and Q. Li (2024)
+        \newblock Accelerating Legacy Numerical Solvers by Non-intrusive Gradient-based Meta-solving
+        \newblock \emph{International Conference on Machine Learning 2024}
+ 
+        
+    \end{thebibliography}
+\end{frame}
+
+\end{document}
