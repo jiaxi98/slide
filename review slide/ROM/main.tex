@@ -482,4 +482,18 @@
 	\end{itemize}
 \end{frame}
 
+\begin{frame}{DL approach to CV}
+	\begin{itemize}
+		\item * Time-lagged autoencoders\footnotemark:
+		\begin{equation}
+			\min_{\opE, \opD} \sum_{t=0}^{T-1} \norml \wtd y_t - \opD(\opE(\wtd x_t)) \normr_2^2,
+		\end{equation}
+		where $\wtd y_t, \wtd x_t$ denotes the observed (lagged) data after whitening
+		transformation. 
+	\end{itemize}
+	\footnotetext{Wehmeyer, Christoph, and Frank Noé. "Time-lagged autoencoders:
+	Deep learning of slow collective variables for molecular kinetics." The Journal
+	of chemical physics 148.24 (2018).}
+\end{frame}
+
 \end{document}
