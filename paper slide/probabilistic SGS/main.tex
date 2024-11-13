@@ -1,0 +1,202 @@
+\documentclass[paper slide]{beamer}
+\usetheme{Boadilla}
+\usepackage{essay-def}
+\usepackage{bm}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{comment}
+\usepackage{subcaption}
+\usepackage{geometry}
+\usepackage{algorithmic}
+\usepackage{algpseudocode}
+\usepackage{algorithmicx}
+\geometry{left=1cm,right=1cm}
+    \title[Data-driven SGS modeling]{Data-driven subgrid-scale modeling for wall-bounded turbulence}
+\author[J. Zhao]{Jiaxi Zhao \\ \small joint with Q. Li\@ NUS, N. Thuerey\@ TMU}
+\date[\today]{NUS-SJTU PhD Forum \\ \today}
+\begin{document}
+\par \setlength{\parindent}{2em}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Motivation:}
+	\begin{itemize}
+		\item 1. Performing DNS is unaffordable, even a LES with 50M grids of length 1000s takes several days.
+		\item 2. Cheap simulation such as RANS and coarse-grid LES can not obtain accurate quantities such as peak pressure.
+	\end{itemize}
+	\begin{figure}[ht]
+		\centering
+		\includegraphics[width=.6\linewidth]{fig/urban_environment.jpeg}
+	\end{figure}
+	\textit{Can we {\color{red}design or learn better SGS models} based on the LES data so that it can achieve accurate
+	results even {\color{red}on coarse grid LES?}}
+\end{frame}
+
+\begin{frame}{SGS stress modeling}
+	There are three main issues for stress modeling:
+	\begin{itemize}
+		\item 1. The mapping from the input features. e.g. filtered velocity to the stress tensor is {\color{red}non-deterministic} while
+		most classical turbulence models and data-driven models are deterministic.
+		\begin{equation*}
+			\overline{\mfU}, \nabla \overline{\mfU}, \overline{p} \overset{\text{NOT DETERMINISTIC}}{\Longrightarrow} \tau, \quad \min_{\phi}\norml \tau - \phi(\overline{\mfU}) \normr^2.
+		\end{equation*}
+		\item 2. Discrepancy between {\color{red}a-priori error and a-posteriori error}.
+		\begin{equation*}
+			\norml \wht\tau - \tau \normr^2, \quad \norml \overline{\wht\mfU}(T) - \overline{\mfU}(T) \normr^2
+		\end{equation*}
+		\item 3. Difficult to combine the OpenFOAM solver with gradient-based optimization algorithms.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Learning the SGS stress model}
+	We test the following three approaches:
+	\begin{itemize}
+		\item 1. {\color{red}Directly predict} the stress tensor from the input features.
+		\begin{equation}
+			\tau = \text{NN}(\overline{\mfU}, \nabla \overline{\mfU}, \overline{p}).
+		\end{equation}
+		\item 2.  {\color{red}Learn a correction} of the constants to the Smagorinsky model.
+		\begin{equation}
+			\wtd C = \text{NN}(\overline{\mfU}, \nabla \overline{\mfU}, \overline{p}) + C, \quad \nu_t = \wtd C \Delta^2 \lv \bar{S} \rv.
+		\end{equation}
+		\item 3. Learn a  {\color{red}conditional generative model} from the input features.
+	\end{itemize}
+	\begin{itemize}
+		\item The first approach usually provides a much better a-priori error estimate than the second approach.
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{A toy case}
+	In a preliminary work, we apply {\color{red}tangent-space regularized method} to solve the NS equation using the projection
+	method. 
+	\bequn
+		\begin{aligned}
+			\mfu_{k+1} 	& = \mfu_k +
+			\Delta t (\nu \Delta \mfu_k
+			- (\mfu_k \cdot \nabla)\mfu_k - \nabla p_{k}),    \\
+			p_{k} & = \phi(\mfu_k) = \Delta^{-1}(\nabla \cdot \lp \nu \Delta \mfu_k
+			- (\mfu_k \cdot \nabla)\mfu_k\rp),   \\
+		\end{aligned}
+	\eequn
+	Instead of training the data-driven model to solely	minimizing the a-priori error, we incorperate
+	{\color{red}dynamical information, i.e. the iteration of the solver} into the algorithm that accounts for a-posteriori error.
+
+	{\color{blue}For fluid people, this part needs more time to explain, I skip most of the details this time.}
+\end{frame}
+
+\begin{frame}{Kuramoto–Sivashinsky equation}
+	We use the 1D Kuramoto–Sivashinsky equation as a toy model to test the
+	effectiveness of the proposed method.
+	\begin{equation*}
+		\begin{aligned}
+			u_t & = -(c + u)u_x - uu_x - u_{xx} - \nu u_{xxxx},    \\
+			u(0, t) & = u(L, t) = 0, \\
+			u_x(0, t) & = u_x(L, t) = 0, \forall t. \\
+		\end{aligned}
+	\end{equation*}
+	This equation is known to exhibit chaotic behavior and we use the statistics
+	of its first two moments to evaluate the performance of the SGS model.
+	\begin{equation*}
+		\begin{aligned}
+			\la\overline{u}\ra &= \frac{1}{LT}\int_{[0, L]}\int_{t}^{t+T} u(x, t)dt dx,
+			\\
+			\la\overline{u^2}\ra &= \frac{1}{LT}\int_{[0, L]}\int_{t}^{t+T}
+			u^2(x, t)dt dx, \\
+		\end{aligned}
+	\end{equation*}
+\end{frame}
+
+
+\begin{frame}{Statistics}
+	\begin{figure}[ht] 
+		\centering 
+		\includegraphics[width=\textwidth]{fig/ks_c_stats.pdf} 
+		\caption{Simulation statistics under different parameters $c$.} 
+		\label{fig:stats}
+	\end{figure}
+    
+\end{frame}
+
+\begin{frame}{A-priori and a-posteriori discrepancy}
+	The inconsistency between the a priori error and a posteriori error arises because the {\color{red}training algorithm does not take the solver dynamics into account}.
+	\begin{figure}[ht]
+		\centering
+		\begin{subfigure}[b]{\textwidth}
+			\centering
+			\includegraphics[width=.8\textwidth]
+			{fig/regression_uxx_tau_err_scatter.png}
+			\caption{Relation between $u_{xx}, \tau$.} 
+		\end{subfigure}
+		\begin{subfigure}[b]{\textwidth}
+			\centering
+			\includegraphics[width=.8\textwidth]
+			{fig/regression_uxxxx_tau_err_scatter.png}
+			\caption{Relation between $u_{xxxx}, \tau$.} 
+		\end{subfigure}
+		\caption{Prediction $\tau$ using $u_{xx}$.}
+		\label{fig:cmp_stats1}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{Comparison with the regression-based method}
+	\begin{figure}[ht]
+		\centering
+		\begin{subfigure}[b]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]
+				{fig/ks_nu1_N1023n10_regression_cmp_stats.pdf}
+				\caption{}
+		\end{subfigure}
+		\begin{subfigure}[b]{0.45\textwidth}
+				\centering
+				\includegraphics[width=\textwidth]
+				{fig/ks_nu1_N1023n10_gaussian_cmp_stats.pdf}
+				\caption{}
+		\end{subfigure}
+		\caption{Prediction $\tau$ using $u_{xx}$.}
+		\label{fig:cmp_stats1}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{Future work}
+	\begin{itemize}
+		\item 1. Generate a systematical dataset of the flow around bluffs; train SGS models within the dataset and design algorithms
+		which improves the a-posteriori performance.
+		\item 2. Deploy to practical problems: Subgrid-scale modeling in large eddy simulation of the
+		urban environment.
+		\item 3. Investigate the statistical and numerical properties of the data-driven turbulence modeling, with
+		special focus on the dataset characteristic and the relation between data with different resolution.
+	\end{itemize}
+\end{frame}
+
+\begin{frame} % Use [allowframebreaks] to allow automatic splitting across slides if the content is too long
+    \frametitle{References}
+ 
+    \begin{thebibliography}{99} % Beamer does not support BibTeX so references must be inserted manually as below, you may need to use multiple columns and/or reduce the font size further if you have many references
+        \footnotesize % Reduce the font size in the bibliography
+ 
+		\bibitem[BDI]{bdi}
+		M. Benjamin, S. Domino, and G. Iaccarino
+		\newblock Neural Networks for Large Eddy Simulations of Wall-bounded Turbulence: Numerical Experiments and Challenges
+		\newblock \emph{The European Physical Journal E}
+
+		\bibitem[Zhao 2024]{ds}
+        J. Zhao and Q. Li (2024)
+        \newblock Mitigating Distribution Shift in Machine Learning-augmented Hybrid Simulation
+        \newblock \emph{Arxiv preprint https://arxiv.org/pdf/2401.09259}
+
+        \bibitem[S.A. and Q.L., 2024]{nigbms}
+        S. Arisaka and Q. Li (2024)
+        \newblock Accelerating Legacy Numerical Solvers by Non-intrusive Gradient-based Meta-solving
+        \newblock \emph{International Conference on Machine Learning 2024}
+ 
+        
+    \end{thebibliography}
+\end{frame}
+
+\end{document}
