@@ -2,6 +2,7 @@
 \usetheme{Boadilla}
 \usepackage{essay-def}
 \usepackage{bm}
+\usepackage{booktabs}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{amsmath}
@@ -12,11 +13,11 @@
 \usepackage{algorithmic}
 \usepackage{algpseudocode}
 \usepackage{algorithmicx}
+\usepackage[version=4]{mhchem}
 \geometry{left=1cm,right=1cm}
-    \title[Data-driven SGS modeling]{Data-driven subgrid-scale modeling for wall-bounded turbulence}
-\author[J. Zhao]{Jiaxi Zhao \\ \small joint with S. Arisaka, Q. Li, T. Hasama, N. Ikegaya, W. Wang \\
-\small NUS \& Kajima \& KU}
-\date[\today]{The 19th OpenFOAM Workshop \\ \today}
+    \title[Gaussian Hartree-Fock]{Adaptive Gaussian basis for (post) Hartree-Fock calculation}
+\author[J. Zhao]{Jiaxi Zhao}
+\date[\today]{\today}
 \begin{document}
 \par \setlength{\parindent}{2em}
 
@@ -34,6 +35,275 @@
 % 		\includegraphics[width=.8\textwidth]{fig/ku_logo.jpg}
 % 	\end{subfigure}
 % \end{figure}
+\end{frame}
+
+\begin{frame}{Chemists' notation}
+	
+\end{frame}
+
+\begin{frame}
+	The many-body Schr\"odinger equation is given by:
+	\begin{equation*}
+		\begin{aligned}
+			\opH^e \Psi(1, 2, ..., N) = E \Psi(1, 2, ..., N),		\\
+			
+		\end{aligned}
+	\end{equation*}
+\end{frame}
+
+\begin{frame}{Slater determinant}
+	The many-body wave function of the Hartree-Fock theory is given by a single
+Slater determinant:
+\begin{equation*}
+  \lv \Psi_{\text{HF}} \ra = \frac{1}{\sqrt{N!}} 
+\begin{vmatrix}
+\phi_1(1) & \phi_1(2) & \cdots & \phi_1(N) \\
+\phi_2(1) & \phi_2(2) & \cdots & \phi_2(N) \\
+\vdots & \vdots & \ddots & \vdots \\
+\phi_N(1) & \phi_N(\mathbf{r}_2) & \cdots & \phi_N(\mathbf{r}_N)
+\end{vmatrix},
+\end{equation*}
+\end{frame}
+
+\begin{frame}{Hartree-Fock energy}
+	Given a Slater determinant $\lv \Psi_{\text{HF}} \ra$, the energy is given
+	by:
+	\begin{equation*}
+		\begin{aligned} E[\Psi^{HF}] &= \left\langle\Psi^{HF}|\hat{\opH^e}|\Psi^{HF}
+			\right\rangle \\
+			&=  \sum_{i=1}^N \int\text{d}\mathbf{x}_i \, \phi_i^*(\mathbf{x}_i)
+			\hat{h}(\mathbf{x}_i) \phi_i(\mathbf{x}_i) \\ 
+			&+ \frac{1}{2} \sum_{i=1}^N\sum_{j=1}^N \int \mathrm{d}\mathbf{x}_i \int
+			\text{d}\mathbf{x}_j \phi_i^*(\mathbf{x}_i)\phi_j^*(\mathbf{x}_j)
+			\frac{1}{|\mathbf{x}_i-\mathbf{x}_j|}\phi_i(\mathbf{x}_i)
+			\phi_j(\mathbf{x}_j) \\ 
+			&- \frac{1}{2} \sum_{i=1}^N\sum_{j=1}^N \int \text{d}\mathbf{x}_i \int
+			 \text{d}\mathbf{x}_j\phi_i^*(\mathbf{x}_i)\phi_j^*(\mathbf{x}_j)
+			  \frac{1}{|\mathbf{x}_i-\mathbf{x}_j|}\phi_i(\mathbf{x}_j)
+				\phi_j(\mathbf{x}_i)  
+		\end{aligned}
+	\end{equation*}
+	Minimizing the total energy will give the ground state configuration which is
+	consistent with the self-consisten field approach.
+\end{frame}
+
+\begin{frame}{Basis set}
+	Classically, basis set of increasing complexity is used to 
+	\begin{itemize}
+		\item 1. STO-n 
+		\item 2. 6-311G*
+		\item 3. cc-pVDZ
+	\end{itemize}
+	In this work, we propose to use the adaptive Gaussian basis with tunable
+	mean and covariance:
+	\begin{equation*}
+		\phi_i = \sum_{j\in I} c_{ij}\mcN(\mfr; \mu_j, \Sigma_j).
+	\end{equation*}
+	In general, all the optimizable parameters are $\mu \in \mbR^{|I|\times 3},
+	\Sigma \in \lp \mbS_+^3 \rp^{|I|}, C \in \mbC^{|I|\times N}$. $|I|$ is the
+	size of the basis set, $N$ is the number of electrons (ground state +
+	excited state).
+\end{frame}
+
+\begin{frame}{orthognormality and overlap matrix}
+	The orthgnormality of the orbitals in SCF is guaranteed by the eigensolver.
+	In total energy minimization, we have to handle this explicitly.
+
+	As the orbitals are supposed to be orthognormal, it can be written as
+	\begin{equation*}
+		\opC^{\dagger} \opS \opC = \opI.
+	\end{equation*}
+	where $\opS$ is the overlap matrix defined as:
+	\begin{equation*}
+		\operatorname{S}_{ij} = \la \mcN\lp \mfr; \mathbf{\mu_1},
+    \Sigma_1 \rp \rv \left. \mcN\lp \mfr;
+    \mathbf{\mu_2}, \Sigma_2 \rp \ra.
+	\end{equation*}
+	The orthognormality is enforced by QR decomposition modified by the
+	Cholesky factorization of $\opS$.
+\end{frame}
+
+\begin{frame}{Coulumb and external energy}
+	Our primary idea is to approximate the Coulumb kernel by a series of
+	Gaussian modes:
+	\begin{equation*}
+		\frac{1}{r} = \sum_i c_i e^{-\alpha_i r^2},
+	\end{equation*}
+	which is done by minimizing the 
+	\begin{equation*}
+		\begin{aligned}
+			\min_{c_i, \alpha_i} \int_{B_M} \lp \frac{1}{|\mfr|} - \sum_i c_i e^{-\alpha_i |\mfr|^2} \rp^2 d\mfr
+			= \min_{c_i, \alpha_i} 4\pi\int_0^M \lp 1 - \sum_i c_i re^{-\alpha_i r^2} \rp^2 dr.
+		\end{aligned}
+	\end{equation*}
+\end{frame}
+
+\begin{frame}{Parameterization of Gaussian basis}
+	We parameterize the Gaussian basis as
+	\begin{equation*}
+		\Sigma_1 = \opU_1 \opD_1 \opU_1^T, \quad \Sigma_2 = \opU_2 \opD_2 \opU_2^T,
+	\end{equation*}
+	where $\opU_i$ is obtained from the QR decomposition and the positivity of
+	the diagonal element of $\opD_i$ is enforced by the softplus function.
+\end{frame}
+
+\begin{frame}{Numerical experiments}
+	\begin{table}[tb]\label{table:accuracy-2d-ot}
+		\caption{.}
+		\label{table:density-fitting}
+		\centering
+		% \small
+		\resizebox{0.95\columnwidth}{!}{
+		\begin{tabular}{P{3cm} P{2cm} P{2cm} P{2cm} P{2cm} P{2cm} P{2cm} P{2cm}}
+		\toprule [1.5pt]
+		\parbox{3cm}{  } &   \parbox{2cm}{ \centering e\_kin + e\_ext} &
+		\parbox{2cm}{\centering  e\_kin}
+		& \parbox{2cm}{\centering  e\_ext} & 
+		\parbox{2cm}{ \centering e\_nuc } & \parbox{2cm}{ \centering 
+		e\_coul + e\_exc} & \parbox{2cm}{ \centering 
+		e\_coul} & \parbox{2cm}{ \centering e\_exc} & \parbox{2cm}
+		{\centering  e\_tot}   \\ \midrule[1.5pt]
+		
+		\parbox{3cm}{OUR ($\ce{H2}$), 10} & -2.5062 & 1.1254 & -3.6316 & 0.7138 & 0.6591 &
+		1.3182 & -0.6591 & -1.1334 \\ \midrule[0.5pt]
+	
+		% \parbox{3cm}{$n_g= 10, \epsilon=10^{-3}$} & -2.4905 & 1.1070 & -3.5975
+		% & 0.7138 & 0.6549 & 1.3097 & -0.6549 & -1.1219 \\ \midrule[0.5pt]
+	
+		% \parbox{3cm}{$n_g = 20, \epsilon=10^{-3}$} & -2.4897 & 1.1069 & -3.5966
+		% & 0.7138 & 0.6547 & 1.3094 & -0.6547 & -1.1213 \\ \midrule[0.5pt]
+	
+		% \parbox{3cm}{$n_g = 20, \epsilon=10^{-4}$} & -2.4917 & 1.1095 & -3.6012
+		% & 0.7138 & 0.6550 & 1.3100 & -0.6550 & -1.1229 \\ \midrule[0.5pt]
+	
+		% \parbox{3cm}{$n_g = 10, \epsilon=10^{-4}$} & -2.4909 & 1.1078 & -3.5987
+		% & 0.7138 & 0.6550 & 1.3100 & -0.6550 & -1.1221 \\ \midrule[0.5pt]
+	
+		\parbox{3cm}{HF (STO-3G, 2)} 
+		& -2.5049 &  * & * & 0.7138 & 0.6745 & * & * & -1.1167
+		\\ \midrule[0.5pt]
+	
+		\parbox{3cm}{HF (6-31G, 4)} 
+		& -2.4902 &  * & * & 0.7138 & 0.6497 & * & * & -1.1267
+		\\ \midrule[0.5pt]
+	
+		\parbox{3cm}{HF (6-311G, 6)} 
+		& -2.4924 &  * & * & 0.7138 & 0.6507 & * & * & -1.1280
+		\\ \midrule[0.5pt]
+	
+		% \parbox{3cm}{d4ft (6-31g, lda)} 
+		% & -2.482366 & * & * & 0.713754 & * & 1.280327 & -0.552556 & -1.038646
+		% \\ \midrule[0.5pt]
+	
+		% \parbox{3cm}{pyscf} 
+		% & -2.480171 & * & * & 0.713754 & * & 1.275792 & -0.554381 & -1.047201
+		% \\ \midrule[0.5pt] \midrule[0.5pt]
+	
+		% \parbox{3cm}{OUR (\ce{CH4})} & -78.6437 & 37.8278 & -116.4715 & 13.4477
+		% & 25.8757 & 32.3750 & -6.4993 & -39.3203 \\ \midrule[0.5pt]
+	
+		% \parbox{3cm}{$n_g = 10, \epsilon=10^{-3}$} & -78.3927 & 39.6854 &
+		% -118.0781 & 13.4477 & 25.6199 & 32.2481 &
+		% -6.6282 & -39.3251 \\ \midrule[0.5pt]
+	
+		% \parbox{3cm}{$n_g = 20, \epsilon=10^{-3}$} & -79.3790 & 39.9992 &
+		% -119.3782 & 13.4477 & 26.01440 & 32.5979 &
+		% -6.5835 & -39.9169 \\ \midrule[0.5pt]
+	
+		% \parbox{3cm}{$n_g = 20, \epsilon=10^{-4}$} & -79.2670 & 39.8448 &
+		% -119.1118 & 13.4477 & 25.9379& 32.5050 &
+		% -6.5671 & -39.8813 \\ \midrule[0.5pt]
+	
+		% \parbox{3cm}{$n_g = 10, \epsilon=10^{-4}$} & -77.5650 & 39.5177 &
+		% -117.0827 & 13.4477 & 24.9640 & 31.5523 &
+		% -6.5883 & -39.1532 \\ \midrule[0.5pt]
+	
+		\parbox{3cm}{OUR ($\ce{CH4}$), 22} & -79.6713 & 40.0987 & -119.7700 & 13.4477
+		& 26.1010 & 32.6936 & -6.5926 & -40.1225 \\ \midrule[0.5pt]
+	
+		\parbox{3cm}{HF (STO-3G, 9)} 
+		& -79.3617 &  * & * & 13.4477 & 26.1872 & * & * & -39.7267
+		\\ \midrule[0.5pt]
+	
+		\parbox{3cm}{HF (6-31G, 17)} 
+		& -79.6901 &  * & * & 13.4477 & 26.0619 & * & * & -40.1804
+		\\ \midrule[0.5pt]
+	
+		\parbox{3cm}{HF (6-311G, 25)} 
+		& -79.6872 &  * & * & 13.4477 & 26.0515 & * & * & -40.1880
+		\\ \midrule[0.5pt]
+	
+		% \parbox{3cm}{d4ft} 
+		% & -79.503407 & * & * & 13.349528 & * & 32.452280 & -5.856054 & -39.467655
+		% \\ \midrule[0.5pt]
+	
+		% \parbox{3cm}{pyscf} 
+		% & -79.472583 & * & * & 13.349528 & * & 32.586078 & -5.843392 & -39.290969
+		% \\ \midrule[0.5pt] \midrule[0.5pt]
+	
+		% \parbox{3cm}{OUR (\ce{H2O})} & -120.2329 & 68.1350 & -188.3679 & 9.1895 &
+		% 37.4786 & 46.2207 & -8.7421 & -73.5648 \\ \midrule[0.5pt]
+	
+		% \parbox{3cm}{$n_g = 10, \epsilon=10^{-3}$} & -120.9352 & 74.8185 &
+		% -195.7537 & 9.1895 & 37.0497 & 46.0144 &
+		% -8.9647 & -74.6960 \\ \midrule[0.5pt]
+	
+		% \parbox{3cm}{$n_g = 20, \epsilon=10^{-3}$} & -122.6473 & 75.5681 &
+		% -198.2154 & 9.1895 & 37.7575 & 46.6995 &
+		% -8.9420 & -75.7003 \\ \midrule[0.5pt]
+	
+		% \parbox{3cm}{$n_g = 20, \epsilon=10^{-4}$} & -122.7171 & 75.8241 &
+		% -198.5412 & 9.1895 & 37.8074 & 46.7600 &
+		% -8.9526 & -75.7202 \\ \midrule[0.5pt]
+	
+		% \parbox{3cm}{$n_g = 10, \epsilon=10^{-4}$} & -119.5637 & 74.4819 &
+		% -194.0456 & 9.1895 & 36.1289 & 45.0722 &
+		% -8.9433 & -74.2454 \\ \midrule[0.5pt]
+	
+		\parbox{3cm}{OUR ($\ce{H2O}$), 22} & -122.9802 & 75.9462 &
+		-199.0371 & 9.1895 & 37.8786 & 46.8579 &
+		-8.9601 & -76.0036 \\ \midrule[0.5pt]
+	
+		\parbox{3cm}{HF (STO-3G, 7)} 
+		& -122.3614 &  * & * & 9.1895 & 38.2089 & * & * & -74.9630
+		\\ \midrule[0.5pt]
+	
+		\parbox{3cm}{HF (6-31G, 13)} 
+		& -122.9701 &  * & * & 9.1895 & 37.7966 & * & * & -75.9839
+		\\ \midrule[0.5pt]
+	
+		\parbox{3cm}{HF (6-311G, 19)} 
+		& -123.0146 &  * & * & 9.1895 & 37.8157 & * & * & -76.0094
+		\\ \midrule[0.5pt]
+	
+		% \parbox{3cm}{d4ft} 
+		% & -122.983359 & * & * & * & 9.189533 & 46.449287 & -8.117571 & -75.462110
+		% \\ \midrule[0.5pt]
+	
+		% \parbox{3cm}{pyscf} 
+		% & -122.839414 & * & * & * & 9.189534 & 46.589372 & -8.093291 & -75.153800
+		% \\ \midrule[0.5pt]
+	
+		\\\bottomrule[1.5pt]
+		\end{tabular}
+		}
+	\end{table}
+\end{frame}
+
+\begin{frame}{Next step}
+	\begin{itemize}
+		\item 1. Compare the scalability of the double-electron integral
+		calculation over the number of basis functions with the SOTA method, e.g.
+		MD, Rys, HDG.
+		\item 2. Evidence from numerical experiments to show that the adaptive
+		Gaussian basis can achieve the same accuracy with a smaller number of
+		basis.
+		\item 3. Implement post HF method, e.g. CCSD, CCSD(T).
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	Q \& A
 \end{frame}
 
 \begin{frame}{Motivation}

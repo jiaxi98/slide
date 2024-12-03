@@ -1,16 +1,24 @@
-%Copyright Jiaxi Zhao 2019
+%Copyright Jiaxi Zhao 2022
 
 \usepackage{mathrsfs}
 \usepackage{eucal}
-\newtheorem{Prop}{Proposition}
-\newtheorem{Rem}{Remark}
-\newtheorem{Lem}{Lemma}
-\newtheorem{Def}{Definition} 
 \newtheorem{Thm}{Theorem}
-\newtheorem{Cor}{Corollary}
-\newtheorem{Asm}{Assumption}
-\newtheorem{Ex}{Example}
-\newtheorem{Conj}{Conjecture}
+\newtheorem{Prop}[Thm]{Proposition}
+\newtheorem{Rem}[Thm]{Remark}
+\newtheorem{Lem}[Thm]{Lemma}
+\newtheorem{Def}[Thm]{Definition} 
+\newtheorem{Cor}[Thm]{Corollary}
+\newtheorem{Asm}[Thm]{Assumption}
+\newtheorem{Ex}[Thm]{Example}
+\newtheorem{Conj}[Thm]{Conjecture}
+%\newtheorem{Prop}{Proposition}
+%\newtheorem{Rem}{Remark}
+%\newtheorem{Lem}{Lemma}
+%\newtheorem{Def}{Definition}
+%\newtheorem{Cor}{Corollary}
+%\newtheorem{Asm}{Assumption}
+%\newtheorem{Ex}{Example}
+%\newtheorem{Conj}{Conjecture}
 
 
 
@@ -22,12 +30,13 @@
 
 %Formula support
 \usepackage{amsmath}
+\usepackage{extarrows}
 \usepackage{bm}
 \usepackage{rotating} 
 \usepackage{cite}
 
 \newenvironment{eqt}{\begin{equation}\begin{aligned}}{\end{aligned}\end{equation}}
-%\newtheorem{problem}{Problem}
+\newtheorem{problem}{Problem}
 
 
 %color support
@@ -37,6 +46,10 @@
 % underline and highlight
 \usepackage{soul}
 \sethlcolor{grey}
+
+% some important script which is easy to forget
+% \overset
+
 
 % shortcut
 \newcommand{\dm}{displaymath}
@@ -56,6 +69,7 @@
 \newcommand{\ra}{\right\rangle}
 \newcommand{\wtd}{\widetilde}
 \newcommand{\wht}{\widehat}
+%\newcommand{\wbr}{\widebar}.  No widebar command
 \newcommand{\bs}{\backslash}
 \newcommand{\bequ}{\begin{equation}}
 \newcommand{\eequ}{\end{equation}}
@@ -67,10 +81,12 @@
 \newcommand{\pfract}{\frac{\p}{\p t}}
 \newcommand{\pfracx}{\frac{\p}{\p x}}
 \newcommand\Pfrac[2]{\frac{\p^{#2}}{\p#1^{#2}}}
+\newcommand\Phantom[1]{\mathrel{\phantom{#1}}}
+\newcommand{\bsyb}{\boldsymbol}
+
 
 % text
 \newcommand{\ac}{\operatorname{ac}}
-\newcommand{\diag}{\operatorname{diag}}
 \newcommand{\diam}{\operatorname{diam}}
 \newcommand{\dist}{\operatorname{dist}}
 \newcommand{\grad}{\operatorname{grad}}
@@ -78,24 +94,44 @@
 \newcommand{\Diff}{\operatorname{Diff}}
 \newcommand{\Exp}{\operatorname{Exp}}
 %\newcommand{\exp}{\operatorname{exp}}
+\newcommand{\Spec}{\operatorname{Spec}}
 \newcommand{\GL}{\operatorname{GL}}
+\newcommand{\Sp}{\operatorname{Sp}}
+\newcommand{\GSp}{\operatorname{GSp}}
+\newcommand{\GU}{\operatorname{GU}}
 \newcommand{\SL}{\operatorname{SL}}
+\newcommand{\SO}{\operatorname{SO}}
 \newcommand{\PGL}{\operatorname{PGL}}
 \newcommand{\Hessian}{\operatorname{Hess}}
 \newcommand{\Hor}{\operatorname{Hor}}
+\newcommand{\Ch}{\operatorname{Ch}}										
+\newcommand{\Jac}{\operatorname{Jac}}									% Jacobian variety
+\newcommand{\cusp}{\operatorname{cusp}}									% cusp form
+\newcommand{\Tate}{\operatorname{Tate}}									% Tate curves
+\newcommand{\dR}{\operatorname{dR}}										% De Rham
+\newcommand{\Sh}{\operatorname{Sh}}										% Shimura variety
+\newcommand{\Sym}{\operatorname{Sym}}									% symmetric product
+\newcommand{\Res}{\operatorname{Res}}									
+\newcommand{\Ker}{\operatorname{Ker}}
+\newcommand{\Coker}{\operatorname{Coker}}
+\newcommand{\Ind}{\operatorname{Ind}}
+\newcommand{\ind}{\operatorname{ind}}
+\newcommand{\et}{\operatorname{et}}										% etale cohomology
+\newcommand{\rk}{\operatorname{rk}}										% rank
+\newcommand{\Gr}{\operatorname{Gr}}										% Grassmannian
+\newcommand{\Frob}{\operatorname{Frob}}									% Frobenius
+\newcommand{\Fro}{\operatorname{Fro}}									% Frobenius norm
+	
 \newcommand{\Id}{\operatorname{Id}}
-\newcommand{\KL}{\operatorname{KL}}
+\newcommand{\KL}{\mathrm{D}_{\mathrm{KL}}}
 \newcommand{\Prox}{\operatorname{Prox}}
 \newcommand{\Proj}{\operatorname{Proj}}
 \newcommand{\prox}{\operatorname{prox}}
 \newcommand{\tr}{\operatorname{tr}}
 \newcommand{\Tr}{\operatorname{Tr}}
 \newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
 \newcommand{\Ver}{\operatorname{Ver}}
-\newcommand{\Ker}{\operatorname{Ker}}
-\newcommand{\Coker}{\operatorname{Coker}}
-\newcommand{\Ind}{\operatorname{Ind}}
-\newcommand{\ind}{\operatorname{ind}}
 \newcommand{\half}{\frac{1}{2}}
 \newcommand{\id}{\operatorname{id}}
 \newcommand{\Ric}{\operatorname{Ric}}
@@ -106,10 +142,18 @@
 \newcommand\Galg[2]{\Gal\lp #1 / #2\rp}
 \newcommand{\Diag}{\operatorname{Diag}}
 \newcommand{\R}{\operatorname{R}}
-\newcommand{\vol}{\operatorname{vol}}
-\newcommand{\supp}{\operatorname{supp}}
-\newcommand{\Hom}{\operatorname{Hom}}
-\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\vol}{\operatorname{vol}}										% volume form
+\newcommand{\supp}{\operatorname{supp}}									% support set
+\newcommand{\Hom}{\operatorname{Hom}}									% Homomorphism functor
+\newcommand{\sgn}{\operatorname{sgn}}
+\newcommand{\Uniform}{\operatorname{Uniform}}								% Uniform distribution
+\newcommand{\Rad}{\operatorname{Rad}}									% Rademacher complexity
+\newcommand{\rank}{\operatorname{rank}}									% rank
+\newcommand{\ord}{\operatorname{ord}}									% order
+\newcommand{\PPP}{\operatorname{PPP}}									% Poisson Point Process
+\newcommand{\Med}{\operatorname{Med}}
+\newcommand{\FFT}{\operatorname{FFT}}									% median
+
 
 % bm
 \newcommand{\f}{\bm{f}}
@@ -225,15 +269,47 @@
 \newcommand{\mcY}{\mathcal{Y}}
 \newcommand{\mcZ}{\mathcal{Z}}
 \newcommand{\msE}{\mathscr{E}}
-\newcommand{\bsyb}{\boldsymbol}
 
 
+\newcommand{\mfrg}{\mathfrak{g}}
+\newcommand{\mfrh}{\mathfrak{h}}
+\newcommand{\mfrk}{\mathfrak{k}}
+\newcommand{\mfrK}{\mathfrak{K}}
+\newcommand{\mfrM}{\mathfrak{M}}
 \newcommand{\mfro}{\mathfrak{o}}
 \newcommand{\mfrp}{\mathfrak{p}}
 \newcommand{\mfru}{\mathfrak{u}}
 \newcommand{\gl}{\mathfrak{gl}}
 \newcommand{\liesl}{\mathfrak{sl}}
 \newcommand{\su}{\mathfrak{su}}
+
+\newcommand{\opA}{\operatorname{A}}
+\newcommand{\opB}{\operatorname{B}}
+\newcommand{\opC}{\operatorname{C}}
+\newcommand{\opD}{\operatorname{D}}
+\newcommand{\opE}{\operatorname{E}}
+\newcommand{\opF}{\operatorname{F}}
+\newcommand{\opG}{\operatorname{G}}
+\newcommand{\opH}{\operatorname{H}}
+\newcommand{\opI}{\operatorname{I}}
+\newcommand{\opJ}{\operatorname{J}}
+\newcommand{\opK}{\operatorname{K}}
+\newcommand{\opL}{\operatorname{L}}
+\newcommand{\opM}{\operatorname{M}}
+\newcommand{\opN}{\operatorname{N}}
+\newcommand{\opO}{\operatorname{O}}
+\newcommand{\opP}{\operatorname{P}}
+\newcommand{\opQ}{\operatorname{Q}}
+\newcommand{\opR}{\operatorname{R}}
+\newcommand{\opS}{\operatorname{S}}
+\newcommand{\opT}{\operatorname{T}}
+\newcommand{\opU}{\operatorname{U}}
+\newcommand{\opV}{\operatorname{V}}
+\newcommand{\opW}{\operatorname{W}}
+\newcommand{\opX}{\operatorname{X}}
+\newcommand{\opY}{\operatorname{Y}}
+\newcommand{\opZ}{\operatorname{Z}}
+
 
 % boldsymbol
 \newcommand{\bxi}{\boldsymbol{\xi}}
