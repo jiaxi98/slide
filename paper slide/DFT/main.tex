@@ -127,13 +127,13 @@
 		\end{equation*}
 		\item Contracted Gaussian basis functions:
 		\begin{equation*}
-			\varphi_{a, A, \alpha, k}^{\opc\opG} \equiv \sum_{k=1}^{K_A}
+			\varphi_{a, A, \alpha, k}^{\text{c}\opG} \equiv \sum_{k=1}^{K_A}
 			D_{aAk}(x - A_x)^{a_x}(y - A_y)^{a_y}(z - A_z)^{a_z}
 			e^{-\alpha_k \norml \mfr - \mfA \normr_2^2}.
 		\end{equation*}
 		\item Gaussian Lobe functions:
 		\begin{equation*}
-			\varphi_{a, A, \alpha, k}^{\opc\opG} \equiv \sum_{k=1}^{K_A}
+			\varphi_{a, A, \alpha, k}^{\text{Lobe}} \equiv \sum_{k=1}^{K_A}
 			D_{aAk}e^{-\alpha \norml \mfr - \mfA \normr_2^2}.
 		\end{equation*}
 	\end{itemize}
@@ -177,11 +177,11 @@
 	Radiance Field Rendering." ACM Trans. Graph. 42.4 (2023): 139-1.}
 \end{frame}
 
-\begin{frame}{orthognormality and overlap matrix}
+\begin{frame}{orthonormality and overlap matrix}
 	The orthgnormality of the orbitals in SCF is guaranteed by the eigensolver.
 	In total energy minimization, we have to handle this explicitly.
 
-	As the orbitals are supposed to be orthognormal, it can be written as
+	As the orbitals are supposed to be orthonormal, it can be written as
 	\begin{equation*}
 		\opC^{\dagger} \opS \opC = \opI.
 	\end{equation*}
@@ -191,7 +191,7 @@
     \Sigma_i \rp \rv \left. \mcN\lp \mfr;
     \mathbf{\mu_j}, \Sigma_j \rp \ra.
 	\end{equation*}
-	The orthognormality is enforced by QR decomposition modified by the
+	The orthonormality is enforced by QR decomposition modified by the
 	Cholesky factorization of $\opS$.
 \end{frame}
 
@@ -504,7 +504,7 @@
 \begin{frame}{Advantages}
 	There are several advantages of using the distorted plane-wave method.
 	\begin{itemize}
-		\item The orthognormality of the basis is preserved.
+		\item The orthonormality of the basis is preserved.
 		\item Calculation of the density related energy can be estimated 
 		efficiently by the Monte-Carlo method instead of solving the PDE.
 	\end{itemize}
