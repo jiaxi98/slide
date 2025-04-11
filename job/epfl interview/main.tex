@@ -13,10 +13,9 @@
 \usepackage{algpseudocode}
 \usepackage{algorithmicx}
 \geometry{left=1cm,right=1cm}
-    \title[Probabilistic SGS modeling]{A probabilistic approach to 
-		subgrid-scale modeling}
-\author[J. Zhao]{Jiaxi Zhao \\ \small joint with Q. Li\@ NUS, N. Thuerey\@ TUM}
-\date[\today]{NUS-SJTU PhD Forum \\ \today}
+    \title[Interview]{Interview for MatMat group}
+\author[J. Zhao]{Jiaxi Zhao}
+\date[\today]{}
 \begin{document}
 \par \setlength{\parindent}{2em}
 
@@ -24,43 +23,78 @@
 \titlepage
 \end{frame}
 
-\begin{frame}{PhD project 1}
-	\begin{enumerate}
-		\item Establish a theoretical understanding to explain the mismatch bewteen the a-priori
-		and a-posteriori error appears in scientific machine learning.
-		\item Propose the tangent-space regularization method to stabilize the 
-		\item Propose a generative modeling approach to learn the subgrid-scale (SGS) model
-		and use this methods to improve the accuracy of long time simulation of the chaotics systems.
-	\end{enumerate}
-	\footnotetext{}
+
+\begin{frame}{}
+	\noindent
+	\small
+	Many machine-learning assisted scientific computing methods have an
+	iterative nature, e.g., turbulence modeling, XC functional:
+  \begin{equation*}
+         \partial_t\mfu = \mcL(\mfu, \mfy, t), \quad \mfy = \phi(\mfu, t),
+				 \quad \min_{\theta} \sum_{n} \norml \phi_{\theta}(\mfu^{(n)}) - \mfy^{(n)} \normr^2,
+	\end{equation*}
+	The stability and a-posteriori performance are not satisfactory.
+	\begin{itemize}
+		\item 1. Tangent-space regularization method (\textit{published in SISC})
+		\begin{itemize}
+			\item · First mathematical formulation and analysis.
+			\item · Non-intrusive and differentiable regularization.
+			\item · Significant improvement over dynamics-agnostic methods.
+			\item · Deployment to practical urban environment simulation (ongoing).
+		\end{itemize}
+		\item 2. Generative subgrid-scale model (\textit{accepted by ICLR 2025 MLMP})
+		\item 3. Numerical anlysis of the turbulence modeling (multiscale,
+		data-imbalance, multivaluedness)
+		\item 4. Distorted plane-wave via normalizing flow (adaptive basis set, smaller
+		cutoff energy, comparable accuracy)
+		\item 5. Adaptive Gaussian basis set (efficient electron integral, differentiable basis sets)
+	\end{itemize}
+\end{frame}
+ 
+ 
+\begin{frame}{Mathematics, physics, and programming background}
+	\noindent
+  Mathematics \& Physics:
+	\begin{itemize}
+    \item 1. Mathematics, graduate level course on computational math and analysis: 
+		numerical analysis, (numerical) PDE, numerical linear algebra, stochastic analysis, etc.
+		\item 2. Physics (quantum mechanics, quantum chemistry, solid-state physics, fluid dynamics).
+  \end{itemize}
+	\noindent
+	Programming:
+	\begin{itemize}
+    \item 1. Core contributor of the \textit{Jrystal} package (pseudopotential,
+		accuracy test modules, exploring the machine-learning XC functionals).
+    \item 2. Extensive experience with deep-learning framework and models (PyTorch, JAX, generative models,
+		differentiable programming).
+    \item 3. Familiar with various open-source packages (PySCF, OpenFOAM).
+  \end{itemize}
 \end{frame}
 
-
-\begin{frame}{PhD project 2}
-	\begin{enumerate}
-		\item 
-		\item Propose a generative modeling approach to learn the SGS model
-	\end{enumerate}
+ 
+\begin{frame}{Research vision and contribution to MatMat group}
+	\noindent
+	Research vision:
+	\begin{itemize}
+		\item Machine-learning tools can advance scientific computing (differentiable programming,
+		data-centric viewpoint, generative modeling)
+		\item Numerical analysis for hybrid algorithms (stability analysis, error estimation, 
+		uncertainty quantification)
+	\end{itemize}
+	I aim to contribute to the MatMat group research in the following two aspects:
+	
+	1. Gradient-accelerated inverse materials design 
+		\begin{itemize}
+			\item · Combining stabilization algorithm with inverse design.
+			\item · Generative model guided by differentiable DFT calculation.
+		\end{itemize}
+	
+	2. Estimation of simulation errors
+		\begin{itemize}
+			\item · Numerical analysis related to pseudo-potential and XC functional.
+			\item · Machine-learning XC functionals and its related problems.
+		\end{itemize}
 \end{frame}
-
-
-\begin{frame}{Mathematics, Physics, and coding}
-	\begin{enumerate}
-		\item Strong background in mathematics, with abundant experience in numerical methods,
-		especially in density functional theory and computational fluid dynamics.
-		\item Strong skills in differentiable programming.
-	\end{enumerate}
-\end{frame}
-
-\begin{frame}{My insight in MatMat}
-	\begin{enumerate}
-		\item The DFT and material design pipeline is also dynamics, similar to the problems
-		framework I have been working on during my graduate study.
-		\item I hope that my solid mathematics background can help to explore the problems we
-		encountered during the material design results.
-	\end{enumerate}
-\end{frame}
-
 
 
 % \begin{frame} % Use [allowframebreaks] to allow automatic splitting across slides if the content is too long
