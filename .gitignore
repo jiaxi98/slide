@@ -1,5 +1,5 @@
 *.DS_Store
-*/main.pdf
+*main.pdf
 */.DS_Store
 .aux
 *.aux

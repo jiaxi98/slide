@@ -89,7 +89,9 @@ An extra term comes in, i.e. $\la \mfu u_j \ra$ Reynolds stress. The equation is
 
 
 \begin{frame}{Data-driven method}
-	An effective approximation related the Reynolds stresses to a basis of tensors $T^{(1)}, T^{(2)}, \cdots, T^{(10)}$. This tensor are designed to guarantee several invariance of the fluid statistics.
+	An effective approximation related the Reynolds stresses to a basis of
+	 tensors $T^{(1)}, T^{(2)}, \cdots, T^{(10)}$. This tensor are designed to
+	  guarantee several invariance of the fluid statistics.
 	\bequ
 	\mathbf{b} = \sum_{n=1}^{10} g^{(n)}(\lambda_1, \lambda_2, \cdots, \lambda_5) T^{(n)}.
 \eequ
@@ -117,7 +119,8 @@ An extra term comes in, i.e. $\la \mfu u_j \ra$ Reynolds stress. The equation is
 
 \begin{frame}{Inner-outer loop: linear case}
 	\begin{Prop}[DRO of linear regression]\label{linreg-DRO}
-	Consider the DRO formulation of linear regression in special case where $\Cov(\mfX) = \Sigma, \mu \in \mcN(\mu_0, \varepsilon) = \lbb \Sigma_0 + \Delta \Sigma | \norml \Delta \Sigma \normr_2 \leq \delta \rbb$:
+	Consider the DRO formulation of linear regression in special case where
+	 $\Cov(\mfX) = \Sigma, \mu \in \mcN(\mu_0, \varepsilon) = \lbb \Sigma_0 + \Delta \Sigma | \norml \Delta \Sigma \normr_2 \leq \delta \rbb$:
 	\bequ\label{DRO}
 	\Theta = \arg\min_{\theta} \sup_{\mu \in \mcN(\mu_0, \varepsilon)} \mbE_{X \sim \mu} \norml \mfY - \theta \mfX \normr^2,
 \eequ
@@ -140,7 +143,8 @@ where $S = (C^T - \theta^T)(C - \theta).$
 	f_{k, l} = & \Tr(E^T (E^{l})^T (EE^T)^{k-l-1} S E^l \Delta E ),
 	\end{aligned}
 \eequ
-where $S = (C^T - \theta^T)(C - \theta).$ If further either $\Delta E$ or $S$ is assumed to commute with $E, E^T$, this reduces to 
+where $S = (C^T - \theta^T)(C - \theta).$ If further either $\Delta E$ or $S$
+ is assumed to commute with $E, E^T$, this reduces to 
 \bequ
 \Tr(\sum_{k = 0}^N 2k(N-k)E^T (EE^T)^{k-1} S\Delta E)
 \eequ
@@ -149,7 +153,8 @@ where $S = (C^T - \theta^T)(C - \theta).$ If further either $\Delta E$ or $S$ is
 
 
 \begin{frame}{Inner-outer loop: non-linear case}
-	For nonlinear case, the shift of covariance structure is no longer in closed-form, but we can still use some methods to obtain some informations in the covariance shift.
+	For nonlinear case, the shift of covariance structure is no longer in closed-form,
+	 but we can still use some methods to obtain some informations in the covariance shift.
 	\begin{itemize}
 		\item 1. linearization
 		\item 2. adjoint equation
@@ -169,7 +174,8 @@ First example is a generalized linear model where the basis $\phi_i$ is taken to
 \eequ
 Then use the method of adjoint equation, we can calculate the derivative of $\mcF$ w.r.t. the parameter $\alpha$:
 \bequn
-	\nabla_{\alpha} \mcF = \frac{1}{\tau}\int_0^{\tau}(\mfX_t^T\nabla\phi_i(\mfX_t)\mathbf{\lambda_t} - \phi_i(\mfX_t)^T\mathbf{\lambda_t})dt.
+	\nabla_{\alpha} \mcF = \frac{1}{\tau}\int_0^{\tau}(\mfX_t^T\nabla\phi_i(\mfX_t)
+	\mathbf{\lambda_t} - \phi_i(\mfX_t)^T\mathbf{\lambda_t})dt.
 \eequn
 \end{Ex}
 \end{frame}
@@ -190,7 +196,10 @@ Another example is the Gibbs measure, which is important in sampling problem. Su
 
 
 \begin{frame}{Performance of different estimators}
-	Estimation in this inner-outer loop structure is completely different from that of traditional least square estimation and system identification. For linear system identification, satisfying statistical results have been establish for both stable and unstable system while nonlinear system is still beyond our knowledge.
+	Estimation in this inner-outer loop structure is completely different from
+	 that of traditional least square estimation and system identification. For
+	  linear system identification, satisfying statistical results have been establish
+		 for both stable and unstable system while nonlinear system is still beyond our knowledge.
 \end{frame}
 
 
@@ -425,7 +434,8 @@ And we use a \textbf{neural network} with $2$ hidden layer to parameterize the m
 	\bequn
 		\mcM_t := \lbb (x(t), v(t), t)  \quad t \in [0, 1]  \rbb,
 	\eequn
-		\item The other empirical manifold related to the data-driven surrogate model and can be defined as following set:
+		\item The other empirical manifold related to the data-driven surrogate model
+		 and can be defined as following set:
 \bequn
 	\wht \mcM_t := \lbb (x, v, t) \Big| \norml \phi_{NN}(x_k, v_k, t_k) - u_k \normr_2 < \epsilon \rbb.
 \eequn
@@ -436,7 +446,8 @@ And we use a \textbf{neural network} with $2$ hidden layer to parameterize the m
 
 \begin{frame}{$ \mcM_t $}
 \bequn
-		\min_{\theta} \mbE \norml \mfu - \phi_{\theta}(\mfx, t) \normr^2 + \lambda \norml D(E(\wht \mfx)) - \wht \mfx \normr^2
+		\min_{\theta} \mbE \norml \mfu - \phi_{\theta}(\mfx, t) \normr^2 + \lambda
+		 \norml D(E(\wht \mfx)) - \wht \mfx \normr^2
 	\eequn
 	Averaged error is given by $0.173001$.
 	\begin{figure}[H]
@@ -449,7 +460,8 @@ And we use a \textbf{neural network} with $2$ hidden layer to parameterize the m
 
 \begin{frame}{$\wht \mcM_t $}
 	\bequn
-		\min_{\theta} \mbE \norml \mfu - \phi_{\theta}(\mfx, t) \normr^2 + \lambda \norml \wht \mfu - \phi_{\theta}(\wht \mfx, t) \normr^2
+		\min_{\theta} \mbE \norml \mfu - \phi_{\theta}(\mfx, t) \normr^2 + \lambda
+		 \norml \wht \mfu - \phi_{\theta}(\wht \mfx, t) \normr^2
 	\eequn
 	Averaged error is given by $0.160128$.
 	\begin{figure}[H]
@@ -471,7 +483,11 @@ And we use a \textbf{neural network} with $2$ hidden layer to parameterize the m
 		\end{pmatrix},
     \end{aligned}
 	\end{equation}
-	This provides a simple inner-outer loop structure for the numerical solver. The initial data is given by $\mfu_0$ is a random field and generated by i.i.d. sampling from a normal distribution and $\alpha = 0.01, \beta=0.25$. We use mesh size $128 \times 128$ for the whole problems. Computational domain is given by $[0, 1]\times[0, 1]$.
+	This provides a simple inner-outer loop structure for the numerical solver.
+	 The initial data is given by $\mfu_0$ is a random field and generated by i.i.d.
+	  sampling from a normal distribution and $\alpha = 0.01, \beta=0.25$. We use
+		 mesh size $128 \times 128$ for the whole problems. Computational domain is
+		  given by $[0, 1]\times[0, 1]$.
 \end{frame}
 
 
@@ -485,11 +501,12 @@ And we use a \textbf{neural network} with $2$ hidden layer to parameterize the m
 \eequn
 	\bequ
 	\lbb\begin{aligned}
-		\mfu_{2n}^{t+1} & = I_n^{2n} \circ f(R_{2n}^{n}(\mfu_{2n}^t))) + \wht \mfR(\mfu_{2n}^t),		\\
+		\mfu_{2n}^{t+1} & = I_n^{2n} \circ f(R_{2n}^{n}(\mfu_{2n}^t)) + \wht \mfR(\mfu_{2n}^t),		\\
 		\wht \mfR(\mfu) & = \phi_{NN}(u, v).
 	\end{aligned}\right.
 \eequ
-	It is akin to the main idea of multigrid. Inner-loop now represents the role of accounting for the residue of switching between two grid size.
+	It is akin to the main idea of multigrid. Inner-loop now represents the role of
+	 accounting for the residue of switching between two grid size.
 \end{frame}
 
 
@@ -500,7 +517,8 @@ And we use a \textbf{neural network} with $2$ hidden layer to parameterize the m
           \centerline{\includegraphics[width=1.1\linewidth]{fig/Unet.png}}
           \caption{U-net structure for flow prediction\footnotemark}
 \end{figure}
-\footnotetext{Thuerey, Nils, et al. "Deep learning methods for Reynolds-averaged Navier–Stokes simulations of airfoil flows." AIAA Journal 58.1 (2020): 25-36.}
+\footnotetext{Thuerey, Nils, et al. "Deep learning methods for Reynolds-averaged
+ Navier–Stokes simulations of airfoil flows." AIAA Journal 58.1 (2020): 25-36.}
 \end{frame}
 
 
@@ -510,7 +528,8 @@ And we use a \textbf{neural network} with $2$ hidden layer to parameterize the m
           \centering
           \centerline{\includegraphics[width=0.4\linewidth]{fig/RD2-64-bm.jpg}}
           \centerline{\includegraphics[width=0.4\linewidth]{fig/RD2-64-reg.jpg}}
-          \caption{Upper: Benchmark with relative numerical error 12; Lower: Regularized sampler with numerical error 8.}
+          \caption{Upper: Benchmark with relative numerical error 12; Lower:
+					 Regularized sampler with numerical error 8.}
 \end{figure}
 \end{frame}
 
@@ -519,11 +538,14 @@ And we use a \textbf{neural network} with $2$ hidden layer to parameterize the m
 	Consider incompressible NS equation:
 	\begin{equation}\label{FN}
     \begin{aligned}
-        	\frac{\p \mfu}{\p t} + (\mfu \cdot \nabla)\mfu -  \nu \Delta \mfu & =   \nabla p, \quad T \in [0, 1], 	\\
+        	\frac{\p \mfu}{\p t} + (\mfu \cdot \nabla)\mfu -  \nu \Delta \mfu & =
+					\nabla p, \quad T \in [0, 1], 	\\
 		\nabla \cdot \mfu & = 0,
     \end{aligned}
 \end{equation}
-	The computational domain is a rectangular $[0, 4]\times [0, 1]$. The boundary condition on upper and lower boundary is no-slip for velocity. The boundary condition for outlet is zero-gradient on pressure while we specify the inlet velocity.
+	The computational domain is a rectangular $[0, 4]\times [0, 1]$. The boundary
+	condition on upper and lower boundary is no-slip for velocity. The boundary condition
+	for outlet is zero-gradient on pressure while we specify the inlet velocity.
 \end{frame}
 
 
@@ -540,7 +562,8 @@ And we use a \textbf{neural network} with $2$ hidden layer to parameterize the m
 	\begin{figure}[H]
           \centering
           \centerline{\includegraphics[width=0.9\linewidth]{fig/ns_p.jpg}}
-          \caption{Prediction of pressure at time $t=7$; Left: ground truth; Middle: prediction; Right: error}
+          \caption{Prediction of pressure at time $t=7$; Left: ground truth;
+					Middle: prediction; Right: error}
 \end{figure}
 \end{frame}
 
@@ -548,7 +571,8 @@ And we use a \textbf{neural network} with $2$ hidden layer to parameterize the m
 \begin{frame}{Future work: Algorithm}
 In the algorithmic perspective
 	\begin{itemize}
-		\item 1. Complete the work on encoder-decoder regularized method to mitigate the distribution mismatch in scientific computing.
+		\item 1. Complete the work on encoder-decoder regularized method to mitigate the
+		 distribution mismatch in scientific computing.
 		\item 2. Scientific computing + Manifold learning/self-supervised learning.
 	\end{itemize}
 
@@ -558,8 +582,10 @@ In the algorithmic perspective
 \begin{frame}{Future work: Application}
 	In terms of application, we will further investigate the following thing:
 	\begin{itemize}
-		\item 1. Try to implant the best performed algorithm to the problems in fluid mechanics such as turbulence transition and flow separation.
-		\item 2. Consider interesting problems in physics such as black holes dynamics, space-time classification in general relativity.
+		\item 1. Try to implant the best performed algorithm to the problems in fluid
+		 mechanics such as turbulence transition and flow separation.
+		\item 2. Consider interesting problems in physics such as black holes dynamics,
+		 space-time classification in general relativity.
 	\end{itemize}
 
 \end{frame}
