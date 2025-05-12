@@ -1,4 +1,4 @@
-\documentclass{beamer}
+\documentclass[aspectratio=169]{beamer}
 \usetheme{Boadilla}
 \usepackage{essay-def}
 \usepackage{bm}
@@ -11,7 +11,7 @@
 \geometry{left=1cm,right=1cm}
     \title[Distribution Mismatch]{Combatting distribution shift in SciML}
 \author[J. Zhao]{Jiaxi Zhao}
-\date{20th Mar, 2024}
+\date{13th May, 2025}
 \begin{document}
 \par \setlength{\parindent}{2em}
 
@@ -24,7 +24,7 @@
 	Simulating the dynamics:
 	\bequn
 		\begin{aligned}
-			\mathbf{0} & = \mcL(\mfx, \p_t \mfx, \mfu, t), \quad \mfx \in \mcX, \mfu \in \mcU, \mcL: \mcX \times T\mcX \times \mcU \times \mbR_+ \rightarrow \mbR^{c},			\\
+			\mcL(\mfx, \p_t \mfx, \mfu, t) & = \mathbf{0}, \quad \mfx \in \mcX, \mfu \in \mcU, \mcL: \mcX \times T\mcX \times \mcU \times \mbR_+ \rightarrow \mbR^{c},			\\
 			\mfu & = \phi(\mfx, t), \quad \phi: \mcX \times \mbR_+ \rightarrow \mfu.
 		\end{aligned}
 	\eequn
@@ -109,6 +109,43 @@
 	The question is: \textit{How to go beyond linear?}
 \end{frame}
 
+\begin{frame}{Subgrid-scale stress modeling based on NN}
+	\begin{equation*}
+		\begin{aligned}
+		\frac{\p u_i}{\p t} + \frac{\p}{\p x_j}(u_iu_j) & \ = 
+		-\frac{\p p}{\p x_i} + \nu\Delta u_i,   \\
+		\frac{\p u_i}{\p x_i} & \ = 0.
+		\end{aligned}
+	\end{equation*}
+	Applying a filter $G$ to the equation, i.e. 
+	$\overline{u} = G * u$
+	\begin{equation*}
+		\begin{aligned}
+		\frac{\p \overline{u}_i}{\p t} + \frac{\p}{\p x_j}(\overline{u}_i
+		\overline{u}_j) & \ = -\frac{\p \overline{p}}{\p x_i} + \nu\Delta 
+		\overline{u}_i - \frac{\p \tau_{ij}}{\p x_j},   \\
+		\frac{\p \overline{u}_i}{\p x_i} & \ = 0,		\\
+		\tau_{ij} & \ = \overline{u_iu_j} - \overline{u}_i\overline{u}_j.
+		\end{aligned}
+	\end{equation*}
+	Classical SGS stress models include the (dynamic) Smagorinsky model, 
+	and the Wall-Adapting Local Eddy-Viscosity model, and etc. They all based
+	on physical intuition and empirical data.
+\end{frame}
+
+\begin{frame}{Understanding the SGS modeling}
+	\begin{figure}[ht]
+     \centering 
+     \includegraphics[width=\textwidth]
+     {fig/ks_hist.png} 
+\end{figure}
+
+\begin{itemize}
+	\item \textbf{Multivaluedness}
+	\item \textbf{Data imbalance}
+\end{itemize}
+\end{frame}
+
 \begin{frame}{Generative SGS modeling}
 	
 \end{frame}
@@ -122,6 +159,7 @@
 	\url{https://github.com/jiaxi98/ml4dynamics}
 
 	Data-driven turbulence modeling platform based on OpenFOAM
+	
 	\url{https://github.com/jiaxi98/pyfoam}
 \end{frame}
 
