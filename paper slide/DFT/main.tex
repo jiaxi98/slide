@@ -1,5 +1,5 @@
-\documentclass[paper slide]{beamer}
-\usetheme{Boadilla}
+\documentclass[aspectratio=169]{beamer}
+\usetheme{boxes}
 \usepackage{essay-def}
 \usepackage{bm}
 \usepackage{booktabs}
@@ -15,84 +15,120 @@
 \usepackage{algorithmicx}
 \usepackage[version=4]{mhchem}
 \geometry{left=1cm,right=1cm}
-    \title[Gaussian Hartree-Fock]{Adaptive Gaussian basis for (post) Hartree-Fock calculation}
-\author[J. Zhao]{Jiaxi Zhao}
+    \title[Gaussian Hartree-Fock]{Adaptive Gaussian basis for quantum chemistry calculation}
+\author[J. Zhao]{Jiaxi Zhao (NUS)\\joint work with Doc. Min Lin (SAIL)}
 \date[\today]{\today}
 \begin{document}
 \par \setlength{\parindent}{2em}
 
 \begin{frame}
 \titlepage
-% \begin{figure}[ht]
-% 	\centering
-% 	\begin{subfigure}[b]{0.32\textwidth}
-% 		\includegraphics[width=.8\textwidth]{fig/nus-logo-horizon.png}
-% 	\end{subfigure}
-% 	\begin{subfigure}[b]{0.32\textwidth}
-% 		\includegraphics[width=.8\textwidth]{fig/kajima-logo.jpg}
-% 	\end{subfigure}
-% 	\begin{subfigure}[b]{0.32\textwidth}
-% 		\includegraphics[width=.8\textwidth]{fig/ku_logo.jpg}
-% 	\end{subfigure}
-% \end{figure}
+\begin{figure}[ht]
+	\centering
+	\begin{subfigure}[b]{0.32\textwidth}
+		\includegraphics[width=.8\textwidth]{fig/nus-logo-horizon.png}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.32\textwidth}
+		\includegraphics[width=.8\textwidth]{fig/sail_logo.png}
+	\end{subfigure}
+\end{figure}
 \end{frame}
 
-% \begin{frame}{Chemists' notation}
+\begin{frame}{What is quantum chemistry?}
+
+	Recall in high school chemistry, we learned:
+	\begin{itemize}
+		\item 1. Atoms have s, p, d, f, etc orbitals.
+		\item 2. There are ionic and covalent bonds.
+		\item 3. Materials can be conductors, semi-conductors, and insulators.
+	\end{itemize}
+
+	{\color{red} All these properties can be explained by the electronic structure from
+	first principle calculations!}
+
+	\begin{figure}[ht]
+	\centering
+		\includegraphics[width=.4\textwidth]{fig/qc.png}
+\end{figure}
+	
+\end{frame}
+
+% for long talk
+% \begin{frame}{Many-body Schr\"odinger equation}
+% 	After Born–Oppenheimer approximation, the many-body Schr\"odinger equation
+% 	is given by:
 % 	\begin{equation*}
 % 		\begin{aligned}
-% 			f(\opi) & := f(\mfr_i), 		\\
-			
+% 			\hat{\opH^e} & \Psi(\mfr_1, \mfr_2, ..., \mfr_N) = E
+% 			\Psi(\mfr_1, \mfr_2, ..., \mfr_N),		\\
+% 			\hat{\opH^e} & = -\half \Delta_{\mfr} - \sum_{i=1}^N\sum_{j=1}^{n_A} \frac{Z_j}
+% 			{\norml \mfr_i - \mfR_j \normr_2} + \frac{1}{2} \sum_{i \neq j}^N
+% 			\frac{1}{r_{ij}}		\\
+% 			& = \sum_{i=1}^N \wht{\operatorname{h}}(\text{i}) + \frac{1}{2} \sum_{i \neq j}^N
+% 			\frac{1}{r_{ij}}
 % 		\end{aligned}
 % 	\end{equation*}
-% 	NOTE: We omit the discussion of the spin orbitals.
+% 	Solving this equation, we can obtain the ground state energy, potential
+% 	energy surface (for geometry optimization and transition states search),
+% 	band structure for the solid state system, and etc.
 % \end{frame}
 
-\begin{frame}{Many-body Schr\"odinger equation}
-	After Born–Oppenheimer approximation, the many-body Schr\"odinger equation
-	is given by:
+% % for long talk
+% \begin{frame}{Mean-field approximation: Slater determinant}
+% 	Pauli exclusion principle requires following antisymmetric constraint on the
+% 	many-body wave function:
+% 	\begin{equation*}
+% 		\Psi_{\text{HF}}(..., \mfr_j, ..., \mfr_i, ...) = 
+% 		- \Psi_{\text{HF}}(..., \mfr_i, ..., \mfr_j, ...)
+% 	\end{equation*}
+
+% 	The many-body wave function of the Hartree-Fock theory is given by a single
+% 	Slater determinant:
+% 	\begin{equation*}
+% 		\Psi_{\text{HF}}(\mfr_1, ..., \mfr_N) = \frac{1}{\sqrt{N!}} 
+% 		\begin{vmatrix}
+% 			\phi_1(\mfr_1) & \phi_1(\mfr_2) & \cdots & \phi_1(\mfr_N) \\
+% 			\phi_2(\mfr_1) & \phi_2(\mfr_2) & \cdots & \phi_2(\mfr_N) \\
+% 			\vdots & \vdots & \ddots & \vdots \\
+% 			\phi_N(\mfr_1) & \phi_N(\mfr_2) & \cdots & \phi_N(\mfr_N)
+% 		\end{vmatrix}
+% 	\end{equation*}
+% 	{\color{red} This part is still a bit confusing for math audience.}
+% \end{frame}
+
+% % for long talk
+% \begin{frame}{Total energy}
+% 	\begin{equation*}
+% 		\begin{aligned} & E[\Psi^{HF}] = 
+% 			\left\langle\Psi^{HF}|\hat{\opH^e}|\Psi^{HF}
+% 			\right\rangle =  \sum_{i=1}^N \int\text{d}\mathbf{r}_i
+% 		  \phi_i^*(\mathbf{r}_i)
+% 			\wht{\operatorname{h}}(\text{i}) \phi_i(\mathbf{r}_i) \\ 
+% 			&+ \frac{1}{2N(N - 1)} \sum_{i \neq j}^N \sum_{k \neq l}^N \iint
+% 			\mathrm{d}\mathbf{r}_i
+% 			\text{d}\mathbf{r}_j \phi_k^*(\mathbf{r}_i)\phi_l^*(\mathbf{r}_j)
+% 			\frac{1}{|\mathbf{r}_i-\mathbf{r}_j|}\phi_k(\mathbf{r}_i)
+% 			\phi_l(\mathbf{r}_j) \\ 
+% 			&- \frac{1}{2N(N - 1)} \sum_{i \neq j}^N \sum_{k \neq l}^N \iint
+% 			\text{d}\mathbf{r}_i
+% 			\text{d}\mathbf{r}_j\phi_k^*(\mathbf{r}_i)\phi_l^*(\mathbf{r}_j)
+% 			\frac{1}{|\mathbf{r}_i-\mathbf{r}_j|}\phi_k(\mathbf{r}_j)
+% 			\phi_l(\mathbf{r}_i)  \\
+% 			& = E(\phi_1, \phi_2, \cdots, \phi_N).
+% 		\end{aligned}
+% 	\end{equation*}
+% 	Minimizing the total energy will give the ground state configuration which is
+% 	consistent with the self-consistent field approach. The double-electron
+% 	integrations $O(N^4)$ are the dominant part of computational cost.
+% \end{frame}
+
+\begin{frame}{Mathematical formulation}
+	Variational formulation of the Hartree-Fock theory:
 	\begin{equation*}
 		\begin{aligned}
-			\hat{\opH^e} & \Psi(\mfr_1, \mfr_2, ..., \mfr_N) = E
-			\Psi(\mfr_1, \mfr_2, ..., \mfr_N),		\\
-			\hat{\opH^e} & = -\half \Delta_{\mfr} - \sum_{i=1}^N\sum_{j=1}^{n_A} \frac{Z_j}
-			{\norml \mfr_i - \mfR_j \normr_2} + \frac{1}{2} \sum_{i \neq j}^N
-			\frac{1}{r_{ij}}		\\
-			& = \sum_{i=1}^N \wht{\operatorname{h}}(\text{i}) + \frac{1}{2} \sum_{i \neq j}^N
-			\frac{1}{r_{ij}}
-		\end{aligned}
-	\end{equation*}
-	Solving this equation, we can obtain the ground state energy, potential
-	energy surface (for geometry optimization and transition states search),
-	band structure for the solid state system, and etc.
-\end{frame}
-
-\begin{frame}{Mean-field approximation: Slater determinant}
-	Pauli exclusion principle requires following antisymmetric constraint on the
-	many-body wave function:
-	\begin{equation*}
-		\Psi_{\text{HF}}(..., \mfr_j, ..., \mfr_i, ...) = 
-		- \Psi_{\text{HF}}(..., \mfr_i, ..., \mfr_j, ...)
-	\end{equation*}
-
-	The many-body wave function of the Hartree-Fock theory is given by a single
-	Slater determinant:
-	\begin{equation*}
-		\Psi_{\text{HF}}(\mfr_1, ..., \mfr_N) = \frac{1}{\sqrt{N!}} 
-		\begin{vmatrix}
-			\phi_1(\mfr_1) & \phi_1(\mfr_2) & \cdots & \phi_1(\mfr_N) \\
-			\phi_2(\mfr_1) & \phi_2(\mfr_2) & \cdots & \phi_2(\mfr_N) \\
-			\vdots & \vdots & \ddots & \vdots \\
-			\phi_N(\mfr_1) & \phi_N(\mfr_2) & \cdots & \phi_N(\mfr_N)
-		\end{vmatrix}
-	\end{equation*}
-	{\color{red} This part is still a bit confusing for math audience.}
-\end{frame}
-
-\begin{frame}{Total energy}
-	\begin{equation*}
-		\begin{aligned} & E[\Psi^{HF}] = 
-			\left\langle\Psi^{HF}|\hat{\opH^e}|\Psi^{HF}
-			\right\rangle =  \sum_{i=1}^N \int\text{d}\mathbf{r}_i
+			& \ E(\phi_1, \phi_2, \cdots, \phi_N) \\
+			= & 
+	\sum_{i=1}^N \int\text{d}\mathbf{r}_i
 		  \phi_i^*(\mathbf{r}_i)
 			\wht{\operatorname{h}}(\text{i}) \phi_i(\mathbf{r}_i) \\ 
 			&+ \frac{1}{2N(N - 1)} \sum_{i \neq j}^N \sum_{k \neq l}^N \iint
@@ -104,13 +140,14 @@
 			\text{d}\mathbf{r}_i
 			\text{d}\mathbf{r}_j\phi_k^*(\mathbf{r}_i)\phi_l^*(\mathbf{r}_j)
 			\frac{1}{|\mathbf{r}_i-\mathbf{r}_j|}\phi_k(\mathbf{r}_j)
-			\phi_l(\mathbf{r}_i)  \\
-			& = E(\phi_1, \phi_2, \cdots, \phi_N).
+			\phi_l(\mathbf{r}_i).
 		\end{aligned}
 	\end{equation*}
-	Minimizing the total energy will give the ground state configuration which is
-	consistent with the self-consistent field approach. The double-electron
-	integrations $O(N^4)$ are the dominant part of computational cost.
+	\begin{itemize}
+		\item 1. Direct optimization of the total energy.
+		\item 2. Self-consistent field (SCF) method.
+		\item 3. Discretization of the wave function.
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{Basis set\footnotemark}
