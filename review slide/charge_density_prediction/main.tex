@@ -1,0 +1,118 @@
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{Outline}
+    \tableofcontents
+\end{frame}
+
+\section{Introduction}
+
+\begin{frame}{What is Charge Density?}
+    \begin{itemize}
+        \item Charge density $\rho(\vec{r})$ is a fundamental quantity in quantum mechanics
+        \item Represents the probability distribution of electrons in a system
+        \item Key properties:
+        \begin{itemize}
+            \item Non-negative: $\rho(\vec{r}) \geq 0$
+            \item Normalized: $\int \rho(\vec{r}) d\vec{r} = N$ (number of electrons)
+            \item E(3) equivariant: $\rho(R\vec{r} + \vec{t}) = \rho(\vec{r})$ for any rotation $R$ and translation $\vec{t}$
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Why is Charge Density Important?}
+    \begin{itemize}
+        \item Foundation of Density Functional Theory (DFT)
+        \item Determines many physical properties:
+        \begin{itemize}
+            \item Total energy
+            \item Forces on atoms
+            \item Electronic structure
+            \item Chemical bonding
+        \end{itemize}
+        \item Computational bottleneck in materials science
+        \item Key for materials discovery and design
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Challenges in Charge Density Prediction}
+    \begin{itemize}
+        \item High-dimensional output space
+        \item Need for physical constraints:
+        \begin{itemize}
+            \item E(3) equivariance
+            \item Electron conservation
+            \item Non-negativity
+        \end{itemize}
+        \item Computational efficiency
+        \item Accuracy requirements for downstream tasks
+    \end{itemize}
+\end{frame}
+
+\section{Mathematical Foundation}
+
+\begin{frame}{E(3) Equivariance}
+    \begin{itemize}
+        \item E(3) = Euclidean group in 3D
+        \item Includes:
+        \begin{itemize}
+            \item Rotations (SO(3))
+            \item Translations
+            \item Reflections
+        \end{itemize}
+        \item For charge density:
+        \[
+        \rho(R\vec{r} + \vec{t}) = \rho(\vec{r})
+        \]
+        where $R \in \text{SO(3)}$ and $\vec{t} \in \mathbb{R}^3$
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Higher-Order Tensor Representations}
+    \begin{itemize}
+        \item Irreducible representations (irreps) of SO(3)
+        \item Tensor features $V^{(\ell,p)}_{cm}$ where:
+        \begin{itemize}
+            \item $\ell$: rotation order ($\ell \in \{0,1,2,...\}$)
+            \item $p$: parity ($p \in \{-1,1\}$)
+            \item $c$: channel index
+            \item $m$: index in $[-\ell,\ell]$
+        \end{itemize}
+        \item Size at each order: $\mathbb{R}^{N_{\text{channels}} \times (2\ell+1)}$
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Tensor Product Operations}
+    \begin{itemize}
+        \item Combines representations using Clebsch-Gordan coefficients
+        \[
+        (U^{(\ell_1,p_1)} \otimes V^{(\ell_2,p_2)})^{(\ell_o,p_o)}_{cm_o} = 
+        \sum_{m_1=-\ell_1}^{\ell_1} \sum_{m_2=-\ell_2}^{\ell_2} 
+        C^{(\ell_o,m_o)}_{(\ell_1,m_1)(\ell_2,m_2)} 
+        U^{(\ell_1,p_1)}_{cm_1} V^{(\ell_2,p_2)}_{cm_2}
+        \]
+        where:
+        \begin{itemize}
+            \item $|\ell_1 - \ell_2| \leq \ell_o \leq |\ell_1 + \ell_2|$
+            \item $p_o = p_1p_2$
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Impact of Higher-Order Features}
+    \begin{itemize}
+        \item Higher $\ell$ values capture more complex angular dependencies
+        \item Performance improvement:
+        \begin{itemize}
+            \item 44.6\% median improvement for materials with non-metals/metalloids
+            \item 23.0\% median improvement for materials with only metals
+        \end{itemize}
+        \item Particularly important for:
+        \begin{itemize}
+            \item Covalent bonding
+            \item High angular variance systems
+            \item Complex electronic structures
+        \end{itemize}
+    \end{itemize}
+\end{frame} 

@@ -1,0 +1,134 @@
+\section{Uni-3DAR: Unified 3D Generation and Understanding}
+
+\begin{frame}{Uni-3DAR Overview}
+    \begin{itemize}
+        \item Tokenization-based approach
+        \item Key components:
+        \begin{itemize}
+            \item Hierarchical octree compression
+            \item Fine-grained structural tokenization
+            \item Masked next-token prediction
+        \end{itemize}
+        \item Unifies:
+        \begin{itemize}
+            \item 3D structure generation
+            \item Property prediction
+            \item Multi-modal tasks
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Hierarchical Tokenization}
+    \begin{itemize}
+        \item Octree-based compression:
+        \begin{itemize}
+            \item Coarse-to-fine subdivision
+            \item Non-empty cell detection
+            \item Level-wise tokenization
+        \end{itemize}
+        \item Fine-grained tokenization:
+        \begin{itemize}
+            \item Atom types and positions
+            \item In-cell coordinate discretization
+            \item Structural details
+        \end{itemize}
+        \item 2-level subtree compression:
+        \begin{itemize}
+            \item 8 subcells → 1 token
+            \item 256 possible states
+            \item 8x reduction in tokens
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Masked Next-Token Prediction}
+    \begin{itemize}
+        \item Challenge: Dynamic token positions
+        \item Solution:
+        \begin{itemize}
+            \item Token duplication
+            \item Masked token replacement
+            \item Position-aware prediction
+        \end{itemize}
+        \item Benefits:
+        \begin{itemize}
+            \item Handles varying token positions
+            \item Maintains causal sampling
+            \item Improves prediction accuracy
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Unified Framework}
+    \begin{itemize}
+        \item Single-frame generation:
+        \begin{itemize}
+            \item Unconditional generation
+            \item Property-conditioned generation
+            \item Text-guided generation
+        \end{itemize}
+        \item Multi-frame generation:
+        \begin{itemize}
+            \item Molecular dynamics
+            \item Pocket-based generation
+            \item Frame-by-frame prediction
+        \end{itemize}
+        \item Understanding tasks:
+        \begin{itemize}
+            \item Token-level properties
+            \item Structure-level properties
+            \item Cross-modal tasks
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Performance Analysis}
+    \begin{itemize}
+        \item Generation tasks:
+        \begin{itemize}
+            \item Up to 256\% relative improvement
+            \item 21.8x faster inference
+            \item Better quality and diversity
+        \end{itemize}
+        \item Understanding tasks:
+        \begin{itemize}
+            \item Competitive with specialized models
+            \item Effective transfer learning
+            \item Multi-task learning benefits
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Efficiency Optimizations}
+    \begin{itemize}
+        \item Training:
+        \begin{itemize}
+            \item FlashAttention with bfloat16
+            \item Sequence packing
+            \item Efficient memory usage
+        \end{itemize}
+        \item Inference:
+        \begin{itemize}
+            \item KV-cache acceleration
+            \item Paired token generation
+            \item GPU utilization optimization
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Cross-Modal Applications}
+    \begin{itemize}
+        \item Protein folding:
+        \begin{itemize}
+            \item Sequence to structure
+            \item Multi-frame generation
+            \item Property prediction
+        \end{itemize}
+        \item Crystal structure prediction:
+        \begin{itemize}
+            \item PXRD-guided generation
+            \item NMR signal conditioning
+            \item Property optimization
+        \end{itemize}
+    \end{itemize}
+\end{frame} 

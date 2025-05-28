@@ -1,0 +1,165 @@
+\section{Methodology Comparison}
+
+\begin{frame}{Approach Comparison}
+    \begin{itemize}
+        \item ChargE3Net:
+        \begin{itemize}
+            \item E(3)-equivariant GNN
+            \item Higher-order tensor features
+            \item Grid-based representation
+        \end{itemize}
+        \item SCDP:
+        \begin{itemize}
+            \item Orbital-based approach
+            \item Learnable basis sets
+            \item Spherical channel representation
+        \end{itemize}
+        \item Uni-3DAR:
+        \begin{itemize}
+            \item Tokenization-based
+            \item Octree compression
+            \item Unified framework
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Performance Comparison}
+    \begin{itemize}
+        \item Accuracy:
+        \begin{itemize}
+            \item ChargE3Net: Best on MP and QM9
+            \item SCDP: Competitive with faster inference
+            \item Uni-3DAR: Best for generation tasks
+        \end{itemize}
+        \item Efficiency:
+        \begin{itemize}
+            \item ChargE3Net: O(N) scaling
+            \item SCDP: >10x faster than grid-based
+            \item Uni-3DAR: 21.8x faster inference
+        \end{itemize}
+        \item Memory usage:
+        \begin{itemize}
+            \item ChargE3Net: Moderate
+            \item SCDP: Low
+            \item Uni-3DAR: High (transformer-based)
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Equivariance Handling}
+    \begin{itemize}
+        \item ChargE3Net:
+        \begin{itemize}
+            \item Explicit E(3) equivariance
+            \item Higher-order tensor representations
+            \item Clebsch-Gordan coefficients
+        \end{itemize}
+        \item SCDP:
+        \begin{itemize}
+            \item Implicit through basis functions
+            \item Spherical harmonics
+            \item Physical constraints
+        \end{itemize}
+        \item Uni-3DAR:
+        \begin{itemize}
+            \item Data augmentation
+            \item Tokenization structure
+            \item Position-aware prediction
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\section{Downstream Applications}
+
+\begin{frame}{DFT Acceleration}
+    \begin{itemize}
+        \item SCF step reduction:
+        \begin{itemize}
+            \item ChargE3Net: 26.7-28.6\%
+            \item SCDP: Efficient initialization
+            \item Uni-3DAR: Multi-frame prediction
+        \end{itemize}
+        \item Property prediction:
+        \begin{itemize}
+            \item Energy and forces
+            \item Electronic structure
+            \item Chemical properties
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Materials Discovery}
+    \begin{itemize}
+        \item High-throughput screening:
+        \begin{itemize}
+            \item Property prediction
+            \item Structure optimization
+            \item Composition design
+        \end{itemize}
+        \item Property optimization:
+        \begin{itemize}
+            \item Inverse design
+            \item Multi-objective optimization
+            \item Constraint satisfaction
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Molecular Dynamics}
+    \begin{itemize}
+        \item Force field generation:
+        \begin{itemize}
+            \item Energy and force prediction
+            \item Trajectory simulation
+            \item Property evolution
+        \end{itemize}
+        \item Long-time dynamics:
+        \begin{itemize}
+            \item Rare event sampling
+            \item Phase transitions
+            \item Chemical reactions
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\section{Conclusions and Future Directions}
+
+\begin{frame}{Key Takeaways}
+    \begin{itemize}
+        \item Higher-order features:
+        \begin{itemize}
+            \item Significant performance improvement
+            \item Better for complex systems
+            \item Important for covalent bonding
+        \end{itemize}
+        \item Tokenization approach:
+        \begin{itemize}
+            \item Efficient compression
+            \item Unified framework
+            \item Cross-modal capabilities
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Future Directions}
+    \begin{itemize}
+        \item Model improvements:
+        \begin{itemize}
+            \item Higher-order features beyond L=4
+            \item Better equivariance handling
+            \item More efficient architectures
+        \end{itemize}
+        \item Applications:
+        \begin{itemize}
+            \item Larger systems
+            \item More complex properties
+            \item Real-time prediction
+        \end{itemize}
+        \item Integration:
+        \begin{itemize}
+            \item Multi-modal learning
+            \item Transfer learning
+            \item Active learning
+        \end{itemize}
+    \end{itemize}
+\end{frame} 

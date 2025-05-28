@@ -1,0 +1,126 @@
+\section{ChargE3Net}
+
+\begin{frame}{ChargE3Net Architecture Overview}
+    \begin{itemize}
+        \item E(3)-equivariant graph neural network
+        \item Key components:
+        \begin{itemize}
+            \item Graph construction with atoms and probe points
+            \item Higher-order equivariant features (up to L=4)
+            \item Message passing between atoms and probes
+            \item Equivariant convolution operations
+        \end{itemize}
+        \item Input: Atomic species and positions
+        \item Output: Charge density at probe points
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Graph Construction}
+    \begin{itemize}
+        \item Vertices:
+        \begin{itemize}
+            \item Atoms: One-hot encoding of atomic number
+            \item Probe points: Initialized as zero scalar
+        \end{itemize}
+        \item Edges:
+        \begin{itemize}
+            \item Atom-atom: Unidirectional, cutoff 4Å
+            \item Atom-probe: Directed from atoms to probes
+        \end{itemize}
+        \item Periodic boundary conditions supported
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Message Passing Architecture}
+    \begin{itemize}
+        \item Two types of convolutions:
+        \begin{itemize}
+            \item Conv$_{\text{atom}}$: Bidirectional between atoms
+            \item Conv$_{\text{probe}}$: From atoms to probes
+        \end{itemize}
+        \item Each layer:
+        \begin{itemize}
+            \item Updates atom representations
+            \item Updates probe representations
+            \item Uses tensor product operations
+        \end{itemize}
+        \item Final layer: Regression to predict charge density
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Performance on Benchmark Datasets}
+    \begin{itemize}
+        \item Materials Project (MP):
+        \begin{itemize}
+            \item ChargE3Net: 0.523\% ϵmae
+            \item DeepDFT: 0.799\% ϵmae
+            \item invDeepDFT: 0.859\% ϵmae
+        \end{itemize}
+        \item QM9:
+        \begin{itemize}
+            \item ChargE3Net: 0.206\% ϵmae
+            \item OrbNet-Equi: 0.284\% ϵmae
+            \item DeepDFT: 0.357\% ϵmae
+        \end{itemize}
+        \item NMC:
+        \begin{itemize}
+            \item ChargE3Net: 0.061\% ϵmae
+            \item DeepDFT: 0.060\% ϵmae
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Impact on DFT Calculations}
+    \begin{itemize}
+        \item SCF step reduction:
+        \begin{itemize}
+            \item MP materials: 26.7\% reduction
+            \item GNoME materials: 28.6\% reduction
+        \end{itemize}
+        \item Non-self-consistent property prediction:
+        \begin{itemize}
+            \item 40\% of materials: energy errors < 1 meV/atom
+            \item 70\% of materials: forces < 0.03 eV/Å
+            \item 76\% of materials: band gaps within chemical accuracy
+        \end{itemize}
+        \item Linear scaling O(N) with system size
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Higher-Order Features Analysis}
+    \begin{itemize}
+        \item Performance vs. rotation order:
+        \begin{itemize}
+            \item L=0: Basic scalar features
+            \item L=1: Vector features
+            \item L=2,3,4: Higher-order tensor features
+        \end{itemize}
+        \item Channel distribution:
+        \begin{itemize}
+            \item N$_{\text{channels}} = \lfloor 500/(L+1) \rfloor$
+            \item Equal representation size across orders
+        \end{itemize}
+        \item Consistent improvement with increasing L
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Angular Variance Analysis}
+    \begin{itemize}
+        \item High angular variance materials:
+        \begin{itemize}
+            \item Example: Cs(H2PO4)
+            \item Strong covalent bonding
+            \item Significant L=4 improvement
+        \end{itemize}
+        \item Low angular variance materials:
+        \begin{itemize}
+            \item Example: Rb2Sn6
+            \item Primarily ionic interactions
+            \item Similar L=0 and L=4 performance
+        \end{itemize}
+        \item Metric $\zeta$ for angular variance:
+        \[
+        \zeta(G) = 1 - \frac{\sum_{\vec{g}_k \in G} |\nabla\rho(\vec{g}_k) \cdot \hat{r}_{ki}|}{\sum_{\vec{g}_k \in G} ||\nabla\rho(\vec{g}_k)||}
+        \]
+    \end{itemize}
+\end{frame} 

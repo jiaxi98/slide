@@ -1,0 +1,110 @@
+\section{SCDP: Spherical Channel Density Prediction}
+
+\begin{frame}{SCDP Architecture Overview}
+    \begin{itemize}
+        \item Orbital-based approach
+        \item Key components:
+        \begin{itemize}
+            \item Spherical-harmonics-based atomic orbitals
+            \item Learnable basis sets
+            \item Efficient evaluation of spherical fields
+        \end{itemize}
+        \item Input: Atomic species and positions
+        \item Output: Charge density through orbital coefficients
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Orbital Representation}
+    \begin{itemize}
+        \item Charge density as sum of spherical fields:
+        \[
+        \rho(\vec{r}) = \sum_i \sum_{nlm} c_{nlm}^i \phi_{nlm}(\vec{r} - \vec{r}_i)
+        \]
+        where:
+        \begin{itemize}
+            \item $\phi_{nlm}$: Atomic orbital basis functions
+            \item $c_{nlm}^i$: Learnable coefficients
+            \item $\vec{r}_i$: Atomic positions
+        \end{itemize}
+        \item Basis functions:
+        \begin{itemize}
+            \item Radial part: Gaussian-type orbitals
+            \item Angular part: Spherical harmonics
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Learnable Basis Sets}
+    \begin{itemize}
+        \item Reference basis: def2-QZVPPD
+        \item Learnable parameters:
+        \begin{itemize}
+            \item Orbital exponents ($\alpha$)
+            \item Contraction coefficients
+            \item Radial scaling factors
+        \end{itemize}
+        \item Optimization:
+        \begin{itemize}
+            \item End-to-end training
+            \item Physical constraints preserved
+            \item Adaptive to different elements
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Efficiency Optimizations}
+    \begin{itemize}
+        \item Spherical channel representation:
+        \begin{itemize}
+            \item Efficient evaluation of spherical harmonics
+            \item Pre-computed Clebsch-Gordan coefficients
+            \item Optimized tensor operations
+        \end{itemize}
+        \item Computational improvements:
+        \begin{itemize}
+            \item >10x faster than existing methods
+            \item Linear scaling with system size
+            \item GPU-optimized implementation
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Performance Analysis}
+    \begin{itemize}
+        \item Accuracy:
+        \begin{itemize}
+            \item Competitive with grid-based methods
+            \item Better for systems with strong atomic character
+            \item Flexible accuracy-efficiency trade-off
+        \end{itemize}
+        \item Efficiency:
+        \begin{itemize}
+            \item Faster inference than grid-based methods
+            \item Lower memory requirements
+            \item Scalable to large systems
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Downstream Applications}
+    \begin{itemize}
+        \item Property prediction:
+        \begin{itemize}
+            \item Total energy
+            \item Forces
+            \item Electronic structure
+        \end{itemize}
+        \item Materials discovery:
+        \begin{itemize}
+            \item High-throughput screening
+            \item Property optimization
+            \item Structure prediction
+        \end{itemize}
+        \item Molecular dynamics:
+        \begin{itemize}
+            \item Force field generation
+            \item Trajectory simulation
+            \item Property evolution
+        \end{itemize}
+    \end{itemize}
+\end{frame} 
