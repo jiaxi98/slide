@@ -17,7 +17,9 @@
 \geometry{left=1cm,right=1cm}
     \title[Gaussian Hartree-Fock]{Adaptive Gaussian basis for quantum chemistry calculation}
 \author[J. Zhao]{Jiaxi Zhao (NUS)\\joint work with Doc. Min Lin (SAIL)}
-\date[\today]{\today}
+\date[\today]{\today\\
+Joint FDU-NUS-ZJU
+PhD Forum in Mathematics}
 \begin{document}
 \par \setlength{\parindent}{2em}
 
@@ -38,7 +40,7 @@
 
 	Recall in high school chemistry, we learned:
 	\begin{itemize}
-		\item 1. Atoms have s, p, d, f, etc orbitals.
+		\item 1. Atoms have s, p, d, f, etc orbitals, Pauli exclusion principle, Hund's Rules.
 		\item 2. There are ionic and covalent bonds.
 		\item 3. Materials can be conductors, semi-conductors, and insulators.
 	\end{itemize}
@@ -126,27 +128,26 @@
 	Variational formulation of the Hartree-Fock theory:
 	\begin{equation*}
 		\begin{aligned}
-			& \ E(\phi_1, \phi_2, \cdots, \phi_N) \\
-			= & 
+			& E(\phi_1, \phi_2, \cdots, \phi_N) = 
 	\sum_{i=1}^N \int\text{d}\mathbf{r}_i
-		  \phi_i^*(\mathbf{r}_i)
-			\wht{\operatorname{h}}(\text{i}) \phi_i(\mathbf{r}_i) \\ 
-			&+ \frac{1}{2N(N - 1)} \sum_{i \neq j}^N \sum_{k \neq l}^N \iint
+		  \phi_i^*(\mathbf{r}_i) (-\frac{1}{2}\Delta - \sum_{\text{atom } a}
+			\frac{Z_a}{|\mathbf{r}_i - \mathbf{A}_a|})(\mathbf{r}_i))
+			 \phi_i(\mathbf{r}_i) \\ 
+			&+ \frac{1}{N(N - 1)} \sum_{i \neq j}^N \sum_{k \neq l}^N \iint
 			\mathrm{d}\mathbf{r}_i
-			\text{d}\mathbf{r}_j \phi_k^*(\mathbf{r}_i)\phi_l^*(\mathbf{r}_j)
-			\frac{1}{|\mathbf{r}_i-\mathbf{r}_j|}\phi_k(\mathbf{r}_i)
-			\phi_l(\mathbf{r}_j) \\ 
-			&- \frac{1}{2N(N - 1)} \sum_{i \neq j}^N \sum_{k \neq l}^N \iint
-			\text{d}\mathbf{r}_i
-			\text{d}\mathbf{r}_j\phi_k^*(\mathbf{r}_i)\phi_l^*(\mathbf{r}_j)
-			\frac{1}{|\mathbf{r}_i-\mathbf{r}_j|}\phi_k(\mathbf{r}_j)
-			\phi_l(\mathbf{r}_i).
+			\frac{1}{|\mathbf{r}_i-\mathbf{r}_j|}
+			\left(\underbrace{\phi_l(\mathbf{r}_j)\phi_l^*(\mathbf{r}_j)}_{\rho_l(\mathbf{r}_j)}
+			\text{d}\mathbf{r}_j \overbrace{\phi_k^*(\mathbf{r}_i)\phi_k(\mathbf{r}_i)
+			}^{\rho_k(\mathbf{r}_i)} - \underbrace{\phi_k^*(\mathbf{r}_i)\phi_l^*(\mathbf{r}_j)
+			\phi_k(\mathbf{r}_j)\phi_l(\mathbf{r}_i)}_{\text{Exchange term}}\right)  \\
+      & \int\text{d}\mathbf{r}
+		  \phi_i^*(\mathbf{r}) \phi_j(\mathbf{r}) = \delta_{ij}.
 		\end{aligned}
 	\end{equation*}
 	\begin{itemize}
-		\item 1. Direct optimization of the total energy.
-		\item 2. Self-consistent field (SCF) method.
-		\item 3. Discretization of the wave function.
+		\item 1. Mean-field approximation of the quantum many-body Schr\"odinger equation.
+		\item 2. Direct optimization of the total energy; self-consistent field (SCF) method.
+		\item 3. Discretization of the wave function: $\phi_j = \sum_{i\in I} c_{ji}\varphi_i$.
 	\end{itemize}
 \end{frame}
 
@@ -162,23 +163,25 @@
 			\varphi_{a, A, \alpha}^{\opG} \equiv (x - A_x)^{a_x} (y - A_y)^{a_y}
 			(z - A_z)^{a_z} e^{-\alpha \norml \mfr - \mfA \normr_2^2}.
 		\end{equation*}
-		\item Contracted Gaussian basis functions:
+		\item Contracted Gaussian basis functions (PySCF, QChem):
 		\begin{equation*}
 			\varphi_{a, A, \alpha, k}^{\text{c}\opG} \equiv \sum_{k=1}^{K_A}
 			D_{aAk}(x - A_x)^{a_x}(y - A_y)^{a_y}(z - A_z)^{a_z}
 			e^{-\alpha_k \norml \mfr - \mfA \normr_2^2}.
 		\end{equation*}
-		\item Gaussian Lobe functions:
+		\item Numerical atomic orbitals (Abacus):
 		\begin{equation*}
-			\varphi_{a, A, \alpha, k}^{\text{Lobe}} \equiv \sum_{k=1}^{K_A}
-			D_{aAk}e^{-\alpha \norml \mfr - \mfA \normr_2^2}.
+			\varphi_{a, A, \alpha, k} \equiv \sum_{L}^{L_A}
+			Y_L(\widehat{\mathbf{r} - \mathbf{A}})
+			f_L(\norml \mathbf{r} - \mathbf{A} \normr_2^2).
 		\end{equation*}
 	\end{itemize}
-	\footnotetext{Gill, Peter MW. "Molecular integrals over gaussian basis
+	\footnotetext[1]{Gill, Peter MW. "Molecular integrals over gaussian basis
 	functions." Advances in quantum chemistry. Vol. 25. Academic Press, 1994.
 	141-205.}
 \end{frame}
 
+% for long talk
 \begin{frame}{A primer on molecular integral over Gaussian basis functions}
 	It suffices to evaluate the fundamental integrals:
 	\begin{equation*}
@@ -194,28 +197,34 @@
 	angular momentum and thus computationally expensive.}
 \end{frame}
 
-\begin{frame}{Basis set}
+\begin{frame}{Adaptive Gaussian basis}
 	% Classically, basis set of increasing complexity is used to 
 	% \begin{itemize}
 	% 	\item 1. STO-n 
 	% 	\item 2. 6-311G*
 	% 	\item 3. cc-pVDZ
 	% \end{itemize}
-	In this work, we propose to use the adaptive Gaussian basis with tunable
-	mean and covariance:
+
+	{\color{red}\textbf{Basis set optimization}} is also a hot topic for research.
+
+	Adaptive Gaussian basis with optimizable mean and covariance:
 	\begin{equation*}
 		\phi_i = \sum_{j\in I} c_{ij}\mcN(\mfr; \mu_j, \Sigma_j).
 	\end{equation*}
 	In general, all the optimizable parameters are $\mu \in \mbR^{|I|\times 3},
 	\Sigma \in \lp \mbS_+^3 \rp^{|I|}, C \in \mbC^{|I|\times N}$. $|I|$ is the
-	size of the basis set, $N$ is the number of electrons (ground state +
-	excited state).
+	size of the basis set, $N$ is the number of electrons.
+
+	\begin{itemize}
+		\item 1. More flexibility to model the wave functions.
+		\item 2. Analytic Gaussian integral.
+	\end{itemize}
 	\footnotetext{Kerbl, Bernhard, et al. "3D Gaussian Splatting for Real-Time
 	Radiance Field Rendering." ACM Trans. Graph. 42.4 (2023): 139-1.}
 \end{frame}
 
-\begin{frame}{orthonormality and overlap matrix}
-	The orthgnormality of the orbitals in SCF is guaranteed by the eigensolver.
+\begin{frame}{Orthonormality and overlap matrix}
+	The orthonormality of the orbitals in SCF is guaranteed by the eigensolver.
 	In total energy minimization, we have to handle this explicitly.
 
 	As the orbitals are supposed to be orthonormal, it can be written as
@@ -233,6 +242,13 @@
 \end{frame}
 
 \begin{frame}{Coulomb and external energy}
+	Why difficulites? No analytic formula for
+	\begin{equation}
+		\la \mcN\lp \mfr_1 | \mathbf{\mu_1}, \Sigma_1 \rp \rv \frac{1}{
+				\lv \mfr_1 - \mfr_2 \rv}\lv \mcN\lp \mfr_2 | \mathbf{\mu_2}, \Sigma_2
+				\rp \ra
+	\end{equation}
+
 	Our primary idea is to approximate the Coulomb kernel by a series of
 	Gaussian modes:
 	\begin{equation*}
@@ -250,24 +266,25 @@
 	function via gradient-based optimization.
 \end{frame}
 
-\begin{frame}{Analysis of the nonlinear optimization problem}
-	\begin{equation*}
-		\begin{aligned}
-			& \ \int_0^M \lp 1 - \sum_i c_i re^{-\alpha_i r^2} \rp^2 dr 
-			\overset{u = kr}{=} & \ \frac{1}{k}\int_0^{kM} \lp 1 - \sum_i \frac{c_i}{k} u 
-			e^{-\frac{\alpha_i}{k^2} u^2} \rp^2 du.
-		\end{aligned}
-	\end{equation*}
-	The optimal solution for different $M$ can be obtained by rescaling the optimal
-	coefficient and variance of the Gaussian modes.
+% for long talk
+% \begin{frame}{Analysis of the nonlinear optimization problem}
+% 	\begin{equation*}
+% 		\begin{aligned}
+% 			& \ \int_0^M \lp 1 - \sum_i c_i re^{-\alpha_i r^2} \rp^2 dr 
+% 			\overset{u = kr}{=} & \ \frac{1}{k}\int_0^{kM} \lp 1 - \sum_i \frac{c_i}{k} u 
+% 			e^{-\frac{\alpha_i}{k^2} u^2} \rp^2 du.
+% 		\end{aligned}
+% 	\end{equation*}
+% 	The optimal solution for different $M$ can be obtained by rescaling the optimal
+% 	coefficient and variance of the Gaussian modes.
 
-	However, optimizing such problem to a relatively low threshold, e.g. $10^{-5}$
-	is quite difficult.
-	\begin{figure}[h]
-		\centering
-		\includegraphics[width=0.5\linewidth]{fig/convergence.pdf}
-	\end{figure}
-\end{frame}
+% 	However, optimizing such problem to a relatively low threshold, e.g. $10^{-5}$
+% 	is quite difficult.
+% 	\begin{figure}[h]
+% 		\centering
+% 		\includegraphics[width=0.5\linewidth]{fig/convergence.pdf}
+% 	\end{figure}
+% \end{frame}
 
 \begin{frame}{Coulomb kernel decomposition}
 	\begin{figure}[h]
@@ -283,35 +300,24 @@
 				\lv \mfr_1 - \mfr_2 \rv}\lv \mcN\lp \mfr_2 | \mathbf{\mu_2}, \Sigma_2
 				\rp \ra     \\
 			= & \ \int\int d\mfr_1d\mfr_2 \frac{1}{\sqrt{(2\pi)^6\det(\Sigma_1)
-			\det(\Sigma_2)}} \\
-			& \ \sum_i c_i  \exp\lb -\half\lp (\mfr_1 - \mu_1)^T
+			\det(\Sigma_2)}} \sum_i c_i  \exp\lb -\half\lp (\mfr_1 - \mu_1)^T
 			\Sigma_1^{-1}(\mfr_1 - \mu_1) \right.\right.		\\
 				& \ \left.\left. + (\mfr_2 - \mu_2)^T\Sigma_2^{-1}(\mfr_2 - \mu_2)\rp
 				- (\mfr_1 - \mfr_2)^T \alpha_i \operatorname{I} (\mfr_1 - \mfr_2) \rb
 			\\
-			= & \ \int\int d\mfr \frac{1}{\sqrt{(2\pi)^6\det(\Sigma_1)
-			\det(\Sigma_2)}}   \\
-			& \ \sum_i c_i s(i)\exp\lb -\half(\mfr - \mu(i))^T \begin{pmatrix}
-			\Sigma_1^{-1} + 2\alpha_i \operatorname{I} & -2\alpha_i \operatorname{I}
-			\\
-			-2\alpha_i \operatorname{I} & \Sigma_2^{-1} + 2\alpha_i \operatorname{I}
-			\end{pmatrix} (\mfr - \mu(i)) \rb.
+			= & \ \int\int d\mfr \frac{\sum_i c_i s(i)\exp\lb -\half(\mfr - \mu(i))^T \begin{pmatrix}
+				\Sigma_1^{-1} + 2\alpha_i \operatorname{I} & -2\alpha_i \operatorname{I}
+				\\
+				-2\alpha_i \operatorname{I} & \Sigma_2^{-1} + 2\alpha_i \operatorname{I}
+				\end{pmatrix} (\mfr - \mu(i)) \rb}{\sqrt{(2\pi)^6\det(\Sigma_1)
+			\det(\Sigma_2)}}.
 		\end{aligned}
 	\end{equation*}
-\end{frame}
-
-\begin{frame}{Potential improvement}
 	\begin{itemize}
-		\item 1. Using greedy algorithm to optimize for more Gaussian modes, i.e.
-		one can use the optimization results for less modes as the warm-start
-		for more modes.
-		\item 2. The approximation interval $[0, M]$ can be done adaptively according
-		to the relative position of two Gaussian modes.
-		\item 3. Motivated by the Boys function, can we design other decomposition
-		of the Coulomb kernel?
-		\begin{equation*}
-			\frac{1}{r} = C\int_{\mbR} e^{-r^2t^2} dt.
-		\end{equation*}
+		\item 1. solving a linear system of size $3\times 3$, MVP of size $3\times 3$, calculating
+		the determinant of a $3\times 3$ matrix.
+		\item 2. The FLOPs count for a single ERI evaluation with one $\alpha$ is around 60, comparing
+		to classical method: (ss|ss), (ps|ps), (pp|pp) requires 33, 58, 1326 FLOPs for a single evaluation.
 	\end{itemize}
 \end{frame}
 
@@ -344,7 +350,7 @@
 		{\centering  e\_tot}   \\ \midrule[1.5pt]
 		
 		\parbox{4cm}{OUR ($\ce{H2}$), 10} & -2.5062 & 1.1254 & -3.6316 & 0.7138 & 0.6591 &
-		1.3182 & -0.6591 & -1.1334 \\ \midrule[0.5pt]
+		1.3182 & -0.6591 & \textbf{-1.1334} \\ \midrule[0.5pt]
 	
 		% \parbox{3cm}{$n_g= 10, \epsilon=10^{-3}$} & -2.4905 & 1.1070 & -3.5975
 		% & 0.7138 & 0.6549 & 1.3097 & -0.6549 & -1.1219 \\ \midrule[0.5pt]
@@ -367,7 +373,7 @@
 		\\ \midrule[0.5pt]
 	
 		\parbox{4cm}{HF (6-311G, 6)} 
-		& -2.4924 &  * & * & 0.7138 & 0.6507 & * & * & -1.1280
+		& -2.4924 &  * & * & 0.7138 & 0.6507 & * & * & \textbf{-1.1280}
 		\\ \midrule[0.5pt]
 	
 		% \parbox{3cm}{d4ft (6-31g, lda)} 
@@ -398,14 +404,14 @@
 		% -6.5883 & -39.1532 \\ \midrule[0.5pt]
 	
 		\parbox{4cm}{OUR ($\ce{CH4}$), 22} & -79.6713 & 40.0987 & -119.7700 & 13.4477
-		& 26.1010 & 32.6936 & -6.5926 & -40.1225 \\ \midrule[0.5pt]
+		& 26.1010 & 32.6936 & -6.5926 & \textbf{-40.1225} \\ \midrule[0.5pt]
 	
 		\parbox{4cm}{HF (STO-3G, 9)} 
 		& -79.3617 &  * & * & 13.4477 & 26.1872 & * & * & -39.7267
 		\\ \midrule[0.5pt]
 	
 		\parbox{4cm}{HF (6-31G, 17)} 
-		& -79.6901 &  * & * & 13.4477 & 26.0619 & * & * & -40.1804
+		& -79.6901 &  * & * & 13.4477 & 26.0619 & * & * & \textbf{-40.1804}
 		\\ \midrule[0.5pt]
 	
 		\parbox{4cm}{HF (6-311G, 25)} 
@@ -441,7 +447,7 @@
 	
 		\parbox{4cm}{OUR ($\ce{H2O}$), 22} & -122.9802 & 75.9462 &
 		-199.0371 & 9.1895 & 37.8786 & 46.8579 &
-		-8.9601 & -76.0036 \\ \midrule[0.5pt]
+		-8.9601 & \textbf{-76.0036} \\ \midrule[0.5pt]
 	
 		\parbox{4cm}{HF (STO-3G, 7)} 
 		& -122.3614 &  * & * & 9.1895 & 38.2089 & * & * & -74.9630
@@ -452,7 +458,7 @@
 		\\ \midrule[0.5pt]
 	
 		\parbox{4cm}{HF (6-311G, 19)} 
-		& -123.0146 &  * & * & 9.1895 & 37.8157 & * & * & -76.0094
+		& -123.0146 &  * & * & 9.1895 & 37.8157 & * & * & \textbf{-76.0094}
 		\\ \midrule[0.5pt]
 	
 		% \parbox{3cm}{d4ft} 
@@ -469,20 +475,76 @@
 	\end{table}
 \end{frame}
 
-\begin{frame}{Next step}
-	\begin{itemize}
-		\item 1. Compare the scalability of the double-electron integral
-		calculation over the number of basis functions with the SOTA method, e.g.
-		MD, HGP(OS), Rys.
-		\item 2. Conduct numerical experiments to check if the adaptive
-		Gaussian basis can achieve the same accuracy with a smaller number of
-		basis.
-		\item 3. Implement post HF method, e.g. CCSD, CCSD(T).
-	\end{itemize}
+\begin{frame}
+	Thank you for your attention!
+	Q \& A
 \end{frame}
 
-\begin{frame}
-	Q \& A
+\begin{frame}{Many-body Schr\"odinger equation}
+	After Born–Oppenheimer approximation, the many-body Schr\"odinger equation
+	is given by:
+	\begin{equation*}
+		\begin{aligned}
+			\hat{\opH^e} & \Psi(\mfr_1, \mfr_2, ..., \mfr_N) = E
+			\Psi(\mfr_1, \mfr_2, ..., \mfr_N),		\\
+			\hat{\opH^e} & = -\half \Delta_{\mfr} - \sum_{i=1}^N\sum_{j=1}^{n_A} \frac{Z_j}
+			{\norml \mfr_i - \mfR_j \normr_2} + \frac{1}{2} \sum_{i \neq j}^N
+			\frac{1}{r_{ij}}		\\
+			& = \sum_{i=1}^N \wht{\operatorname{h}}(\text{i}) + \frac{1}{2} \sum_{i \neq j}^N
+			\frac{1}{r_{ij}}
+		\end{aligned}
+	\end{equation*}
+	Solving this equation, we can obtain the ground state energy, potential
+	energy surface (for geometry optimization and transition states search),
+	band structure for the solid state system, and etc.
+\end{frame}
+
+% for long talk
+\begin{frame}{Mean-field approximation: Slater determinant}
+	Pauli exclusion principle requires following antisymmetric constraint on the
+	many-body wave function:
+	\begin{equation*}
+		\Psi(..., \mfr_j, ..., \mfr_i, ...) = 
+		- \Psi(..., \mfr_i, ..., \mfr_j, ...)
+	\end{equation*}
+
+	The many-body wave function of the Hartree-Fock theory is given by a single
+	Slater determinant:
+	\begin{equation*}
+		\Psi_{\text{HF}}(\mfr_1, ..., \mfr_N) = \frac{1}{\sqrt{N!}} 
+		\begin{vmatrix}
+			\phi_1(\mfr_1) & \phi_1(\mfr_2) & \cdots & \phi_1(\mfr_N) \\
+			\phi_2(\mfr_1) & \phi_2(\mfr_2) & \cdots & \phi_2(\mfr_N) \\
+			\vdots & \vdots & \ddots & \vdots \\
+			\phi_N(\mfr_1) & \phi_N(\mfr_2) & \cdots & \phi_N(\mfr_N)
+		\end{vmatrix}
+	\end{equation*}
+\end{frame}
+
+% for long talk
+\begin{frame}{Total energy}
+	\begin{equation*}
+		\begin{aligned} & E[\Psi^{\text{HF}}] = 
+			\left\langle\Psi^{\text{HF}}|\hat{\opH^e}|\Psi^{\text{HF}}
+			\right\rangle =  \sum_{i=1}^N \int\text{d}\mathbf{r}_i
+		  \phi_i^*(\mathbf{r}_i)
+			\wht{\operatorname{h}}(\text{i}) \phi_i(\mathbf{r}_i) \\ 
+			&+ \frac{1}{2N(N - 1)} \sum_{i \neq j}^N \sum_{k \neq l}^N \iint
+			\mathrm{d}\mathbf{r}_i
+			\text{d}\mathbf{r}_j \phi_k^*(\mathbf{r}_i)\phi_l^*(\mathbf{r}_j)
+			\frac{1}{|\mathbf{r}_i-\mathbf{r}_j|}\phi_k(\mathbf{r}_i)
+			\phi_l(\mathbf{r}_j) \\ 
+			&- \frac{1}{2N(N - 1)} \sum_{i \neq j}^N \sum_{k \neq l}^N \iint
+			\text{d}\mathbf{r}_i
+			\text{d}\mathbf{r}_j\phi_k^*(\mathbf{r}_i)\phi_l^*(\mathbf{r}_j)
+			\frac{1}{|\mathbf{r}_i-\mathbf{r}_j|}\phi_k(\mathbf{r}_j)
+			\phi_l(\mathbf{r}_i)  \\
+			& = E(\phi_1, \phi_2, \cdots, \phi_N).
+		\end{aligned}
+	\end{equation*}
+	Minimizing the total energy will give the ground state configuration which is
+	consistent with the self-consistent field approach. The double-electron
+	integrations $O(N^4)$ are the dominant part of computational cost.
 \end{frame}
 
 \begin{frame}{SCF}
@@ -507,6 +569,21 @@
 			(\mathbf{r}_j) \phi_k(\mathbf{r}_j)}{|\mathbf{r}_k-\mathbf{r}_j|}.\\
 		\end{aligned}
 	\end{equation*}
+\end{frame}
+
+\begin{frame}{Potential improvement}
+	\begin{itemize}
+		\item 1. Using greedy algorithm to optimize for more Gaussian modes, i.e.
+		one can use the optimization results for less modes as the warm-start
+		for more modes.
+		\item 2. The approximation interval $[0, M]$ can be done adaptively according
+		to the relative position of two Gaussian modes.
+		\item 3. Motivated by the Boys function, can we design other decomposition
+		of the Coulomb kernel?
+		\begin{equation*}
+			\frac{1}{r} = C\int_{\mbR} e^{-r^2t^2} dt.
+		\end{equation*}
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{Motivation}
@@ -547,30 +624,42 @@
 	\end{itemize}
 \end{frame}
 
-\begin{frame} % Use [allowframebreaks] to allow automatic splitting across slides if the content is too long
-    \frametitle{References}
- 
-    \begin{thebibliography}{99} % Beamer does not support BibTeX so references must be inserted manually as below, you may need to use multiple columns and/or reduce the font size further if you have many references
-        \footnotesize % Reduce the font size in the bibliography
- 
-		\bibitem[migbs]{migbs}
-		Gill, Peter MW.
-		\newblock Molecular integrals over gaussian basis functions.
-		\newblock \emph{Advances in quantum chemistry. Vol. 25. Academic Press,
-		1994. 141-205.}
+\begin{frame}{Next step}
+	\begin{itemize}
+		\item 1. Compare the scalability of the double-electron integral
+		calculation over the number of basis functions with the SOTA method, e.g.
+		MD, HGP(OS), Rys.
+		\item 2. Conduct numerical experiments to check if the adaptive
+		Gaussian basis can achieve the same accuracy with a smaller number of
+		basis.
+		\item 3. Implement post HF method, e.g. CCSD, CCSD(T).
+	\end{itemize}
+\end{frame}
 
-		\bibitem[3dgs]{3dgs}
-		Kerbl, Bernhard, et al
-		\newblock 3D Gaussian Splatting for Real-Time Radiance Field Rendering
-		\newblock \emph{ACM Trans. Graph. 42.4 (2023): 139-1.}
+% \begin{frame} % Use [allowframebreaks] to allow automatic splitting across slides if the content is too long
+%     \frametitle{References}
+ 
+%     \begin{thebibliography}{99} % Beamer does not support BibTeX so references must be inserted manually as below, you may need to use multiple columns and/or reduce the font size further if you have many references
+%         \footnotesize % Reduce the font size in the bibliography
+ 
+% 		\bibitem[migbs]{migbs}
+% 		Gill, Peter MW.
+% 		\newblock Molecular integrals over gaussian basis functions.
+% 		\newblock \emph{Advances in quantum chemistry. Vol. 25. Academic Press,
+% 		1994. 141-205.}
 
-		\bibitem[S.A. and Q.L., 2024]{nigbms}
-		S. Arisaka and Q. Li (2024)
-		\newblock Accelerating Legacy Numerical Solvers by Non-intrusive Gradient-based Meta-solving
-		\newblock \emph{International Conference on Machine Learning 2024}
+% 		\bibitem[3dgs]{3dgs}
+% 		Kerbl, Bernhard, et al
+% 		\newblock 3D Gaussian Splatting for Real-Time Radiance Field Rendering
+% 		\newblock \emph{ACM Trans. Graph. 42.4 (2023): 139-1.}
+
+% 		\bibitem[S.A. and Q.L., 2024]{nigbms}
+% 		S. Arisaka and Q. Li (2024)
+% 		\newblock Accelerating Legacy Numerical Solvers by Non-intrusive Gradient-based Meta-solving
+% 		\newblock \emph{International Conference on Machine Learning 2024}
  
         
-    \end{thebibliography}
-\end{frame}
+%     \end{thebibliography}
+% \end{frame}
 
 \end{document}
