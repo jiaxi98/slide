@@ -14,22 +14,7 @@
 
 \begin{document}
 
-\begin{frame}
-    \titlepage
-\end{frame}
-
-\begin{frame}{Overview}
-    \begin{columns}
-        \column{0.5\textwidth}
-        \begin{itemize}
-            \item Charge3Net: Higher-order angular momentum
-            \item SCDP: Tokenization-based approach
-            \item Uni3D-AR: Foundation model adaptation
-        \end{itemize}
-        \column{0.5\textwidth}
-        Evolution of charge density prediction models
-    \end{columns}
-\end{frame}
+\include{main}
 
 \begin{frame}{Equivariance in Charge Density Prediction}
     \begin{itemize}
@@ -68,56 +53,50 @@
                 \psi_{nlm}(r,\theta,\phi) &= R_{nl}(r)Y_{lm}(\theta,\phi) \\
                 \text{where } Y_{lm} &= \sqrt{\frac{2l+1}{4\pi}\frac{(l-m)!}{(l+m)!}}P_l^m(\cos\theta)e^{im\phi}
             \end{align*}
+            \item Training objective:
+            \begin{align*}
+                \mathcal{L}_{\text{ChargE3Net}} &= \frac{1}{n}\sum_{i=1}^n |\rho(\mathbf{r}_i) - \hat{\rho}(\mathbf{r}_i)| \\
+                \text{where } n &\text{ is number of grid points}
+            \end{align*}
         \end{itemize}
         \column{0.4\textwidth}
         Spherical harmonics visualization
     \end{columns}
 \end{frame}
 
-\begin{frame}{SCDP: Tokenization Approach}
-    \begin{columns}
-        \column{0.5\textwidth}
-        \begin{itemize}
-            \item Grid-based tokenization
-            \begin{itemize}
-                \item 3D voxel grid representation
-                \item Multi-scale feature extraction
-                \item Hierarchical attention
-            \end{itemize}
-            \item Key innovations:
-            \begin{itemize}
-                \item Adaptive grid resolution
-                \item Local-global feature fusion
-                \item Position-aware attention
-            \end{itemize}
-        \end{itemize}
-        \column{0.5\textwidth}
-        3D grid tokenization process
-    \end{columns}
-\end{frame}
+\include{charge3net}
+\include{scdp}
 
 \begin{frame}{Uni3D-AR: Foundation Model Adaptation}
-    \begin{columns}
-        \column{0.5\textwidth}
+    \begin{itemize}
+        \item Grid-based tokenization
         \begin{itemize}
-            \item Based on transformer architecture
-            \item Key features:
-            \begin{itemize}
-                \item Pre-training on large datasets
-                \item Fine-tuning for charge density
-                \item Multi-task learning capability
-            \end{itemize}
-            \item Advantages:
-            \begin{itemize}
-                \item Transfer learning potential
-                \item Scalable architecture
-                \item State-of-the-art performance
-            \end{itemize}
+            \item 3D voxel grid representation
+            \item Multi-scale feature extraction
+            \item Hierarchical attention
         \end{itemize}
-        \column{0.5\textwidth}
-        Model architecture comparison
-    \end{columns}
+        \item Key innovations:
+        \begin{itemize}
+            \item Adaptive grid resolution
+            \item Local-global feature fusion
+            \item Position-aware attention
+        \end{itemize}
+        \item Based on transformer architecture
+        \item Key features:
+        \begin{itemize}
+            \item Pre-training on large datasets
+            \item Fine-tuning for charge density
+            \item Multi-task learning capability
+        \end{itemize}
+        \item Training objective:
+        \begin{align*}
+            \mathcal{L}_{\text{Uni3D-AR}} &= \mathcal{L}_{\text{main}} + \lambda\mathcal{L}_{\text{aux}} \\
+            \text{where } \mathcal{L}_{\text{main}} &= \text{Masked next-token prediction} \\
+            \mathcal{L}_{\text{aux}} &= \text{Property prediction loss}
+        \end{align*}
+    \end{itemize}
 \end{frame}
+\include{uni3dar}
 
 \begin{frame}{Performance Comparison}
     \begin{table}[h]
@@ -133,25 +112,6 @@
         \end{tabular}
         \caption{Performance metrics across models}
     \end{table}
-\end{frame}
-
-\begin{frame}{Key Innovations}
-    \begin{columns}
-        \column{0.5\textwidth}
-        \begin{itemize}
-            \item Higher-order terms in Charge3Net
-            \item Tokenization strategies in SCDP
-            \item Foundation model adaptation in Uni3D-AR
-            \item Common themes:
-            \begin{itemize}
-                \item Equivariance preservation
-                \item Scalable architectures
-                \item Multi-scale representations
-            \end{itemize}
-        \end{itemize}
-        \column{0.5\textwidth}
-        Model architecture comparison
-    \end{columns}
 \end{frame}
 
 \begin{frame}{Future Directions}
