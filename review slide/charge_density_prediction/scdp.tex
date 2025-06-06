@@ -2,63 +2,69 @@
 
 \begin{frame}{SCDP Architecture Overview}
     \begin{itemize}
-        \item Orbital-based approach with three key ingredients:
+        \item Basis-based approach with following ingredients:
         \begin{itemize}
             \item Virtual nodes for non-local electronic structures
             \item Even-tempered Gaussian basis sets
-            \item High-capacity equivariant neural networks (eSCN)
+            \item High-capacity equivariant spherical channel network (eSCN).
         \end{itemize}
-        \item Input: Atomic species and positions
-        \item Output: Charge density through orbital coefficients
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Mathematical Formulation}
-    \begin{itemize}
-        \item Charge density representation:
+        \item Charge density representation with trainable scale parameters:
         \begin{align*}
-            \rho(\mathbf{r}) &= \sum_i^N \sum_j^{N_b^i} \sum_{m = -l_{ij}}^{l_{ij}} c_{ijm}^i \Phi_{\alpha_{ij},l_{ij},m,\mathbf{r}_i}(\mathbf{r}, s_{ij}) \\
-            \text{where } \Phi_{\alpha,l,m,\mathbf{r}_i}(\mathbf{r}, s) &= z_{\alpha,l,s} \exp(-s \cdot \alpha r^2) r^l Y_{lm}(\hat{\mathbf{r} - \mathbf{r}_i})
+            \rho(\mathbf{r}) &= \sum_a \sum_l^{N_a} \sum_{m = -l}^{l} c_{alm}
+            \Phi_{\alpha,l,m,\mathbf{r}_a}(\mathbf{r}, s_{al}) \\
+            \Phi_{\alpha,l,m,\mathbf{r}_i}(\mathbf{r}, s) &= 
+            z_{\alpha,l,s} \exp(-s \cdot \alpha |\mathbf{r} - \mathbf{r}_a|^2) 
+            |\mathbf{r} - \mathbf{r}_a|^l Y_{lm}(
+                \widehat{\mathbf{r} - \mathbf{r}_a})
         \end{align*}
-        \item Model prediction:
+        \item Model prediction, scaling factors $s_{al} \in (0.5, 2.0)$:
         \begin{align*}
-            \{c_{ijm}, s_{ij}\} &= F(A, R) \\
-            \text{where } A &= \{a_i | i = 1,...,N\} \text{ (atomic types)} \\
-            R &= \{\mathbf{r}_i | i = 1,...,N\} \text{ (coordinates)}
+            \{c_{alm}, s_{al}\} &= F(\{(\mathbf{r}_a, Z_a)\}).
         \end{align*}
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Equivariance Guarantees}
+
+\begin{frame}{Virtual Nodes and Basis Sets}
     \begin{itemize}
-        \item SE(3) equivariance preservation:
+        \item Virtual nodes:
         \begin{itemize}
-            \item Input coordinates: $R \in SO(3), \mathbf{t} \in \mathbb{R}^3$
-            \item Virtual node placement: Bond midpoints (SE(3)-equivariant)
-            \item Basis coefficients: SE(3)-equivariant
-            \item Scaling factors: SE(3)-invariant
+            \item Placed at bond midpoints.
+            \item Use oxygen basis functions
+            \item SE(3)-equivariant placement
         \end{itemize}
-        \item Architecture components:
+        \item Even-tempered Gaussian basis for better accuracy:
+        \begin{align*}
+            \alpha_k &= \alpha \cdot \beta^k \text{ for } k = 0,1,2,...,N_l
+        \end{align*}
+        \item  Reducing SO(3) convolution to SO(2): $O(L^6) \rightarrow O(L^3)$.
+        \item  The basis set is not orthonormal, the coefficients depend on the
+        cutoff radius.
+        \item Two-stage training for stability caused by the scale factors
+        on the exponent:
         \begin{itemize}
-            \item eSCN backbone: SO(3) convolutions reduced to SO(2)
-            \item Tensor product layers: Preserve equivariance
-            \item Point-wise spherical non-linearity
+            \item pre-train the model with fixed basis set exponents
+            \item fine-tune the prediction model with a small learning rate with
+            the learning for scaling factors enabled.
         \end{itemize}
     \end{itemize}
 \end{frame}
+
 
 \begin{frame}{Model Architecture}
     \begin{itemize}
         \item Backbone: eSCN (equivariant spherical channel network)
         \begin{itemize}
+            \item $\{x_a\} = \text{eSCN}(\{(\mathbf{r}_a, Z_a)\})$
             \item Complexity: $O(L^3)$ vs $O(L^6)$ for tensor products
             \item Features: Multi-channel spherical harmonics
             \item Example: $128\times0e + 128\times1o + 128\times2e + 128\times3o$
         \end{itemize}
         \item Prediction layers:
         \begin{align*}
-            \{c_{ijm}, h_i\} &= \text{FullyConnectedTensorProduct}(x_i, x_i) \\
-            s_{ij} &= \frac{C_1}{1 + \exp(-\text{Linear}(h_i) + \ln C_2)} + C_3
+            \{c_{alm}, h_i\} &= \text{FullyConnectedTensorProduct}(x_i, x_l) \\
+            s_{al} &= \frac{C_1}{1 + \exp(-\text{Linear}(h_i) + \ln C_2)} + C_3
+            \in [C_1, C_3].
         \end{align*}
         \item Training objective:
         \begin{align*}
@@ -67,90 +73,26 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Fully Connected Tensor Product Operation}
-    \begin{itemize}
-        \item Mathematical definition:
-        \begin{align*}
-            (U^{(\ell_1,p_1)} \otimes V^{(\ell_2,p_2)})^{(\ell_o,p_o)}_{cm_o} &= \sum_{m_1=-\ell_1}^{\ell_1} \sum_{m_2=-\ell_2}^{\ell_2} C^{(\ell_o,m_o)}_{(\ell_1,m_1)(\ell_2,m_2)} U^{(\ell_1,p_1)}_{cm_1} V^{(\ell_2,p_2)}_{cm_2}
-        \end{align*}
-        where:
-        \begin{itemize}
-            \item $|\ell_1 - \ell_2| \leq \ell_o \leq |\ell_1 + \ell_2|$
-            \item $p_o = p_1p_2$
-            \item $C^{(\ell_o,m_o)}_{(\ell_1,m_1)(\ell_2,m_2)}$ are Clebsch-Gordan coefficients
-        \end{itemize}
-        \item Properties:
-        \begin{itemize}
-            \item Preserves SO(3) equivariance
-            \item Combines features of different angular momenta
-            \item Output channels determined by tensor product rules
-        \end{itemize}
-        \item Implementation:
-        \begin{itemize}
-            \item Pre-computed Clebsch-Gordan coefficients
-            \item Efficient sparse tensor operations
-            \item Channel-wise feature combination
-        \end{itemize}
-    \end{itemize}
-\end{frame}
 
-\begin{frame}{Virtual Nodes and Basis Sets}
-    \begin{itemize}
-        \item Virtual nodes:
-        \begin{itemize}
-            \item Placed at bond midpoints
-            \item Use oxygen basis functions
-            \item SE(3)-equivariant placement
-        \end{itemize}
-        \item Even-tempered Gaussian basis:
-        \begin{align*}
-            \alpha_k &= \alpha \cdot \beta^k \text{ for } k = 0,1,2,...,N_l
-        \end{align*}
-        \item Learnable parameters:
-        \begin{itemize}
-            \item Basis coefficients $c_{ijm}$
-            \item Scaling factors $s_{ij} \in (0.5, 2.0)$
-            \item Two-stage training for stability
-        \end{itemize}
-    \end{itemize}
-\end{frame}
+% \begin{frame}{pseudocode}
+%     \begin{figure}
+%         \includegraphics[width=\textwidth]{figures/scdp_3.jpg}
+%     \end{figure}
+% \end{frame}
+
 
 \begin{frame}{Performance Analysis}
     \begin{itemize}
-        \item Accuracy:
-        \begin{itemize}
-            \item NMAE: 0.178\% on QM9 test set
-            \item 31.7x faster than ChargE3Net
-            \item Flexible accuracy-efficiency trade-off
-        \end{itemize}
-        \item Efficiency:
-        \begin{itemize}
-            \item Linear scaling with system size
-            \item GPU-optimized implementation
-            \item Efficient basis function evaluation
-        \end{itemize}
+        \item NMAE: 0.178\% on QM9 test set
+        \item 31.7x faster than ChargE3Net
+        \item Flexible accuracy-efficiency trade-off
     \end{itemize}
+    \begin{figure}
+        \begin{subfigure}{0.48\textwidth}
+        \includegraphics[width=\textwidth]{figures/scdp_2.jpg}
+    \end{subfigure}
+    \begin{subfigure}{0.48\textwidth}
+        \includegraphics[width=\textwidth]{figures/scdp_1.jpg}
+    \end{subfigure}
+    \end{figure}
 \end{frame}
-
-\begin{frame}{Downstream Applications}
-    \begin{itemize}
-        \item Property prediction:
-        \begin{itemize}
-            \item Total energy
-            \item Forces
-            \item Electronic structure
-        \end{itemize}
-        \item Materials discovery:
-        \begin{itemize}
-            \item High-throughput screening
-            \item Property optimization
-            \item Structure prediction
-        \end{itemize}
-        \item Molecular dynamics:
-        \begin{itemize}
-            \item Force field generation
-            \item Trajectory simulation
-            \item Property evolution
-        \end{itemize}
-    \end{itemize}
-\end{frame} 

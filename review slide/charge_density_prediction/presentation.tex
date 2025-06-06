@@ -3,137 +3,37 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage{subcaption}
 \usepackage{tikz}
 \usepackage{physics}
 \usepackage{xcolor}
 \usepackage{booktabs}
 
-\title{Recent Advances in Charge Density Prediction using Foundation Models}
-\author{Review}
-\date{\today}
+\title{Recent Advances in Charge Density Prediction}
+\author{Jiaxi Zhao (NUS)}
+\date{\today \\
+Multiscale Modelling and Machine Learning Seminar}
 
 \begin{document}
 
 \include{main}
-
-\begin{frame}{Equivariance in Charge Density Prediction}
-    \begin{itemize}
-        \item Charge density must be invariant to:
-        \begin{align*}
-            \rho(\mathbf{r}) &= \rho(R\mathbf{r} + \mathbf{t}) \\
-            \text{where } R &\in SO(3), \mathbf{t} \in \mathbb{R}^3
-        \end{align*}
-        \item For molecular systems, we require:
-        \begin{align*}
-            \rho(\mathbf{r}) &= \sum_{i} \sum_{l=0}^{\infty} \sum_{m=-l}^{l} c_{ilm} R_{l}(r_i)Y_{lm}(\hat{\mathbf{r}}_i) \\
-            \text{where } \hat{\mathbf{r}}_i &= \frac{\mathbf{r} - \mathbf{r}_i}{|\mathbf{r} - \mathbf{r}_i|}
-        \end{align*}
-        \item Key considerations:
-        \begin{itemize}
-            \item Rotational equivariance of spherical harmonics
-            \item Translation invariance of relative positions
-            \item Permutation invariance of identical atoms
-        \end{itemize}
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Charge3Net: Higher-Order Angular Momentum}
-    \begin{columns}
-        \column{0.6\textwidth}
-        \begin{itemize}
-            \item Novel approach using higher-order angular momentum
-            \item Key components:
-            \begin{itemize}
-                \item Spherical harmonics expansion
-                \item Radial basis functions
-                \item Message passing network
-            \end{itemize}
-            \item Mathematical formulation:
-            \begin{align*}
-                \psi_{nlm}(r,\theta,\phi) &= R_{nl}(r)Y_{lm}(\theta,\phi) \\
-                \text{where } Y_{lm} &= \sqrt{\frac{2l+1}{4\pi}\frac{(l-m)!}{(l+m)!}}P_l^m(\cos\theta)e^{im\phi}
-            \end{align*}
-            \item Training objective:
-            \begin{align*}
-                \mathcal{L}_{\text{ChargE3Net}} &= \frac{1}{n}\sum_{i=1}^n |\rho(\mathbf{r}_i) - \hat{\rho}(\mathbf{r}_i)| \\
-                \text{where } n &\text{ is number of grid points}
-            \end{align*}
-        \end{itemize}
-        \column{0.4\textwidth}
-        Spherical harmonics visualization
-    \end{columns}
-\end{frame}
-
-\include{charge3net}
+\include{e3nn}
 \include{scdp}
+\include{charge3net}
+% \include{uni3dar}
 
-\begin{frame}{Uni3D-AR: Foundation Model Adaptation}
+      
+\begin{frame}{Discussions}
     \begin{itemize}
-        \item Grid-based tokenization
-        \begin{itemize}
-            \item 3D voxel grid representation
-            \item Multi-scale feature extraction
-            \item Hierarchical attention
-        \end{itemize}
-        \item Key innovations:
-        \begin{itemize}
-            \item Adaptive grid resolution
-            \item Local-global feature fusion
-            \item Position-aware attention
-        \end{itemize}
-        \item Based on transformer architecture
-        \item Key features:
-        \begin{itemize}
-            \item Pre-training on large datasets
-            \item Fine-tuning for charge density
-            \item Multi-task learning capability
-        \end{itemize}
-        \item Training objective:
-        \begin{align*}
-            \mathcal{L}_{\text{Uni3D-AR}} &= \mathcal{L}_{\text{main}} + \lambda\mathcal{L}_{\text{aux}} \\
-            \text{where } \mathcal{L}_{\text{main}} &= \text{Masked next-token prediction} \\
-            \mathcal{L}_{\text{aux}} &= \text{Property prediction loss}
-        \end{align*}
+        \item Incorperate more symmetries: space-group symmetry, point-group symmetry of crystal.
+        \item Comparison with approaches of canonical transformations. This type of method is
+        is restricted to be probe-based.
+        \item Different approaches to equivariance in robot community: equivariant vision.
+        \item {\color{red} \textbf{Sobolev training for downstream tasks where the gradient information of the density
+        is required.}}
+        \item Does it worth to pursue the equivariance for the model? Seems not necessary as
+        the AlphaFold evolves.
     \end{itemize}
-\end{frame}
-\include{uni3dar}
-
-\begin{frame}{Performance Comparison}
-    \begin{table}[h]
-        \centering
-        \begin{tabular}{lccc}
-            \toprule
-            Model & MAE & RMSE & Training Time \\
-            \midrule
-            Charge3Net & 0.012 & 0.015 & 24h \\
-            SCDP & 0.008 & 0.010 & 48h \\
-            Uni3D-AR & 0.006 & 0.008 & 72h \\
-            \bottomrule
-        \end{tabular}
-        \caption{Performance metrics across models}
-    \end{table}
-\end{frame}
-
-\begin{frame}{Future Directions}
-    \begin{columns}
-        \column{0.5\textwidth}
-        \begin{itemize}
-            \item Integration with foundation models
-            \begin{itemize}
-                \item Pre-training strategies
-                \item Transfer learning
-                \item Multi-task learning
-            \end{itemize}
-            \item Technical challenges:
-            \begin{itemize}
-                \item Computational efficiency
-                \item Data requirements
-                \item Model interpretability
-            \end{itemize}
-        \end{itemize}
-        \column{0.5\textwidth}
-        Potential research directions
-    \end{columns}
 \end{frame}
 
 \end{document} 

@@ -1,22 +1,35 @@
 \section{Uni-3DAR: Unified 3D Generation and Understanding}
 
-\begin{frame}{Uni-3DAR Overview}
+\begin{frame}{Uni3D-AR: Foundation Model Adaptation}
     \begin{itemize}
-        \item Tokenization-based approach
-        \item Key components:
+        \item Grid-based tokenization
         \begin{itemize}
-            \item Hierarchical octree compression
-            \item Fine-grained structural tokenization
-            \item Masked next-token prediction
+            \item 3D voxel grid representation
+            \item Multi-scale feature extraction
+            \item Hierarchical attention
         \end{itemize}
-        \item Unifies:
+        \item Key innovations:
         \begin{itemize}
-            \item 3D structure generation
-            \item Property prediction
-            \item Multi-modal tasks
+            \item Adaptive grid resolution
+            \item Local-global feature fusion
+            \item Position-aware attention
         \end{itemize}
+        \item Based on transformer architecture
+        \item Key features:
+        \begin{itemize}
+            \item Pre-training on large datasets
+            \item Fine-tuning for charge density
+            \item Multi-task learning capability
+        \end{itemize}
+        \item Training objective:
+        \begin{align*}
+            \mathcal{L}_{\text{Uni3D-AR}} &= \mathcal{L}_{\text{main}} + \lambda\mathcal{L}_{\text{aux}} \\
+            \text{where } \mathcal{L}_{\text{main}} &= \text{Masked next-token prediction} \\
+            \mathcal{L}_{\text{aux}} &= \text{Property prediction loss}
+        \end{align*}
     \end{itemize}
 \end{frame}
+
 
 \begin{frame}{Hierarchical Tokenization}
     \begin{itemize}
@@ -99,36 +112,20 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Efficiency Optimizations}
-    \begin{itemize}
-        \item Training:
-        \begin{itemize}
-            \item FlashAttention with bfloat16
-            \item Sequence packing
-            \item Efficient memory usage
-        \end{itemize}
-        \item Inference:
-        \begin{itemize}
-            \item KV-cache acceleration
-            \item Paired token generation
-            \item GPU utilization optimization
-        \end{itemize}
-    \end{itemize}
-\end{frame}
 
-\begin{frame}{Cross-Modal Applications}
-    \begin{itemize}
-        \item Protein folding:
-        \begin{itemize}
-            \item Sequence to structure
-            \item Multi-frame generation
-            \item Property prediction
-        \end{itemize}
-        \item Crystal structure prediction:
-        \begin{itemize}
-            \item PXRD-guided generation
-            \item NMR signal conditioning
-            \item Property optimization
-        \end{itemize}
-    \end{itemize}
-\end{frame} 
+% \begin{frame}{Cross-Modal Applications}
+%     \begin{itemize}
+%         \item Protein folding:
+%         \begin{itemize}
+%             \item Sequence to structure
+%             \item Multi-frame generation
+%             \item Property prediction
+%         \end{itemize}
+%         \item Crystal structure prediction:
+%         \begin{itemize}
+%             \item PXRD-guided generation
+%             \item NMR signal conditioning
+%             \item Property optimization
+%         \end{itemize}
+%     \end{itemize}
+% \end{frame} 
