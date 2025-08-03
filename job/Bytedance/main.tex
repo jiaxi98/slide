@@ -8,17 +8,24 @@
 \usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{comment}
-\usepackage{subcaption}
+\usepackage{enumitem}
 \usepackage{geometry}
 \usepackage{algorithmic}
 \usepackage{algpseudocode}
 \usepackage{algorithmicx}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usepackage{physics}
+\usepackage{xcolor}
 \usepackage[version=4]{mhchem}
 \geometry{left=1cm,right=1cm}
-    \title[Gaussian Hartree-Fock]{Adaptive Gaussian basis for quantum chemistry calculation}
-\author[J. Zhao]{Jiaxi Zhao (NUS)\\joint work with Doc. Min Lin (SAIL)}
+\title[ML4DFT]{Advancing Density Functional Theory Calculation with Machine Learning}
+\author[J. Zhao]{Jiaxi Zhao (NUS)}
 \date[\today]{\today\\
-Job talk \@ Bytedance}
+Job talk @ Bytedance}
+
+% TODO: add reference to each slide, better use a concise notion
 \begin{document}
 \par \setlength{\parindent}{2em}
 
@@ -26,88 +33,85 @@ Job talk \@ Bytedance}
 \titlepage
 \end{frame}
 
-\begin{frame}{What is quantum chemistry?}
 
-	Recall in high school chemistry, we learned:
+\begin{frame}{Bio}
 	\begin{itemize}
-		\item 1. Atoms have s, p, d, f, etc orbitals, Pauli exclusion principle, Hund's Rules.
-		\item 2. There are ionic and covalent bonds.
-		\item 3. Materials can be conductors, semi-conductors, and insulators.
+		\item 2016--2020: Undergraduate in Peking univerisity majored in mathematics;
+		\item 2021--2026 (expected): Ph.D. in national university of Singapore majored in
+		applied mathematics, focusing on 
+		\item 2024--present: Research intern in Sea AI Lab to improve the jax-based
+		solid-state DFT solver \textit{Jrystal} using machine-learning toolbox.
 	\end{itemize}
+\end{frame}
 
-	{\color{red} All these properties can be explained by the electronic structure from
-	first principle calculations!}
-	
+
+% for long talk
+\begin{frame}{Many-body Schr\"odinger equation}
+	After Born–Oppenheimer approximation, the many-body Schr\"odinger equation
+	is given by:
+	\begin{equation*}
+		\begin{aligned}
+			\hat{\opH^e} & \Psi(\mfr_1, \mfr_2, ..., \mfr_N) = E
+			\Psi(\mfr_1, \mfr_2, ..., \mfr_N),		\\
+			\hat{\opH^e} & = -\half \Delta_{\mfr} - \sum_{i=1}^N\sum_{j=1}^{n_A} \frac{Z_j}
+			{\norml \mfr_i - \mfR_j \normr_2} + \frac{1}{2} \sum_{i \neq j}^N
+			\frac{1}{r_{ij}}		\\
+			& = \sum_{i=1}^N \wht{\operatorname{h}}(\text{i}) + \frac{1}{2} \sum_{i \neq j}^N
+			\frac{1}{r_{ij}}
+		\end{aligned}
+	\end{equation*}
+	Solving this equation, we can obtain the ground state energy, potential
+	energy surface (for geometry optimization and transition states search),
+	band structure for the solid state system, and etc.
 \end{frame}
 
 % for long talk
-% \begin{frame}{Many-body Schr\"odinger equation}
-% 	After Born–Oppenheimer approximation, the many-body Schr\"odinger equation
-% 	is given by:
-% 	\begin{equation*}
-% 		\begin{aligned}
-% 			\hat{\opH^e} & \Psi(\mfr_1, \mfr_2, ..., \mfr_N) = E
-% 			\Psi(\mfr_1, \mfr_2, ..., \mfr_N),		\\
-% 			\hat{\opH^e} & = -\half \Delta_{\mfr} - \sum_{i=1}^N\sum_{j=1}^{n_A} \frac{Z_j}
-% 			{\norml \mfr_i - \mfR_j \normr_2} + \frac{1}{2} \sum_{i \neq j}^N
-% 			\frac{1}{r_{ij}}		\\
-% 			& = \sum_{i=1}^N \wht{\operatorname{h}}(\text{i}) + \frac{1}{2} \sum_{i \neq j}^N
-% 			\frac{1}{r_{ij}}
-% 		\end{aligned}
-% 	\end{equation*}
-% 	Solving this equation, we can obtain the ground state energy, potential
-% 	energy surface (for geometry optimization and transition states search),
-% 	band structure for the solid state system, and etc.
-% \end{frame}
+\begin{frame}{Mean-field approximation: Slater determinant}
+	Pauli exclusion principle requires following antisymmetric constraint on the
+	many-body wave function:
+	\begin{equation*}
+		\Psi_{\text{HF}}(..., \mfr_j, ..., \mfr_i, ...) = 
+		- \Psi_{\text{HF}}(..., \mfr_i, ..., \mfr_j, ...)
+	\end{equation*}
 
-% % for long talk
-% \begin{frame}{Mean-field approximation: Slater determinant}
-% 	Pauli exclusion principle requires following antisymmetric constraint on the
-% 	many-body wave function:
-% 	\begin{equation*}
-% 		\Psi_{\text{HF}}(..., \mfr_j, ..., \mfr_i, ...) = 
-% 		- \Psi_{\text{HF}}(..., \mfr_i, ..., \mfr_j, ...)
-% 	\end{equation*}
+	The many-body wave function of the Hartree-Fock theory is given by a single
+	Slater determinant:
+	\begin{equation*}
+		\Psi_{\text{HF}}(\mfr_1, ..., \mfr_N) = \frac{1}{\sqrt{N!}} 
+		\begin{vmatrix}
+			\phi_1(\mfr_1) & \phi_1(\mfr_2) & \cdots & \phi_1(\mfr_N) \\
+			\phi_2(\mfr_1) & \phi_2(\mfr_2) & \cdots & \phi_2(\mfr_N) \\
+			\vdots & \vdots & \ddots & \vdots \\
+			\phi_N(\mfr_1) & \phi_N(\mfr_2) & \cdots & \phi_N(\mfr_N)
+		\end{vmatrix}
+	\end{equation*}
+\end{frame}
 
-% 	The many-body wave function of the Hartree-Fock theory is given by a single
-% 	Slater determinant:
-% 	\begin{equation*}
-% 		\Psi_{\text{HF}}(\mfr_1, ..., \mfr_N) = \frac{1}{\sqrt{N!}} 
-% 		\begin{vmatrix}
-% 			\phi_1(\mfr_1) & \phi_1(\mfr_2) & \cdots & \phi_1(\mfr_N) \\
-% 			\phi_2(\mfr_1) & \phi_2(\mfr_2) & \cdots & \phi_2(\mfr_N) \\
-% 			\vdots & \vdots & \ddots & \vdots \\
-% 			\phi_N(\mfr_1) & \phi_N(\mfr_2) & \cdots & \phi_N(\mfr_N)
-% 		\end{vmatrix}
-% 	\end{equation*}
-% 	{\color{red} This part is still a bit confusing for math audience.}
-% \end{frame}
-
-% % for long talk
-% \begin{frame}{Total energy}
-% 	\begin{equation*}
-% 		\begin{aligned} & E[\Psi^{HF}] = 
-% 			\left\langle\Psi^{HF}|\hat{\opH^e}|\Psi^{HF}
-% 			\right\rangle =  \sum_{i=1}^N \int\text{d}\mathbf{r}_i
-% 		  \phi_i^*(\mathbf{r}_i)
-% 			\wht{\operatorname{h}}(\text{i}) \phi_i(\mathbf{r}_i) \\ 
-% 			&+ \frac{1}{2N(N - 1)} \sum_{i \neq j}^N \sum_{k \neq l}^N \iint
-% 			\mathrm{d}\mathbf{r}_i
-% 			\text{d}\mathbf{r}_j \phi_k^*(\mathbf{r}_i)\phi_l^*(\mathbf{r}_j)
-% 			\frac{1}{|\mathbf{r}_i-\mathbf{r}_j|}\phi_k(\mathbf{r}_i)
-% 			\phi_l(\mathbf{r}_j) \\ 
-% 			&- \frac{1}{2N(N - 1)} \sum_{i \neq j}^N \sum_{k \neq l}^N \iint
-% 			\text{d}\mathbf{r}_i
-% 			\text{d}\mathbf{r}_j\phi_k^*(\mathbf{r}_i)\phi_l^*(\mathbf{r}_j)
-% 			\frac{1}{|\mathbf{r}_i-\mathbf{r}_j|}\phi_k(\mathbf{r}_j)
-% 			\phi_l(\mathbf{r}_i)  \\
-% 			& = E(\phi_1, \phi_2, \cdots, \phi_N).
-% 		\end{aligned}
-% 	\end{equation*}
-% 	Minimizing the total energy will give the ground state configuration which is
-% 	consistent with the self-consistent field approach. The double-electron
-% 	integrations $O(N^4)$ are the dominant part of computational cost.
-% \end{frame}
+% for long talk
+\begin{frame}{Total energy}
+	\begin{equation*}
+		\begin{aligned} & E[\Psi^{HF}] = 
+			\left\langle\Psi^{HF}|\hat{\opH^e}|\Psi^{HF}
+			\right\rangle =  \sum_{i=1}^N \int\text{d}\mathbf{r}_i
+		  \phi_i^*(\mathbf{r}_i)
+			\wht{\operatorname{h}}(\text{i}) \phi_i(\mathbf{r}_i) \\ 
+			&+ \frac{1}{2N(N - 1)} \sum_{i \neq j}^N \sum_{k \neq l}^N \iint
+			\mathrm{d}\mathbf{r}_i
+			\text{d}\mathbf{r}_j \phi_k^*(\mathbf{r}_i)\phi_l^*(\mathbf{r}_j)
+			\frac{1}{|\mathbf{r}_i-\mathbf{r}_j|}\phi_k(\mathbf{r}_i)
+			\phi_l(\mathbf{r}_j) \\ 
+			&- \frac{1}{2N(N - 1)} \sum_{i \neq j}^N \sum_{k \neq l}^N \iint
+			\text{d}\mathbf{r}_i
+			\text{d}\mathbf{r}_j\phi_k^*(\mathbf{r}_i)\phi_l^*(\mathbf{r}_j)
+			\frac{1}{|\mathbf{r}_i-\mathbf{r}_j|}\phi_k(\mathbf{r}_j)
+			\phi_l(\mathbf{r}_i)  \\
+			& = E(\phi_1, \phi_2, \cdots, \phi_N).
+		\end{aligned}
+	\end{equation*}
+	Minimizing the total energy will give the ground state configuration which is
+	consistent with the self-consistent field approach. The double-electron
+	integrations $O(N^4)$ are the dominant part of computational cost.
+\end{frame}
 
 \begin{frame}{Mathematical formulation}
 	Variational formulation of the Hartree-Fock theory:
@@ -228,11 +232,11 @@ Job talk \@ Bytedance}
 
 \begin{frame}{Coulomb and external energy}
 	Why difficulites? No analytic formula for
-	\begin{equation}
+	\begin{equation*}
 		\la \mcN\lp \mfr_1 | \mathbf{\mu_1}, \Sigma_1 \rp \rv \frac{1}{
 				\lv \mfr_1 - \mfr_2 \rv}\lv \mcN\lp \mfr_2 | \mathbf{\mu_2}, \Sigma_2
 				\rp \ra
-	\end{equation}
+	\end{equation*}
 
 	Our primary idea is to approximate the Coulomb kernel by a series of
 	Gaussian modes:
@@ -460,12 +464,231 @@ Job talk \@ Bytedance}
 	\end{table}
 \end{frame}
 
+
+% \begin{frame}{Next step}
+% 	\begin{itemize}
+% 		\item 1. Compare the scalability of the double-electron integral
+% 		calculation over the number of basis functions with the SOTA method, e.g.
+% 		MD, HGP(OS), Rys.
+% 		\item 2. Conduct numerical experiments to check if the adaptive
+% 		Gaussian basis can achieve the same accuracy with a smaller number of
+% 		basis.
+% 		\item 3. Implement post HF method, e.g. CCSD, CCSD(T).
+% 	\end{itemize}
+% \end{frame}
+
+
+\begin{frame}{A primer on plane-wave based solid-state DFT}
+	\begin{itemize}
+		\item Wavefunctions, density, and potential functions are parametrized as the
+		linear combination of plane-waves $e^{i\mathbf{k} \cdot \mathbf{r}}, \mathbf{k}$
+		lattice vector.
+		\item Fast Fourier transform enables efficient calculation of different
+		parts of the energy.
+		\item Systematical approach to obtain more accurate DFT calculation -- increase
+		the plane-wave energy cutoff.
+	\end{itemize}
+	
+	\begin{itemize}
+		\item Energy cutoff has to be very high around the atomic site, leading to unaffordable
+		computational budget for the whole supercell.
+	\end{itemize}
+	% \JX{We need to survey the literature for some multiscale basis such as
+	% the wavelet basis.}
+\end{frame}
+
+
+\begin{frame}{Literature}
+	\begin{itemize}
+		\item Use fixed analytic transformation mapping depending on the position of the
+		atom. (Similar to the r type mesh refinement in numerical PDE.)
+		\item Solve some OT-type problems to predetermine the basis before the SCF
+		loop.
+	\end{itemize}
+	
+	The design of the distorted grid has great freedom and has to be done by expert 
+	for each crystal system -- can we have a more adaptive and automatic design
+	of the distorted grid?
+\end{frame}
+
+
+\begin{frame}{Normalizing flow on periodic domain}
+
+	\begin{itemize}
+		\item Invertible mapping on $S^1$ parametrized by spline function
+		\begin{figure}[h]
+			\centering
+			\includegraphics[width=.4\linewidth]{fig/nsf.jpg}
+		\end{figure}
+		\item Coupling layer to handle 3D domain:
+		\begin{equation*}\label{equ:cnf-auto-regressive}
+			\begin{pmatrix}
+			x_1^{(0)} \\
+			x_2^{(0)}
+			\end{pmatrix} 
+			\underset{x_2^{(1)}=\ x_2^{(0)}}{\xrightarrow{x_1^{(1)}=\ \phi(x_1^{(0)}, \text{NN}^{(0)}_1(t))}}
+			\begin{pmatrix}
+			x_1^{(1)} \\
+			x_2^{(1)}
+			\end{pmatrix} 
+			\underset{x_2^{(2)}=\ \phi(x_2^{(1)},\, \text{NN}^{(1)}_2(x_1^{(1)},t))}{\xrightarrow{\quad\quad x_1^{(2)} =\ x_1^{(1)} \quad\quad }}
+			\begin{pmatrix}
+			x_1^{(2)} \\
+			x_2^{(2)}
+			\end{pmatrix}.
+		\end{equation*}
+		\item Autoregressive layer to improve expressivity.
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Distorted plane-wave basis}
+	\begin{itemize}
+		\item Distorted planewaves (DPW) $\phi _{\vb{G}}$ is defined as planewaves in the parameter space
+		\begin{equation*} \label{eqn:dpw}
+		\braket{\vb{r}}{\vb{G}} := \phi _{\vb{G}}(\vb{r})
+			= \frac{1}{\sqrt{\Omega_{\vb*{\xi }} }} \abs{ J_{f^{-1}}(\vb{r})}^{\frac{1}{2}} \exp \left[\I \vb{G} ^{\top} f^{-1}(\vb{r})  \right]
+		\end{equation*}
+		\item Ideally, the grid points will concentrate around the atomic sites and be
+		relatively sparse in the interatomic region.
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Kinetic matrix element: FFT}
+	\begin{itemize}
+		\item \begin{equation*}
+			\begin{split}
+		& \mel{\psi _{i, \vb{k}}}{\hat{T}}{\psi _{j, \vb{k}}} \\
+				=& \frac{1}{2} \sum_{\vb{G}', \vb{G}} c^{*}_{i, \vb{k}, \vb{G}'} c_{j, \vb{k}, \vb{G}}\{B_{\vb{G}', \vb{G}} - G_{q}[U_{\vb{G}', \vb{G}}]_{q} + G'_{q}[U_{\vb{G}', \vb{G}}]_{q} + (G_{p}+k_{p})(G'_{q}+k_{q})[P_{\vb{G}', \vb{G}}]_{pq}\} .
+			\end{split}
+		\end{equation*}
+		\item FFT implementation of the Toeplitz matrix-vector product is extremely fast.
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Hartree energy: solving the Poisson equation}
+	\begin{equation*}
+		\laplacian V_{\rho _{1}} = -4\pi \rho_{1}.
+	\end{equation*}
+	\begin{itemize}
+		\item Solved by FFT in plane-wave basis;
+		\item Solved by physics-informed neural network -- introducing an inner
+		loop of optimization
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Overall algorithm}
+	\begin{algorithm}[H]
+		\caption{Distorted plane-wave method}
+		\begin{algorithmic}[1]
+			\State \textbf{Input:} 
+		\end{algorithmic}
+	\end{algorithm}
+\end{frame}
+
+
+\begin{frame}{Good features}
+	There are several advantages of using the distorted plane-wave method.
+	\begin{itemize}
+		\item The orthonormality of the basis is preserved.
+		\item Calculation of the density related energy can be estimated 
+		efficiently by the Monte-Carlo method instead of integrating over the
+		grid:
+		\begin{equation*}
+			E_{\text{xc}} = \int_{\Omega} \epsilon_{\text{xc}}^{\text{LDA}}(\rho(\mathbf{r}))
+			\rho(\mathbf{r})d\mathbf{r} = \frac{1}{N} \sum_{i=1}^N \epsilon_{\text{xc}}^{\text{LDA}}(\rho_i).
+		\end{equation*}
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Numerical results}
+	\begin{table}[htbp]
+		\footnotesize
+	\centering
+	\caption{Band structure calculation for diamond with LDA. All energies are in eV unit.}
+	{\tabulinesep=1.2mm
+	\begin{tabu}{cccccc}
+	\hline
+	Method & FFT grid size & band gap & L & X & $\Gamma$  \\ \hline\hline
+	\multirow{3}{*}{PW}
+	 & 128 & 3.05869 & 7.51526 & 3.05869 & 4.79634  \\ \cline{2-6}
+	 & 96  & 3.14795 & 7.61833 & 3.14795 & 4.77946  \\ \cline{2-6}
+	 & 64  & 3.68519 & 7.72595 & 3.68519 & 4.88759  \\ \cline{2-6}
+	\hline\hline
+	\multirow{3}{*}{PW + ANC}
+	 & 96 & 3.08192 & 7.7782  & 3.08192 & 4.75455  \\ \cline{2-6}
+	 & 64 & 3.10424 & 7.77621 & 3.10424 & 4.88761  \\ \cline{2-6}
+	 & 48 & 1.98104 & 7.39363 & 1.98104 & 4.84532  \\ \cline{2-6}
+	\hline\hline
+	\multirow{1}{*}{FDPW + PINN}
+	 & 48 & 3.01882 & 7.26194 & 3.01882 & 4.41584  \\ \cline{2-6}
+	\hline
+	\end{tabu}}
+	\end{table}
+\end{frame}
+
+
+\begin{frame}{Pseudopotential: domain decomposition}
+	\begin{itemize}
+		\item Near atomic sites, influence of other atoms is negligible -- 
+		atomic configuration;
+		\item At the interatomic region, the wavefunction is smooth and plane-wave
+		is efficient;
+		\item Need a clever way to glue together above two parts of the wavefunctions.
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Diagrammtic illustration of PAW}
+	Projector augmented-wave method (PAW)
+
+	All the quantites: wavefunctions, density, energy can be calculated via the
+	following scheme:
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=.4\linewidth]{fig/paw.jpg}
+	\end{figure}
+\end{frame}
+
+
+\begin{frame}{Mathematical essence of PAW}
+	\begin{equation*}
+			\begin{aligned}
+				& \text{Wavefunctions:} \qquad \psi & = \wtd \psi + \sum_a (\psi^a - \wtd\psi^a),		\\
+				& \text{Density:} \qquad \rho = & \ \wtd \rho + \sum_a (\rho^a - \wtd \rho^a),		\\
+				& \text{Energy:} \qquad E_{\text{kin}} = & \ \wtd E_{\text{kin}} +
+				\half\sum_{a,i,j}D_{ij}^a
+				\int_{\mathbb{S}^a}\lp \nabla{\phi_i^{a}}^*(\mathbf{r}) \nabla\phi_j^a(\mathbf{r}) - 
+				\nabla\wtd {\phi_i^{a}}^*(\mathbf{r}) \nabla\wtd\phi_j^a(\mathbf{r}) \rp d\mathbf{r},		\\
+			\end{aligned}
+	\end{equation*}
+\end{frame}
+
+
+\begin{frame}{MLXC under the PAW formulation}
+	\textbf{\color{red} Why do we need the PAW's formulation?}
+	
+\end{frame}
+
+\begin{frame}{Difficulties in the PAW implementation}
+	\begin{itemize}
+		\item Mathematical sophistication;
+		\item Misalignment between the pseudopotential file and the PAW formulation;
+		\item Design of the unit in the code development of the PAW
+	\end{itemize}
+\end{frame}
+
+
 \begin{frame}
 	Thank you for your attention!
 	Q \& A
 \end{frame}
 
-\begin{frame}{Many-body Schr\"odinger equation}
+\begin{frame}{Many-body Schr\"odinger equation*}
 	After Born–Oppenheimer approximation, the many-body Schr\"odinger equation
 	is given by:
 	\begin{equation*}
@@ -571,65 +794,6 @@ Job talk \@ Bytedance}
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{Motivation}
-	The effect cutoff used by the plane-wave method to solve large system is
-	unaffordable. Moreover, given the nature of the electron density which will
-	be concentrated around the nucleus, while away from the nucleus which is the
-	case of majority of the computational region, the electron density is
-	relatively smooth, the plane-wave method is not efficient.
-	\JX{We need to survey the literature for some multiscale basis such as
-	the wavelet basis.}
-
-\end{frame}
-
-\begin{frame}{Literature}
-	In literature, there has been lots of work on exploring the adaptive basis for
-	solving DFT. 
-	\begin{itemize}
-		\item Use fixed analytic transformation mapping depending on the position of the
-		atom. (Similar to the r type mesh refinement in numerical PDE.)
-		\item Solve some OT-type problems to predetermine the basis before the SCF
-		loop.
-	\end{itemize}
-	However, our method is different from the above method in several aspects:
-	\begin{itemize}
-		\item Our basis is continuously optimized during the optimization porcess of
-		DFT.
-		\item We use Monte-Carlo method to estimate the density related energy,
-		differs from the traditional PDE solving method.
-	\end{itemize}
-\end{frame}
-
-\begin{frame}{Advantages}
-	There are several advantages of using the distorted plane-wave method.
-	\begin{itemize}
-		\item The orthonormality of the basis is preserved.
-		\item Calculation of the density related energy can be estimated 
-		efficiently by the Monte-Carlo method instead of solving the PDE.
-	\end{itemize}
-\end{frame}
-
-\begin{frame}{Next step}
-	\begin{itemize}
-		\item 1. Compare the scalability of the double-electron integral
-		calculation over the number of basis functions with the SOTA method, e.g.
-		MD, HGP(OS), Rys.
-		\item 2. Conduct numerical experiments to check if the adaptive
-		Gaussian basis can achieve the same accuracy with a smaller number of
-		basis.
-		\item 3. Implement post HF method, e.g. CCSD, CCSD(T).
-	\end{itemize}
-\end{frame}
-
-
-\begin{frame}{Another attempt: combining normalizing flow with plane-wave calculation}
-	
-\end{frame}
-
-
-\begin{frame}{MLXC under the PAW formulation}
-	\textbf{\color{red} Why do we need the PAW's formulation?}
-\end{frame}
 
 % \begin{frame} % Use [allowframebreaks] to allow automatic splitting across slides if the content is too long
 %     \frametitle{References}
