@@ -24,7 +24,7 @@
 \usepackage[version=4]{mhchem}
 \geometry{left=1cm,right=1cm}
 \title[ML4DFT]{Machine Learning-Inspired Advancements in Density Functional Theory}
-\author[J. Zhao]{Jiaxi Zhao (NUS) \\ joint with Tianbo Li, Zekun Shi, and Min Lin
+\author[J. Zhao]{Jiaxi Zhao (NUS) \\ joint work with Tianbo Li, Zekun Shi, and Min Lin
 @ SAIL\\
 Giovanni Vignale and Qianxiao Li @ NUS}
 \date[\today]{\today\\
@@ -42,7 +42,7 @@ Job talk @ Bytedance}
 \begin{frame}{Research}
 	\begin{itemize}
 		\item Applied mathematics Ph.D. @ National University of Singapore
-		developing data-driven hybrid simulation method for PDE problems
+		developing data-driven hybrid simulation methods for PDE problems
 		\begin{itemize}
 			\item {\scriptsize \color{red} Mitigating distribution shift in machine learning-augmented hybrid simulation (SISC 2025)}
 			\item {\scriptsize \color{red} Generative subgrid-scale modeling (MLMP ICLR 2025)}
@@ -50,7 +50,7 @@ Job talk @ Bytedance}
 			\item {\scriptsize Variational conditional normalizing flows for computing second-order mean field control problems}
 			\item {\scriptsize Numerical analysis for data-driven SGS modeling}
 		\end{itemize}
-		\item Research intern @ Sea AI Lab improving the jax-based
+		\item Research intern @ Sea AI Lab improving the JAX-based
 		solid-state DFT solver \textit{Jrystal} (core developer) using machine-learning toolbox
 		\begin{itemize}
 			\item {\scriptsize Amortized Eigendecomposition for Neural Networks (NeurIPS 2024)}
@@ -67,28 +67,41 @@ Job talk @ Bytedance}
 % \end{frame}
 
 
-\begin{frame}{Three fundamental difficulties of DFT}
+\begin{frame}{Three fundamental challenges of DFT}
+	% \begin{equation*}
+	% 	\begin{aligned}
+	% 		\delta E[\phi_k^*(x_k)] & \ = \delta E(\phi_1, \phi_2, \cdots, \phi_N)
+	% 		- \delta\left[\sum_{i=1}^N \sum_{j=1}^N
+	% 		\lambda_{ij} \left( \left\langle\phi_i, \phi_j\right\rangle - \delta_{ij}
+	% 		\right)\right]		\\
+	% 		\wht \opF(\text{k})\phi_k(\mathbf{r}_k) & \equiv \left[ \hat{h}
+	% 		(\text{k}) + \hat{J}(\text{k}) - \hat{K}(\text{k}) \right]
+	% 		\phi_k(\mathbf{r}_k) = \epsilon_k \phi_k(\mathbf{r}_k),	\\
+	% 		\wht \opJ(\text{k}) & \equiv \sum_{j=1}^N \int \mathrm{d}\mathbf{r}_j
+	% 		\frac{\phi_j^*(\mathbf{r}_j) \phi_j(\mathbf{r}_j)}{|\mathbf{r}_k-
+	% 		\mathbf{r}_j|}= \sum_{j=1}^N \int \mathrm{d}\mathbf{r}_j \frac{\rho(
+	% 		\mathbf{r}_j)}{|\mathbf{r}_k-\mathbf{r}_j|},\\
+	% 		\wht \opK(\text{k})\phi_{k}(\mathbf{r}_k) & \equiv  \sum_{j=1}^N
+	% 		\phi_{j}(\mathbf{r}_k) \int \text{d}\mathbf{r}_j \frac{\phi_j^*
+	% 		(\mathbf{r}_j) \phi_k(\mathbf{r}_j)}{|\mathbf{r}_k-\mathbf{r}_j|}.\\
+	% 	\end{aligned}
+	% \end{equation*}
 	\begin{equation*}
 		\begin{aligned}
-			\delta E[\phi_k^*(x_k)] & \ = \delta E(\phi_1, \phi_2, \cdots, \phi_N)
-			- \delta\left[\sum_{i=1}^N \sum_{j=1}^N
-			\lambda_{ij} \left( \left\langle\phi_i, \phi_j\right\rangle - \delta_{ij}
-			\right)\right]		\\
-			\wht \opF(\text{k})\phi_k(\mathbf{r}_k) & \equiv \left[ \hat{h}
-			(\text{k}) + \hat{J}(\text{k}) - \hat{K}(\text{k}) \right]
-			\phi_k(\mathbf{r}_k) = \epsilon_k \phi_k(\mathbf{r}_k),	\\
-			\wht \opJ(\text{k}) & \equiv \sum_{j=1}^N \int \mathrm{d}\mathbf{r}_j
-			\frac{\phi_j^*(\mathbf{r}_j) \phi_j(\mathbf{r}_j)}{|\mathbf{r}_k-
-			\mathbf{r}_j|}= \sum_{j=1}^N \int \mathrm{d}\mathbf{r}_j \frac{\rho(
-			\mathbf{r}_j)}{|\mathbf{r}_k-\mathbf{r}_j|},\\
-			\wht \opK(\text{k})\phi_{k}(\mathbf{r}_k) & \equiv  \sum_{j=1}^N
-			\phi_{j}(\mathbf{r}_k) \int \text{d}\mathbf{r}_j \frac{\phi_j^*
-			(\mathbf{r}_j) \phi_k(\mathbf{r}_j)}{|\mathbf{r}_k-\mathbf{r}_j|}.\\
+			E(\{\psi\}) = & \ 
+	\sum_{i=1}^N \int\text{d}\mathbf{r}_i
+		  \psi_i^*(\mathbf{r}_i) (-\frac{1}{2}\Delta - \sum_{\text{atom } a}
+			\frac{Z_a}{|\mathbf{r}_i - \mathbf{A}_a|})
+			 \psi_i(\mathbf{r}_i) \\ 
+			&+ E_{\text{H}}[\rho] + E_{\text{xc}}[\rho] + E_{\text{ion-ion}}\\
+			\rho(\mfr) = & \ \sum_{i=1}^N |\psi_i(\mfr)|^2	\\
+		  \delta_{ij} = & \ \int\psi_i^*(\mathbf{r}) \psi_j(\mathbf{r})d\mathbf{r}
 		\end{aligned}
 	\end{equation*}
 	\begin{itemize}
-		\item Complexity of the basis set $\Longrightarrow$ Adaptive Gaussian basis set
-		\item High plane-waves cutoff for crystal system $\Longrightarrow$ Normalizing Flow Distorted Planewaves
+		\item Direct optimization method for DFT
+		\item Molecular systems: complexity of the basis set $\Longrightarrow$ Adaptive Gaussian basis set
+		\item Crystal system: high plane-waves cutoff for crystal system $\Longrightarrow$ Normalizing Flow Distorted Planewaves
 		\item XC functional for materials $\Longrightarrow$ MLXC under PAW formulation
 	\end{itemize}
 \end{frame}
@@ -193,7 +206,7 @@ Job talk @ Bytedance}
 \end{comment}
 
 
-\section{Adaptiv Gaussian basis for quantum chemistry calculation}
+\section{Adaptive Gaussian Basis for Quantum Chemistry Calculation}
 \begin{frame}
     \centering
     \Large
@@ -204,7 +217,7 @@ Job talk @ Bytedance}
 \end{frame}
 
 
-\begin{frame}{Basis sets are complicated}
+\begin{frame}{Basis sets are complex}
 	\begin{itemize}
 		\item Slater basis functions (STO):
 		\begin{equation*}
@@ -226,7 +239,7 @@ Job talk @ Bytedance}
 \end{frame}
 
 % for long talk
-\begin{frame}{Basis sets integrals are computationally expensive}
+\begin{frame}{Basis set integrals are computationally expensive}
 	\begin{equation*}
 		\iint e^{-\alpha \norml \mfr_1 - \mfA \normr_2^2 -\beta \norml \mfr_2 - \mfB \normr_2^2
 		-\gamma \norml \mfr_1 - \mfC \normr_2^2 -\delta \norml \mfr_2 - \mfD \normr_2^2}
@@ -248,7 +261,7 @@ Job talk @ Bytedance}
 	% 	\item 3. cc-pVDZ
 	% \end{itemize}
 
-	Adaptive Gaussian basis (Kerbl, Bernhard, et al 2023) with optimizable mean and covariance:
+	Adaptive Gaussian basis (Kerbl et al. 2023) with optimizable mean and covariance:
 	\begin{equation*}
 		\phi_i = \sum_{j\in I} c_{ij}\mcN(\mfr; \mu_j, \Sigma_j)
 	\end{equation*}
@@ -257,7 +270,7 @@ Job talk @ Bytedance}
 	size of the basis set, $N$ is the number of electrons
 
 	\begin{itemize}
-		\item Polynomial to more flexible covariance structure
+		\item Polynomial $\Longrightarrow$ more flexible covariance structure
 		\item Analytic Gaussian integral
 	\end{itemize}
 \end{frame}
@@ -265,18 +278,15 @@ Job talk @ Bytedance}
 \begin{frame}{Orthonormality and overlap matrix}
 	\begin{itemize}
 		\item The orthonormality of the orbitals in SCF is guaranteed by the eigensolver
-		\item In total energy minimization, we have to handle this explicitly
-	As the orbitals are supposed to be orthonormal, it can be written as
-	\begin{equation*}
-		\opC^{\dagger} \opS \opC = \opI
-	\end{equation*}
-	where $\opS$ is the overlap matrix defined as:
-	\begin{equation*}
+		\item In total energy minimization, we have to handle this explicitly.
+		\item Coefficient matrix $C$ should satisfy:
+		\begin{equation*}
+			\opC^{\dagger} \opS \opC = \opI, \qquad 
 		\operatorname{S}_{ij} = \la \mcN\lp \mfr; \mathbf{\mu_i},
     \Sigma_i \rp \rv \left. \mcN\lp \mfr;
     \mathbf{\mu_j}, \Sigma_j \rp \ra
 	\end{equation*}
-	The orthonormality is enforced by QR decomposition modified by the
+	The orthonormality is enforced by QR decomposition +
 	Cholesky factorization of $\opS$
 	\end{itemize}
 \end{frame}
@@ -294,7 +304,7 @@ Job talk @ Bytedance}
 		\begin{equation*}
 			\frac{1}{r} = \sum_i c_i e^{-\alpha_i r^2}
 		\end{equation*}
-		\item Minimizing the following
+		\item Minimize the following
 		\begin{equation*}
 			\begin{aligned}
 				\min_{c_i, \alpha_i} \int_{B_M} \lp \frac{1}{|\mfr|} - \sum_i c_i
@@ -355,25 +365,27 @@ Job talk @ Bytedance}
 
 
 \begin{frame}{Parameterization of Gaussian basis}
-	We parameterize the Gaussian basis as
+\begin{itemize}
+	\item Naive implementation: 
 	\begin{equation*}
-		\Sigma_1 = \opU_1 \opD_1 \opU_1^T, \quad \Sigma_2 = \opU_2 \opD_2 \opU_2^T
+		\Sigma = MM^T
 	\end{equation*}
-	where $\opU_i$ is obtained from the QR decomposition and the positivity of
-	the diagonal element of $\opD_i$ is enforced by the softplus function
-
-	This is proved to be more robust than parametrization by Cholesky
-	factorization
+	\item Eigen parametrization:
+	\begin{equation*}
+		\Sigma = \opU \opD \opU^T
+	\end{equation*}
+	$\opU_i$: QR decomposition, $\opD_i$: softplus function
+\end{itemize}
 \end{frame}
 
 
 \begin{frame}{The core contribution of this work}
 	\begin{itemize}
-		\item A self-contained integral library for the Hartree-Fock calculation
+		\item A self-contained integral pipeline for the Hartree-Fock calculation
 		using the Gaussian basis functions with more flexible covariance
 		\item A complete unit test to verify the correctness of the integral
 		\item Efficient Fock build algorithm: single ERI
-		evaFLOPs count around $60 \times 10 = 600$, \textbf{regardless of the orbital type!}
+		FLOPs count around $60 \times 10 = 600$, \textbf{regardless of the orbital type!}
 		\item Classical Fock build algorithm: (ss|ss), (ps|ps), (pp|pp) requires 33, 58, 1326 FLOPs
 		for a single evaluation (Barca et al 2020, 2021)
 	\end{itemize}
@@ -396,7 +408,7 @@ Job talk @ Bytedance}
 		{\centering  e\_tot}   \\ \midrule[1.5pt]
 		
 		\parbox{4cm}{OUR ($\ce{H2}$), 10} & -2.5062 & 1.1254 & -3.6316 & 0.7138 & 0.6591 &
-		1.3182 & -0.6591 & \textbf{-1.1334} \\ \midrule[0.5pt]
+		1.3182 & -0.6591 & {\color{red}-1.1334} \\ \midrule[0.5pt]
 	
 		% \parbox{3cm}{$n_g= 10, \epsilon=10^{-3}$} & -2.4905 & 1.1070 & -3.5975
 		% & 0.7138 & 0.6549 & 1.3097 & -0.6549 & -1.1219 \\ \midrule[0.5pt]
@@ -419,7 +431,7 @@ Job talk @ Bytedance}
 		\\ \midrule[0.5pt]
 	
 		\parbox{4cm}{HF (6-311G, 6)} 
-		& -2.4924 &  * & * & 0.7138 & 0.6507 & * & * & \textbf{-1.1280}
+		& -2.4924 &  * & * & 0.7138 & 0.6507 & * & * & {\color{red}-1.1280}
 		\\ \midrule[0.5pt]
 	
 		% \parbox{3cm}{d4ft (6-31g, lda)} 
@@ -450,14 +462,14 @@ Job talk @ Bytedance}
 		% -6.5883 & -39.1532 \\ \midrule[0.5pt]
 	
 		\parbox{4cm}{OUR ($\ce{CH4}$), 22} & -79.6713 & 40.0987 & -119.7700 & 13.4477
-		& 26.1010 & 32.6936 & -6.5926 & \textbf{-40.1225} \\ \midrule[0.5pt]
+		& 26.1010 & 32.6936 & -6.5926 & {\color{red}-40.1225} \\ \midrule[0.5pt]
 	
 		\parbox{4cm}{HF (STO-3G, 9)} 
 		& -79.3617 &  * & * & 13.4477 & 26.1872 & * & * & -39.7267
 		\\ \midrule[0.5pt]
 	
 		\parbox{4cm}{HF (6-31G, 17)} 
-		& -79.6901 &  * & * & 13.4477 & 26.0619 & * & * & \textbf{-40.1804}
+		& -79.6901 &  * & * & 13.4477 & 26.0619 & * & * & {\color{red}-40.1804}
 		\\ \midrule[0.5pt]
 	
 		\parbox{4cm}{HF (6-311G, 25)} 
@@ -493,7 +505,7 @@ Job talk @ Bytedance}
 	
 		\parbox{4cm}{OUR ($\ce{H2O}$), 22} & -122.9802 & 75.9462 &
 		-199.0371 & 9.1895 & 37.8786 & 46.8579 &
-		-8.9601 & \textbf{-76.0036} \\ \midrule[0.5pt]
+		-8.9601 & {\color{red}-76.0036} \\ \midrule[0.5pt]
 	
 		\parbox{4cm}{HF (STO-3G, 7)} 
 		& -122.3614 &  * & * & 9.1895 & 38.2089 & * & * & -74.9630
@@ -504,7 +516,7 @@ Job talk @ Bytedance}
 		\\ \midrule[0.5pt]
 	
 		\parbox{4cm}{HF (6-311G, 19)} 
-		& -123.0146 &  * & * & 9.1895 & 37.8157 & * & * & \textbf{-76.0094}
+		& -123.0146 &  * & * & 9.1895 & 37.8157 & * & * & {\color{red}-76.0094}
 		\\ \midrule[0.5pt]
 	
 		% \parbox{3cm}{d4ft} 
@@ -546,7 +558,7 @@ Job talk @ Bytedance}
 \end{frame}
 
 
-\begin{frame}{A primer on plane-wave based solid-state DFT}
+\begin{frame}{A primer on planewave based solid-state DFT}
 	\begin{itemize}
 		\item Bloch's theorem: $\phi_j(\mathbf{r}) = e^{i\mathbf{k_j} \cdot \mathbf{r}}
 		u_j(\mathbf{r})$, $u_j(\mathbf{r})$ periodic in the unit cell
@@ -573,7 +585,7 @@ Job talk @ Bytedance}
 
 \begin{frame}{Literature}
 	\begin{itemize}
-		\item Orbital peaks around atomx $\Longrightarrow$ High planewaves cutoff
+		\item Orbital peaks around atoms $\Longrightarrow$ High planewaves cutoff
 		\item Use fixed analytic transformation mapping depending on the position of the
 		atom: Gygi (1993), Zumbach et al. (1996)
 		\begin{figure}[h]
@@ -605,12 +617,12 @@ Job talk @ Bytedance}
 			x_1^{(0)} \\
 			x_2^{(0)}
 			\end{pmatrix} 
-			\underset{x_2^{(1)}=\ x_2^{(0)}}{\xrightarrow{x_1^{(1)}=\ \phi(x_1^{(0)}, \text{NN}^{(1)}_2(x_2^{(0)}))}}
+			\underset{x_2^{(1)}=\ x_2^{(0)}}{\xrightarrow{x_1^{(1)}=\ f(x_1^{(0)}, \text{NN}^{(1)}_2(x_2^{(0)}))}}
 			\begin{pmatrix}
 			x_1^{(1)} \\
 			x_2^{(1)}
 			\end{pmatrix} 
-			\underset{x_2^{(2)}=\ \phi(x_2^{(1)},\, \text{NN}^{(1)}_2(x_1^{(1)}))}{\xrightarrow{\quad\quad x_1^{(2)} =\ x_1^{(1)} \quad\quad }}
+			\underset{x_2^{(2)}=\ f(x_2^{(1)},\, \text{NN}^{(1)}_2(x_1^{(1)}))}{\xrightarrow{\quad\quad x_1^{(2)} =\ x_1^{(1)} \quad\quad }}
 			\begin{pmatrix}
 			x_1^{(2)} \\
 			x_2^{(2)}
@@ -628,8 +640,8 @@ Job talk @ Bytedance}
 		\braket{\vb{r}}{\vb{G}} := \phi _{\vb{G}}(\vb{r})
 			= \frac{1}{\sqrt{|\Omega|}} \abs{ J_{f^{-1}}(\vb{r})}^{\frac{1}{2}} \exp \left[\I \vb{G} ^{\top} f^{-1}(\vb{r})  \right]
 		\end{equation*}
-		\item Bloch factor
-		\item Kinetic energy; Hartree energy; XC energy; Ewald summation
+		\item Basis are orthonormal by change of variable formula
+		\item Bloch factor only affects the kinetic energy
 	\end{itemize}
 \end{frame}
 
@@ -646,7 +658,7 @@ Job talk @ Bytedance}
 			\end{split}
 		\end{equation*}
 		\item $B, U, P$ are all block-Toeplitz
-		\item FFT implementation of the Toeplitz matrix-vector product is extremely fast
+		\item FFT implementation of the Toeplitz matrix-vector product
 	\end{itemize}
 \end{frame}
 
@@ -657,7 +669,7 @@ Job talk @ Bytedance}
 	\end{equation*}
 	\begin{itemize}
 		\item Solved by FFT in plane-wave basis
-		\item Solved by physics-informed neural network (PINN) -- introducing an inner
+		\item Solved by physics-informed neural network (PINN) --- introducing an inner
 		loop of optimization
 		\item The loop of PINN needs not to be converged for each step, amortizing with
 		the outer loop
@@ -689,51 +701,45 @@ Job talk @ Bytedance}
 \end{frame}
 
 
-\begin{frame}{Good features}
+\begin{frame}{Numerical results}
+	\begin{center}
+	\footnotesize
+	Band structure calculation for diamond with LDA. All energies are in eV unit.
+	\vspace{0.3cm}
+	\begin{tabular}{l|ccccc}
+	\hline
+	Method & FFT grid size & band gap & L & X & $\Gamma$  \\ \hline\hline
+	PW & 128 & {\color{red} 3.05869} & {\color{red} 7.51526} & {\color{red} 3.05869} & {\color{red} 4.79634}  \\ 
+	PW & 96  & 3.14795 & 7.61833 & 3.14795 & 4.77946  \\ 
+	PW & 64  & 3.68519 & 7.72595 & 3.68519 & 4.88759  \\ \hline
+	PW + ANC & 96 & 3.08192 & 7.7782  & 3.08192 & 4.75455  \\ 
+	PW + ANC & 64 & 3.10424 & 7.77621 & 3.10424 & 4.88761  \\ 
+	PW + ANC & 48 & 1.98104 & 7.39363 & 1.98104 & 4.84532  \\ \hline
+	FDPW + PINN & 48 & {\color{red} 3.01882} & 7.26194 & {\color{red} 3.01882} & 4.41584  \\ \hline
+	\end{tabular}
+	\end{center}
+
+	ANC: Gygi (2023), a light-weight pseudopotential
+\end{frame}
+
+
+\begin{frame}{Summary of contributions}
 	\begin{itemize}
-		\item The orthonormality of the basis is preserved
+		\item DPW via normalizing flow with orthonormal property
 		\item Calculation of the density related energy can be estimated 
-		efficiently by the Monte-Carlo method instead of integrating over the
-		grid:
+		efficiently by the Monte-Carlo method:
 		\begin{equation*}
 			E_{\text{xc}} = \int_{\Omega} \epsilon_{\text{xc}}^{\text{LDA}}(\rho(\mathbf{r}))
 			\rho(\mathbf{r})d\mathbf{r} = \frac{1}{N} \sum_{i=1}^N \epsilon_{\text{xc}}^{\text{LDA}}(\rho_i)
 		\end{equation*}
-		\item Comparing to results like, our method generates the grid on the fly and
+		\item Comparing to results like Gygi (1993) and Lindsey and Sharma (2024), our method generates the grid on the fly and
 		adatively during the optimization loop
-		\item It can reduce the total grid size by $8$ times on small crystal systems
+		\item Reduce the total grid size by $8$ times on small crystal systems
 	\end{itemize}
 \end{frame}
 
 
-\begin{frame}{Numerical results}
-	\begin{table}[htbp]
-		\footnotesize
-	\centering
-	\caption{Band structure calculation for diamond with LDA. All energies are in eV unit.}
-	{\tabulinesep=1.2mm
-	\begin{tabu}{cccccc}
-	\hline
-	Method & FFT grid size & band gap & L & X & $\Gamma$  \\ \hline\hline
-	\multirow{3}{*}{PW}
-	 & 128 & 3.05869 & 7.51526 & 3.05869 & 4.79634  \\ \cline{2-6}
-	 & 96  & 3.14795 & 7.61833 & 3.14795 & 4.77946  \\ \cline{2-6}
-	 & 64  & 3.68519 & 7.72595 & 3.68519 & 4.88759  \\ \cline{2-6}
-	\hline\hline
-	\multirow{3}{*}{PW + ANC}
-	 & 96 & 3.08192 & 7.7782  & 3.08192 & 4.75455  \\ \cline{2-6}
-	 & 64 & 3.10424 & 7.77621 & 3.10424 & 4.88761  \\ \cline{2-6}
-	 & 48 & 1.98104 & 7.39363 & 1.98104 & 4.84532  \\ \cline{2-6}
-	\hline\hline
-	\multirow{1}{*}{FDPW + PINN}
-	 & 48 & 3.01882 & 7.26194 & 3.01882 & 4.41584  \\ \cline{2-6}
-	\hline
-	\end{tabu}}
-	\end{table}
-\end{frame}
-
-
-\section{Machine-Learning Exchange-Correlation functional under Projector Augmented-Wave method}
+\section{Machine-Learning Exchange-Correlation Functional under Projector Augmented-Wave Method}
 \begin{frame}
 	\centering
 	\Large
@@ -747,41 +753,37 @@ Job talk @ Bytedance}
 \end{frame}
 
 
-\begin{frame}{PAW: domain decomposition}
-	Motivation:
+\begin{frame}{PAW is not a pseudopotential method! --- Bl\"{o}chl}
 	\begin{itemize}
-		\item Near atomic sites, influence of other atoms is negligible -- 
-		atomic configuration
-		\item At the interatomic region, the wavefunction is smooth and plane-wave
-		is efficient
-		\item Need a clever way to glue together above two parts of the wavefunctions
+		\item Atomic region $\Longrightarrow$ precomputed radial grid atomic DFT
+		\item Interatomic region $\Longrightarrow$ plane-wave basis
+		\item A clever way to glue together above two parts of the wavefunctions (PAW)
 	\end{itemize}
-
-	Procedure:
-	\begin{itemize}
-		\item Generate the pseudopotential from atomic DFT calculation, need to specify
-		the XC functional
-	\end{itemize}
-\end{frame}
-
-
-\begin{frame}{Diagrammtic illustration of PAW}
-	\textbf{PAW is not a pseudopotential method! --- Bl\"{o}chl}
 	\begin{figure}[h]
 		\centering
-		\includegraphics[width=.8\linewidth]{fig/paw_bloch.jpg}
+		\includegraphics[width=.65\linewidth]{fig/paw_bloch.jpg}
 		\caption{From Bl\"{o}chl's slide}
 	\end{figure}
 \end{frame}
 
 
-\begin{frame}{Diagrammtic illustration of PAW}
+% \begin{frame}{Diagrammtic illustration of PAW}
+% 	Procedure:
+% 	\begin{itemize}
+% 		\item Generate the pseudopotential from atomic DFT calculation, need to specify
+% 		the XC functional
+% 		\item 
+% 	\end{itemize}
+% \end{frame}
+
+
+\begin{frame}{How PAW glue together atomic \& interatomic region}
 
 	\begin{equation*}
 			\begin{aligned}
 				& \text{Wavefunctions:} \qquad \psi & = & \ \wtd \psi + \sum_a (\psi^a - \wtd\psi^a)		\\
-				& \text{Density:} \qquad \qquad \rho & = & \ \wtd \rho + \sum_a (\rho^a - \wtd \rho^a)		\\
-				& \text{Energy:} \qquad \qquad E_{\text{kin}} & = & \ \wtd E_{\text{kin}} +
+				& \text{Density:} \qquad \qquad \quad \rho & = & \ \wtd \rho + \sum_a (\rho^a - \wtd \rho^a)		\\
+				& \text{Energy:} \qquad \qquad \quad E_{\text{kin}} & = & \ \wtd E_{\text{kin}} +
 				\half\sum_{a,i,j}D_{ij}^a
 				\int_{\mathbb{S}^a}\lp \nabla{\phi_i^{a}}^*(\mathbf{r}) \nabla\phi_j^a(\mathbf{r}) - 
 				\nabla\wtd {\phi_i^{a}}^*(\mathbf{r}) \nabla\wtd\phi_j^a(\mathbf{r}) \rp d\mathbf{r}		\\
@@ -790,19 +792,17 @@ Job talk @ Bytedance}
 	\begin{itemize}
 		\item PAW is an all-electron theory with rigorous mathematical formulation
 		and controllable errors.
-		\item The pseudopotential generating process and PAW calculation process are
-		``decoupled''.
 	\end{itemize}
 \end{frame}
 
 
 \begin{frame}{Alignment platform with GPAW}
 	\begin{itemize}
-		\item Understand the mathematical derivation of the PAW
+		\item Understand the mathematical derivation of the PAW method
 		\item Handle the difference of the pseudopotential file systems used by
 		ours and GPAW
 		\item Design of the unit test in the code development of the PAW
-		\item First attempt to implement the MLXC under the PAW framework
+		\item Fully differentiable PAW implementation, suitable for future MLXC applications
 	\end{itemize}
 \end{frame}
 
@@ -820,13 +820,14 @@ Job talk @ Bytedance}
 
 \begin{frame}{The drawback of MLXC under NCPP \& USPP}
 	\begin{itemize}
-		\item The total energy and Hamiltonian contains a nonlinear core
-		correction due to nonlinearity of the exchange-correlation potential
+		\item Standard way to calculate XC energy:
 		\begin{equation*}
-			V_{\text{xc}} = V_{\text{xc}}[\wtd \rho] + \sum_a (V_{\text{xc}}
-			[\wtd \rho + \rho^{\text{core}}] - V_{\text{xc}}[\wtd \rho]).
+			E_{\text{xc}} = E_{\text{xc}}[\wtd \rho]
 		\end{equation*}
-		\item The correction term is linearized, introducing error
+		\item With nonlinear core correction:
+		\begin{equation*}
+			E_{\text{xc}} = E_{\text{xc}}[\wtd \rho + \wtd \rho^{\text{core}}] - E_{\text{xc}}[\wtd \rho]
+		\end{equation*}
 		\item The XC potential is included in the local part of the pseudopotential
 		and is unchanged even using different XC for calculation
 	\end{itemize}
@@ -841,22 +842,27 @@ Job talk @ Bytedance}
 		E_{\text{xc}} = E_{\text{xc}}[\wtd \rho] + \sum_a (E_{\text{xc}}^a[\rho] - E_{\text{xc}}^a[\wtd \rho])
 	\end{equation*}
 	\begin{itemize}
+		\item The pseudopotential generating process and PAW calculation process are
+		``decoupled''
 		\item $E_{\text{xc}}[\wtd \rho]$: the XC energy for the pseudo-density, integrated
 		over uniform grid
 		\item $E_{\text{xc}}[\rho^a] - E_{\text{xc}}[\wtd \rho^a]$: the XC energy difference of the
 		on-site part
-		\item The XC energy of the pseudopotential part is calculated by the MLXC functional
 	\end{itemize}
 \end{frame}
 
 
-\begin{frame}{Design of loss function}
+\begin{frame}{How to train the MLXC functional?}
 	\begin{itemize}
 		\item High accuracy label for the crystal data is extremely sparse and expensive
 		\item Training over the labels generated by the hybrid or double hybrid functional, e.g. HSE06
-		\item Training over the set of stable material:
 		\begin{equation*}
-			\min \text{Tr}(\nabla_{\mathbf{r}} E(\mathbf{r}))
+			\min \mathbb{E}(E^{\text{HSE06}} - E^{\text{MLXC}})^2, \
+			 \min \mathbb{E}(E_{\text{xc}}^{\text{HSE06}} - E_{\text{xc}}^{\text{MLXC}})^2
+		\end{equation*}
+		\item Training over the set of stable materials:
+		\begin{equation*}
+			\min \text{Tr}(\nabla_{\mathbf{r}} E_{\text{MLXC}}(\mathbf{r}))
 		\end{equation*}
 	\end{itemize}
 	
@@ -867,14 +873,13 @@ Job talk @ Bytedance}
 	Simulating the dynamics:
 	\bequn
 		\begin{aligned}
-			\mcL(\mfu, \p_t \mfu, \mfy, t) & = \mathbf{0}, 		\\
-			\mfy & = \phi(\mfu, t).
+			\mcL(\mfu, \p_t \mfu, \mfy, t) & = \mathbf{0}, \quad \mfy & = \phi(\mfu, t).
 		\end{aligned}
 	\eequn
 	\begin{itemize}
-		\item 1. $\mcL$ is known, possibly non-linear, {\color{red}while $\phi$ is un-known}
-		\item 2. Datasets: $\lbb (\mfu_1, \mfy_1, t_1), (\mfu_2, \mfy_2, t_2), \cdots, (\mfu_N, \mfy_N, t_N )\rbb$
-		\item 3. {\color{red} Benchmark algorithm solves the ordinary least square:
+		\item $\mcL$ is known, possibly non-linear, {\color{red}while $\phi$ is un-known}
+		\item Datasets: $\lbb (\mfu_1, \mfy_1, t_1), (\mfu_2, \mfy_2, t_2), \cdots, (\mfu_N, \mfy_N, t_N )\rbb$
+		\item {\color{red} Benchmark algorithm solves the ordinary least square:
 		\bequn
 			\arg\min_{\theta} \mbE \norml \mfy - \phi_{\theta}(\mfu, t) \normr^2
 		\eequn}
@@ -905,6 +910,7 @@ Job talk @ Bytedance}
 			\centering
 			\centerline{\includegraphics[width=0.6\linewidth]{fig/tr.pdf}}
 		\end{figure}
+		\item For nonlinear case, learn a function $F(\mfu)$ which has data manifold as a level set
 		\begin{equation*}
 			l_{\text{TR}}(\theta) := \mbE_{(\mfu, \mfy)}\lb \norml \mfy_k - \phi_{\theta}(\mfu) \normr_2^2
 			+ \lambda \lp\lp  \nabla F(\mfu) \rp^T L(\mfu, \phi_{\theta}(\mfu), t)\rp^2 \rb
@@ -913,6 +919,14 @@ Job talk @ Bytedance}
 	\footnotetext[1]{Zhao, Jiaxi, and Qianxiao Li. "Mitigating Distribution Shift
 	in Machine Learning–Augmented Hybrid Simulation." SIAM Journal on
 	Scientific Computing 47.2 (2025): C475-C500.}
+\end{frame}
+
+
+\begin{frame}{Performance}
+	\begin{figure}[ht]
+		\centering
+		\centerline{\includegraphics[width=.5\linewidth]{fig/NS-TR.pdf}}
+	\end{figure}
 \end{frame}
 
 
