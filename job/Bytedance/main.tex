@@ -761,7 +761,7 @@ Job talk @ Bytedance}
 	\end{itemize}
 	\begin{figure}[h]
 		\centering
-		\includegraphics[width=.65\linewidth]{fig/paw_bloch.jpg}
+		\includegraphics[width=.65\linewidth]{fig/paw_blochl.jpg}
 		\caption{From Bl\"{o}chl's slide}
 	\end{figure}
 \end{frame}
@@ -873,7 +873,7 @@ Job talk @ Bytedance}
 	Simulating the dynamics:
 	\bequn
 		\begin{aligned}
-			\mcL(\mfu, \p_t \mfu, \mfy, t) & = \mathbf{0}, \quad \mfy & = \phi(\mfu, t).
+			\mcL(\mfu, \p_t \mfu, \mfy, t) & = \mathbf{0}, \quad \mfy = \phi(\mfu, t).
 		\end{aligned}
 	\eequn
 	\begin{itemize}
@@ -905,10 +905,9 @@ Job talk @ Bytedance}
 \begin{frame}{Alg 1: Manifold regularization\footnotemark[1]}
 	\begin{itemize}
 		\item Regularization encodes the information of the data manifold
-		\item Assume $u_2 \in \alpha, u_1 \in \alpha, \left\| u_0 - u_1 \right\| = \left\| u_0 - u_2 \right\|$
 		\begin{figure}[H]
 			\centering
-			\centerline{\includegraphics[width=0.6\linewidth]{fig/tr.pdf}}
+			\centerline{\includegraphics[width=0.5\linewidth]{fig/tr.pdf}}
 		\end{figure}
 		\item For nonlinear case, learn a function $F(\mfu)$ which has data manifold as a level set
 		\begin{equation*}
