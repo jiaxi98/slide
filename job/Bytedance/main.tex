@@ -809,11 +809,11 @@ Job talk @ Bytedance}
 
 \begin{frame}{MLXC for molecules v.s. materials}
 	\begin{itemize}
-		\item Golden standard computational method for molecules, CCDS(T) v.s. QMC for materials?
+		\item Golden standard computational method for molecules, CCSD(T) v.s. QMC for materials?
 		\item Various datasets for molecules: QM9, etc v.s. MP for materials
 		\item Pseudopotential is always included in the planewave calculations for material
-		\item MLXC on molecules systems: DeepKS (Chen et al. 2020), DM21 (Kirkpatrick et al. 2021),
-		Skala (Luise et al. 2025) 
+		\item MLXC on molecules systems: DM21 (Kirkpatrick et al. 2021), Cider (Bystrom et al. 2022),
+		Skala (Luise et al. 2025)
 	\end{itemize}
 \end{frame}
 
@@ -862,7 +862,7 @@ Job talk @ Bytedance}
 		\end{equation*}
 		\item Training over the set of stable materials:
 		\begin{equation*}
-			\min \text{Tr}(\nabla_{\mathbf{r}} E_{\text{MLXC}}(\mathbf{r}))
+			\min \text{Tr}(\nabla_{\mathbf{r}}^2 E_{\text{MLXC}}(\mathbf{r}))
 		\end{equation*}
 	\end{itemize}
 	
