@@ -2,29 +2,42 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-# Instructions for making a good slide (MUST FOLLOW)
-- Use Ultrathink
+# Instructions for making a good slide (MUST FOLLOW!!!)
 
-- If you are required to make literature review on several paper, first search over
-the internet to find the corresponding reference, if you are not sure which literature
-is referred to, PLEASE CHECK WITH THE HUMAN USER to make sure you are reviewing the
-correct reference. 
+- **Think deeply before creating**: Apply thorough analysis and critical thinking to understand the topic, audience, and key messages before starting slide creation. Consider the logical flow and main takeaways.
 
-- After all references are confirmed, you can download them locally
-in the references/ directory. Make sure to use those good figures or pseudocodes block
-in the paper in your review if they are very informative and illustrate the essence of
-the paper.
+- **Literature review workflow**: 
+  - When tasked with reviewing multiple papers, use web search to identify and locate the specific references
+  - If paper titles or authors are ambiguous, **ALWAYS confirm with the human user** which exact papers to review before proceeding
+  - Download confirmed references to the local `references/` directory
+  - Extract key figures, algorithms, or pseudocode blocks that clearly illustrate the paper's main contributions
+  - Prioritize visual elements that demonstrate the essence of each paper's methodology or results
 
-- Be precise in each slide, do not include too much equations or statements which is
-hard for audience to follow. Figure and table are much better illuetrator.
+- **Content precision guidelines**:
+  - Limit each slide to 1-3 key points maximum
+  - Prefer figures, diagrams, and tables over dense text or complex equations
+  - If equations are necessary, break them into digestible components across multiple slides
+  - Use bullet points with clear, concise statements (maximum 2 lines per bullet)
+  - Ensure each slide can be understood in 60-90 seconds
 
-- Highlight (boldface or diff colors) the part you want to emphasize
+- **Visual emphasis strategies**:
+  - Use **bold text** for key terms and critical findings
+  - Apply color highlighting (red, blue, or green) to emphasize important results or differences
+  - Use consistent formatting throughout the presentation
+  - Highlight no more than 2-3 elements per slide to avoid visual overload
 
-- After generating the slide, ask code reviewer or architecture to review the slide
-to check if the logic flow and the details are explained clearly
+- **Quality assurance process**:
+  - After completing the slides, compile with `pdflatex` to check for errors
+  - Make sure there is **NO Latex compilation error** and **pdf slide aligns well with the source code**
+  - Review the generated PDF for logical flow and clarity
+  - **Ask the human user to review** the completed slides for technical accuracy and presentation flow
+  - Address any feedback before final delivery
 
-- Make sure you have resolved all the latex compilation error before you hand in the the
-human user
+- **Technical requirements**:
+  - Resolve all LaTeX compilation errors before submission
+  - Ensure all figures display properly and are properly referenced
+  - Verify that all citations and references are correctly formatted
+  - Test that the PDF renders correctly on different viewers
 
 ## Repository Overview
 

@@ -12,7 +12,7 @@
 \usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage{tikz}
-\usepackage{physics}
+% \usepackage{physics} % Removed due to conflicts with essay-def
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{essay-def}
@@ -173,14 +173,12 @@
 		
 		\column{0.4\textwidth}
 		\begin{block}{Agent Loop}
-			\small
-			\begin{verbatim}
-while not done:
-    s = observe()
-    a = π(s)
-    s', r = env.step(a)
-    update(s, a, r, s')
-\end{verbatim}
+			\footnotesize
+			\texttt{while not done:}\\
+			\texttt{\ \ s = observe()}\\
+			\texttt{\ \ a = $\pi$(s)}\\
+			\texttt{\ \ s', r = env.step(a)}\\
+			\texttt{\ \ update(s, a, r, s')}
 		\end{block}
 	\end{columns}
 	
@@ -1067,7 +1065,7 @@ def test_matrix_operations():
 	\end{itemize}
 \end{frame}
 
-\begin{frame}
+\begin{frame}{Thank You}
 	\begin{center}
 		\Huge Thank You!
 		
