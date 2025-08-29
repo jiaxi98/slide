@@ -40,7 +40,7 @@
 
 \title[AI Agents]{AI Agents: From Tool Use to Autonomous Systems}
 \subtitle{21 Days with Claude Code}
-\author[J. Zhao]{Jiaxi Zhao (NUS)}
+\author[J. Zhao \& CC]{Jiaxi Zhao (NUS) \& Claude Code (Anthropic)}
 \date[\today]{\today}
 
 \begin{document}
@@ -54,13 +54,48 @@
 \end{frame}
 
 % ==========================
-% Section 1: Why Agent? (5 pages)
+% Section 1: What is Agent and Why Agent? (6 pages)
 % ==========================
-\section{Why Agent?}
+\section{What is Agent and Why Agent?}
+
+\begin{frame}{What is an Agent?}
+	\begin{block}{Formal Definition (Russell \& Norvig)}
+		"An agent is anything that perceives its \textbf{environment} through sensors and acts upon that environment through \textbf{actuators}."
+	\end{block}
+	
+	\vspace{0.3cm}
+	
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{Key Characteristics:}
+		\begin{itemize}
+			\item {\color{highlight}\textbf{Autonomy}}: Acts independently
+			\item {\color{highlight}\textbf{Perception}}: Senses environment
+			\item {\color{highlight}\textbf{Action}}: Changes environment
+			\item {\color{highlight}\textbf{Goal-directed}}: Works toward objectives
+		\end{itemize}
+		
+		\column{0.5\textwidth}
+		\textbf{In AI Context:}
+		\begin{itemize}
+			\item Software that performs tasks autonomously
+			\item Makes decisions to maximize goals
+			\item Can learn and adapt over time
+			\item Ranges from thermostats to LLMs
+		\end{itemize}
+	\end{columns}
+	
+	\vspace{0.3cm}
+	
+	\begin{center}
+		\small
+		{\color{gray}Etymology: From Latin \textit{agere} (to do) - "action on behalf of"}
+	\end{center}
+\end{frame}
 
 \begin{frame}{Tool Use: Signal of Early Intelligence}
 	\begin{columns}
-		\column{0.6\textwidth}
+		\column{\textwidth}
 		\begin{itemize}
 			\item {\color{highlight}\textbf{Anthropological perspective}}: Tool use marks cognitive revolution
 			\begin{itemize}
@@ -75,17 +110,6 @@
 				\item Claude Code (2024): Full IDE integration
 			\end{itemize}
 		\end{itemize}
-		\column{0.4\textwidth}
-		\begin{block}{Evolution Timeline}
-			\small
-			\begin{tabular}{ll}
-				2020 & Language Models \\
-				2021 & + Web Search \\
-				2022 & + Code Execution \\
-				2023 & + Tool Ecosystem \\
-				2024 & + Autonomous Agents \\
-			\end{tabular}
-		\end{block}
 	\end{columns}
 \end{frame}
 
@@ -116,11 +140,28 @@
 	\end{columns}
 	
 	\vspace{0.5cm}
+	% Presenter notes for the performance metrics
 	\begin{itemize}
 		\item WebGPT: 69\% preference vs Reddit answers
-		\item ReACT: Reduces error propagation in multi-hop QA
+		% Note: "WebGPT uses web browsing to ground its answers with real sources.
+		%        In human evaluation, 69% of users preferred WebGPT's referenced answers
+		%        over crowd-sourced Reddit responses for factual questions."
+		% TODO: move the following two items to their corresponding literature
+		% review part, it does not fit well into this frame
+		\item ReACT: Reduces error propagation in multi-hop QA  
+		% Note: "ReACT interleaves reasoning with actions, preventing errors from
+		%        compounding in complex multi-step questions. Each step is grounded
+		%        in real tool outputs before proceeding to the next."
 		\item Toolformer: Improved zero-shot performance across tasks
+		% Note: "Toolformer teaches itself when to use tools without any examples.
+		%        This self-supervised approach means it can handle new tasks immediately
+		%        without needing task-specific training or demonstrations."
 	\end{itemize}
+	
+	\begin{block}{Presenter Note}
+		\footnotesize
+		\textit{Key message: Each system shows how grounding LLMs with tools dramatically improves reliability. WebGPT proves users trust tool-backed answers, ReACT shows tools prevent cascading errors, and Toolformer demonstrates that models can learn tool use autonomously.}
+	\end{block}
 \end{frame}
 
 \begin{frame}{Environmental Interaction Paradigm}
@@ -170,6 +211,7 @@
 				\item Self-play (AutoGPT iterations)
 			\end{itemize}
 		\end{itemize}
+		Are you sure this correspondence is precise, e.g. WebGPT uses imitation learning?
 		
 		\column{0.4\textwidth}
 		\begin{block}{Agent Loop}
@@ -1037,48 +1079,14 @@ def test_matrix_operations():
 	\end{center}
 \end{frame}
 
-% ==========================
-% Conclusion
-% ==========================
-\begin{frame}{Conclusion}
-	\textbf{We've covered:}
-	\begin{itemize}
-		\item {\color{highlight}Why agents?} Tool use as intelligence marker
-		\item {\color{highlight}How to build?} Architectures and training
-		\item {\color{highlight}Literature:} ReACT, MemGPT, Toolformer, WebGPT
-		\item {\color{highlight}Case study:} 21 days with Claude Code
-	\end{itemize}
-	
-	\textbf{Key Insights:}
-	\begin{itemize}
-		\item Agents = LLMs + Tools + Memory + Planning
-		\item Current success in well-defined domains
-		\item Challenges remain in reliability and generalization
-	\end{itemize}
-	
-	\textbf{Future Outlook:}
-	\begin{itemize}
-		\item Continuous learning agents
-		\item Better memory systems
-		\item Domain-specific capabilities
-		\item Human-AI collaboration patterns
-	\end{itemize}
-\end{frame}
 
-\begin{frame}{Thank You}
+\begin{frame}{}
 	\begin{center}
 		\Huge Thank You!
 		
 		\vspace{1cm}
 		
 		\Large Questions?
-		
-		\vspace{1cm}
-		
-		\normalsize
-		Jiaxi Zhao\\
-		National University of Singapore\\
-		\texttt{jiaxi.zhao@u.nus.edu}
 	\end{center}
 \end{frame}
 
