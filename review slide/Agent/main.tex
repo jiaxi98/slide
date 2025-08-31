@@ -17,6 +17,7 @@
 \usepackage{listings}
 \usepackage{essay-def}
 % Configure itemize for beamer
+\newcommand{\JX}[1]{{\color{blue}{$^{\text{JX}}$[#1]}}}
 \setbeamertemplate{itemize item}{$\circ$}
 \setbeamertemplate{itemize subitem}{\textbullet}
 \usepackage[version=4]{mhchem}
@@ -38,7 +39,7 @@
   backgroundcolor=\color{gray!5}
 }
 
-\title[AI Agents]{AI Agents: From Tool Use to Autonomous Systems}
+\title[AI Agents]{AI Agents: From Tool Use to Intelligent Systems}
 \subtitle{21 Days with Claude Code}
 \author[J. Zhao \& CC]{Jiaxi Zhao (NUS) \& Claude Code (Anthropic)}
 \date[\today]{\today}
@@ -57,6 +58,13 @@
 % Section 1: What is Agent and Why Agent? (6 pages)
 % ==========================
 \section{What is Agent and Why Agent?}
+
+\begin{frame}
+	\begin{center}
+		\Large
+		\textbf{What is Agent and Why Agent?}
+	\end{center}
+\end{frame}
 
 \begin{frame}{What is an Agent?}
 	\begin{block}{Formal Definition (Russell \& Norvig)}
@@ -78,7 +86,7 @@
 		\column{0.5\textwidth}
 		\textbf{In AI Context:}
 		\begin{itemize}
-			\item Software that performs tasks autonomously
+			\item Software that performs tasks with minimal supervision
 			\item Makes decisions to maximize goals
 			\item Can learn and adapt over time
 			\item Ranges from thermostats to LLMs
@@ -106,8 +114,8 @@
 			\begin{itemize}
 				\item GPT-3 (2020): Pure text generation
 				\item WebGPT (2021): Web browsing capability
-				\item ChatGPT Plugins (2023): Tool ecosystem
-				\item Claude Code (2024): Full IDE integration
+				\item ChatGPT Plugins (2023): Third-party tool ecosystem
+				\item Claude Code (2025): Full IDE integration
 			\end{itemize}
 		\end{itemize}
 	\end{columns}
@@ -140,28 +148,10 @@
 	\end{columns}
 	
 	\vspace{0.5cm}
-	% Presenter notes for the performance metrics
-	\begin{itemize}
-		\item WebGPT: 69\% preference vs Reddit answers
-		% Note: "WebGPT uses web browsing to ground its answers with real sources.
-		%        In human evaluation, 69% of users preferred WebGPT's referenced answers
-		%        over crowd-sourced Reddit responses for factual questions."
-		% TODO: move the following two items to their corresponding literature
-		% review part, it does not fit well into this frame
-		\item ReACT: Reduces error propagation in multi-hop QA  
-		% Note: "ReACT interleaves reasoning with actions, preventing errors from
-		%        compounding in complex multi-step questions. Each step is grounded
-		%        in real tool outputs before proceeding to the next."
-		\item Toolformer: Improved zero-shot performance across tasks
-		% Note: "Toolformer teaches itself when to use tools without any examples.
-		%        This self-supervised approach means it can handle new tasks immediately
-		%        without needing task-specific training or demonstrations."
-	\end{itemize}
 	
-	\begin{block}{Presenter Note}
-		\footnotesize
-		\textit{Key message: Each system shows how grounding LLMs with tools dramatically improves reliability. WebGPT proves users trust tool-backed answers, ReACT shows tools prevent cascading errors, and Toolformer demonstrates that models can learn tool use autonomously.}
-	\end{block}
+	\begin{center}
+		\textbf{Key Insight:} {\color{highlight}Grounding in external tools eliminates hallucination}
+	\end{center}
 \end{frame}
 
 \begin{frame}{Environmental Interaction Paradigm}
@@ -193,56 +183,86 @@
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{RL Perspective: Agents as Policies}
-	\begin{columns}
-		\column{0.6\textwidth}
-		\begin{itemize}
-			\item {\color{highlight}\textbf{MDP Formulation}}:
-			\begin{itemize}
-				\item State $s$: Context + Environment state
-				\item Action $a$: Tool calls, text generation
-				\item Reward $r$: Task completion, human feedback
-				\item Policy $\pi$: LLM with prompting strategy
-			\end{itemize}
-			\item {\color{highlight}\textbf{Training Methods}}:
-			\begin{itemize}
-				\item Imitation Learning (WebGPT)
-				\item RLHF (Constitutional AI)
-				\item Self-play (AutoGPT iterations)
-			\end{itemize}
-		\end{itemize}
-		Are you sure this correspondence is precise, e.g. WebGPT uses imitation learning?
-		
-		\column{0.4\textwidth}
-		\begin{block}{Agent Loop}
-			\footnotesize
-			\texttt{while not done:}\\
-			\texttt{\ \ s = observe()}\\
-			\texttt{\ \ a = $\pi$(s)}\\
-			\texttt{\ \ s', r = env.step(a)}\\
-			\texttt{\ \ update(s, a, r, s')}
-		\end{block}
-	\end{columns}
+% TEMP COMMENTED OUT FOR DEBUGGING
+%\begin{frame}{Agent-Environment Interaction: RL Framework}
+%	\begin{center}
+%		\begin{tikzpicture}[scale=0.8]
+%			% Agent
+%			\node[rectangle, draw, fill=blue!30, minimum width=2.5cm, minimum height=1cm] (agent) at (0,0) {Agent (LLM)};
+%			
+%			% Environment
+%			\node[rectangle, draw, fill=green!30, minimum width=3cm, minimum height=1.5cm] (env) at (6,0) {Environment\\Tools, APIs, Files};
+%			
+%			% State arrow
+%			\draw[->, thick, red] (env) to[bend left=30] (agent) node[midway, above] {State $s_t$};
+%			
+%			% Action arrow  
+%			\draw[->, thick, blue] (agent) to[bend left=30] (env) node[midway, below] {Action $a_t$};
+%			
+%			% Reward arrow
+%			\draw[->, thick, purple] (env) to[bend left=60] (agent) node[midway, above left] {Reward $r_t$};
+%		\end{tikzpicture}
+%	\end{center}
+%	
+%	\vspace{0.3cm}
+%	
+%	\begin{columns}
+%		\column{0.5\textwidth}
+%		\textbf{RL Components:}
+%		\begin{itemize}
+%			\item {\color{red}State}: Context + tool outputs
+%			\item {\color{blue}Action}: Tool calls + text generation  
+%			\item {\color{purple}Reward}: Task success + human feedback
+%		\end{itemize}
+%		
+%		\column{0.5\textwidth}
+%		\textbf{Evolution via RL:}
+%		\begin{itemize}
+%			\item Learn which tools to use when
+%			\item Improve reasoning strategies
+%			\item Adapt to user preferences
+%		\end{itemize}
+%	\end{columns}
+%	
+%	\vspace{0.3cm}
+%	\begin{center}
+%		{\color{highlight}Agents can improve through environmental interaction}
+%	\end{center}
+%\end{frame}
+
+\begin{frame}{Agent Learning Through Environment}
+	\textbf{Key Concept:} Agents can evolve and improve through reinforcement learning
 	
-	\vspace{0.3cm}
+	\vspace{0.5cm}
+	
 	\begin{itemize}
-		\item ReACT: 34\% improvement over RL baselines on ALFWorld
-		\item Key insight: Language as both thought and action space
+		\item {\color{highlight}\textbf{State}}: Current context + tool outputs
+		\item {\color{highlight}\textbf{Action}}: Tool calls + text generation
+		\item {\color{highlight}\textbf{Reward}}: Task success + human feedback
+	\end{itemize}
+	
+	\vspace{0.5cm}
+	
+	\textbf{Learning Goals:}
+	\begin{itemize}
+		\item Learn optimal tool selection
+		\item Improve reasoning strategies  
+		\item Adapt to user preferences
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{Evolution: From Prompting to Autonomy}
+\begin{frame}{Evolution: From Prompting to Agents}
 	\begin{center}
 		\begin{tabular}{|l|c|c|c|c|}
 			\hline
-			\textbf{Capability} & \textbf{Prompting} & \textbf{Tool Use} & \textbf{Agents} & \textbf{Autonomous} \\
+			\textbf{Capability} & \textbf{Prompting} & \textbf{Tool Use} & \textbf{Agents} & \textbf{Advanced} \\
 			\hline
-			User Control & High & Medium & Low & Minimal \\
-			Context Length & Limited & Limited & Extended & Unlimited* \\
-			Error Recovery & Manual & Manual & Semi-auto & Automatic \\
-			Task Complexity & Simple & Medium & Complex & Very Complex \\
+			User Control & High & Medium & Low & Guided \\
+			Context Length & Limited & Limited & Extended & Extended* \\
+			Error Recovery & Manual & Manual & Semi-auto & Semi-auto \\
+			Task Complexity & Simple & Medium & Complex & Complex \\
 			\hline
-			\textbf{Example} & ChatGPT & Plugins & ReACT & AutoGPT \\
+			\textbf{Example} & ChatGPT & Plugins & ReAct & Claude Code \\
 			\hline
 		\end{tabular}
 	\end{center}
@@ -251,19 +271,25 @@
 	
 	\begin{itemize}
 		\item {\color{highlight}\textbf{Prompting Era}} (2020-2022): Chain-of-thought, few-shot learning
-		\item {\color{highlight}\textbf{Tool Use Era}} (2022-2023): Function calling, structured outputs
-		\item {\color{highlight}\textbf{Agent Era}} (2023-2024): Planning, memory, reflection
-		\item {\color{highlight}\textbf{Autonomous Era}} (2024-): Self-directed, continuous learning
+		\item {\color{highlight}\textbf{Tool Use Era}} (2022-2024): Function calling, structured outputs
+		\item {\color{highlight}\textbf{Early Agent Era}} (2024-2025): Planning, memory, basic workflows
+		\item {\color{highlight}\textbf{Future}} (2025+): Enhanced reliability, domain specialization
 	\end{itemize}
 	
-	\small
-	*Via memory management systems like MemGPT
 \end{frame}
 
 % ==========================
 % Section 2: How to Build Agent? (5 pages)
 % ==========================
 \section{How to Build Agent?}
+
+\begin{frame}
+	\begin{center}
+		\Large
+		\textbf{How to Build Agent?}
+
+	\end{center}
+\end{frame}
 
 \begin{frame}[fragile]{Tool Use Mechanism: From Text to Action}
 	\begin{block}{Pattern Recognition for Tool Calls}
@@ -285,21 +311,20 @@
 		\end{lstlisting}
 		
 		\column{0.5\textwidth}
-		\textbf{ReACT Format:}
+		\textbf{ReAct Format:}
 		\begin{lstlisting}[basicstyle=\tiny]
-Thought: Need weather info
-Action: weather_api
-Action Input: San Francisco
-Observation: 72F, sunny
-Thought: I have the answer
+Thought: I need to search for weather in San Francisco
+Action: Search[San Francisco weather]
+Observation: Current weather in San Francisco is 72F, sunny
+Thought: I now have the weather information needed
 		\end{lstlisting}
 	\end{columns}
 	
 	\vspace{0.3cm}
 	\begin{itemize}
-		\item {\color{highlight}\textbf{JSON Schema}}: Structured output for reliable parsing
-		\item {\color{highlight}\textbf{XML Tags}}: Claude's tool use format
-		\item {\color{highlight}\textbf{Special Tokens}}: Toolformer's API call tokens
+		\item {\color{highlight}\textbf{JSON Schema}}: Structured output for reliable parsing,
+		Claude's tool use format
+		\item {\color{highlight}\textbf{XML Tags}}: Better prompt readability and 
 	\end{itemize}
 \end{frame}
 
@@ -422,17 +447,18 @@ llm.register(tools)
 		\column{0.5\textwidth}
 		\textbf{LangChain:}
 		\begin{itemize}
-			\item {\color{highlight}Chain-based} architecture
-			\item Sequential tool execution
-			\item Pre-built components
+			\item {\color{highlight}Chain-based} (DAG) architecture
+			\item Sequential, linear workflows
+			\item High-level abstractions
 		\end{itemize}
 		\begin{lstlisting}[language=python, basicstyle=\tiny]
-from langchain import LLMChain
+from langchain.chains import LLMChain
+from langchain.llms import OpenAI
 
 chain = LLMChain(
-    llm=ChatOpenAI(),
-    tools=[search, calculator],
-    memory=ConversationMemory()
+    llm=OpenAI(),
+    prompt=prompt_template,
+    memory=ConversationBufferMemory()
 )
 result = chain.run(query)
 		\end{lstlisting}
@@ -440,29 +466,26 @@ result = chain.run(query)
 		\column{0.5\textwidth}
 		\textbf{LangGraph:}
 		\begin{itemize}
-			\item {\color{highlight}Graph-based} workflows
-			\item Conditional branching
-			\item State machines
+			\item {\color{highlight}Graph-based} with cycles
+			\item Stateful, complex workflows
+			\item Low-level control
 		\end{itemize}
 		\begin{lstlisting}[language=python, basicstyle=\tiny]
-from langgraph import StateGraph
+from langgraph.graph import StateGraph
 
-graph = StateGraph()
-graph.add_node("plan", planner)
-graph.add_node("execute", executor)
-graph.add_edge("plan", "execute")
-graph.compile()
+workflow = StateGraph(state_schema)
+workflow.add_node("plan", planning_node)
+workflow.add_node("act", action_node)
+workflow.add_edge("plan", "act")
+workflow.add_conditional_edges("act", should_continue)
+app = workflow.compile()
 		\end{lstlisting}
 	\end{columns}
 	
 	\vspace{0.3cm}
-	\begin{block}{Framework Comparison}
-		\small
-		\begin{itemize}
-			\item \textbf{AutoGPT}: Fully autonomous, self-prompting
-			\item \textbf{BabyAGI}: Task queue management
-			\item \textbf{CrewAI}: Multi-agent collaboration
-		\end{itemize}
+	\begin{block}{Sources}
+		\footnotesize
+		LangChain Documentation (2024), LangGraph Documentation (langchain-ai.github.io/langgraph), "LangGraph: A new way to build agents" (LangChain Blog, 2024)
 	\end{block}
 \end{frame}
 
@@ -471,12 +494,19 @@ graph.compile()
 % ==========================
 \section{Agent Literature Review}
 
-\begin{frame}{ReACT: Synergizing Reasoning and Acting}
+\begin{frame}
+	\begin{center}
+		\Large
+		\textbf{Agent Literature Review}
+	\end{center}
+\end{frame}
+
+\begin{frame}{ReAct: Synergizing Reasoning and Acting}
 	\begin{columns}
 		\column{0.6\textwidth}
 		\textbf{Key Innovation:} Interleaved reasoning traces and actions
 		
-		\begin{block}{ReACT Trace Example}
+		\begin{block}{ReAct Trace Example}
 			\footnotesize
 			\texttt{Question: What is the elevation of Mt. Everest?}\\
 			\texttt{Thought: I need to search for Mt. Everest}\\
@@ -493,15 +523,16 @@ graph.compile()
 		\textbf{Results:}
 		\begin{itemize}
 			\item HotpotQA: {\color{highlight}27\% improvement}
-			\item ALFWorld: {\color{highlight}34\% over RL}
+			\item ALFWorld: {\color{highlight}34\% over RL baselines}
 			\item WebShop: {\color{highlight}10\% improvement}
+			\item Reduces error propagation in multi-hop QA
 		\end{itemize}
 		
-		\textbf{Contributions:}
+		\textbf{Key Insights:}
 		\begin{itemize}
-			\item Reasoning guides action
-			\item Actions ground reasoning
-			\item Human-interpretable
+			\item Reasoning guides action selection
+			\item Actions ground reasoning in reality
+			\item Language as both thought and action space
 		\end{itemize}
 	\end{columns}
 	
@@ -587,9 +618,9 @@ if not in_context(info):
 		
 		\textbf{Results:}
 		\begin{itemize}
-			\item {\color{highlight}Zero-shot} improvements
-			\item Maintains language ability
-			\item Competitive with larger models
+			\item {\color{highlight}Zero-shot} improvements across tasks
+			\item Maintains language generation ability
+			\item Self-supervised learning approach
 		\end{itemize}
 	\end{columns}
 	
@@ -623,16 +654,16 @@ if not in_context(info):
 		\column{0.4\textwidth}
 		\textbf{Training Data:}
 		\begin{itemize}
-			\item 6K demonstrations
-			\item 20K comparisons
-			\item Human feedback
+			\item 6K human demonstrations
+			\item 20K preference comparisons
+			\item RLHF for alignment
 		\end{itemize}
 		
 		\textbf{Performance:}
 		\begin{itemize}
 			\item {\color{highlight}56\%} preferred over humans
 			\item {\color{highlight}69\%} vs Reddit answers
-			\item Factual with citations
+			\item Factual answers with citations
 		\end{itemize}
 	\end{columns}
 	
@@ -648,7 +679,7 @@ if not in_context(info):
 			\hline
 			\textbf{Method} & \textbf{Memory} & \textbf{Tools} & \textbf{Training} & \textbf{Key Innovation} \\
 			\hline
-			ReACT & Limited & External & Few-shot & Reasoning traces \\
+			ReAct & Limited & External & Few-shot & Reasoning traces \\
 			MemGPT & {\color{highlight}Unlimited} & Basic & N/A & Virtual memory \\
 			Toolformer & Limited & {\color{highlight}5 types} & Self-supervised & Auto tool learning \\
 			WebGPT & Limited & Browser & {\color{highlight}RLHF} & Web grounding \\
@@ -685,46 +716,27 @@ if not in_context(info):
 % ==========================
 \section{Case Study: Claude Code}
 
+\begin{frame}
+	\begin{center}
+		\Large
+		\textbf{Case Study: Claude Code}
+	\end{center}
+\end{frame}
+
 \begin{frame}[fragile]{Claude Code: Introduction}
 	\begin{columns}
 		\column{0.6\textwidth}
 		\textbf{What is Claude Code?}
 		\begin{itemize}
-			\item {\color{highlight}Anthropic's official CLI} for Claude
-			\item Full IDE integration
-			\item Autonomous coding agent
-			\item Released 2024
+			\item {\color{highlight}Anthropic's official CLI} for Claude, an AI-powered coding assistant
+			\item Release in Feb 2025
+			\item Source code is available at: https://github.com/anthropics/claude-code with obfuscated code
 		\end{itemize}
-		
-		\textbf{Key Capabilities:}
-		\begin{itemize}
-			\item Read/write files
-			\item Execute commands
-			\item Search codebases
-			\item Run tests
-			\item Git operations
-			\item Web browsing
-		\end{itemize}
-		
-		\column{0.4\textwidth}
-		\begin{block}{Installation}
-			\footnotesize
-			\begin{lstlisting}[language=bash]
-# Install Claude Code
-npm install -g @anthropic/claude-code
-
-# Initialize
-claude-code init
-
-# Start coding
-claude-code "fix the bug in main.py"
-			\end{lstlisting}
-		\end{block}
 		
 		\textbf{Models Used:}
 		\begin{itemize}
-			\item Haiku 3.5 (quota check)
-			\item Sonnet 4 (main agent)
+			\item Haiku 3.5 (simple tasks, high throughput)
+			\item Sonnet 4 (main agent) 
 			\item Opus 4.1 (complex tasks)
 		\end{itemize}
 	\end{columns}
@@ -753,7 +765,6 @@ claude-code "fix the bug in main.py"
 			\draw[<->, thick] (main) -- (code);
 			\draw[<->, thick] (main) -- (test);
 			\draw[<->, thick] (main) -- (context);
-			\draw[<->, thick] (context) -- (tools);
 			\draw[<->, thick] (context) -- (memory);
 		\end{tikzpicture}
 	\end{center}
@@ -764,6 +775,7 @@ claude-code "fix the bug in main.py"
 		\item {\color{highlight}\textbf{Context Manager}}: Optimizes token usage
 	\end{itemize}
 \end{frame}
+
 
 \begin{frame}{Reverse Engineering: System Prompts}
 	\textbf{Key System Prompt Elements:}
@@ -830,6 +842,55 @@ claude-code "fix the bug in main.py"
 	\end{itemize}
 \end{frame}
 
+\begin{frame}[fragile]{TODO List: How It Works}
+	\textbf{Core Mechanism:}
+	\begin{itemize}
+		\item {\color{highlight}\textbf{Proactive Creation}}: Agent creates TODO list for complex tasks (3+ steps)
+		\item {\color{highlight}\textbf{Real-time Updates}}: Status changes as work progresses
+		\item {\color{highlight}\textbf{Atomic Operations}}: Each task marked complete immediately upon finish
+	\end{itemize}
+	
+	\begin{columns}
+		\column{0.5\textwidth}
+		\begin{block}{JSON Structure}
+			\footnotesize
+			\begin{lstlisting}[basicstyle=\tiny]
+{
+  "todos": [
+    {
+      "content": "Fix authentication bug",
+      "activeForm": "Fixing authentication bug", 
+      "status": "in_progress"
+    },
+    {
+      "content": "Run tests",
+      "activeForm": "Running tests",
+      "status": "pending"  
+    }
+  ]
+}
+			\end{lstlisting}
+		\end{block}
+		
+		\column{0.5\textwidth}
+		\textbf{Workflow:}
+		\begin{itemize}
+			\item[1.] User requests complex task
+			\item[2.] Agent creates TODO list
+			\item[3.] Exactly ONE task "in\_progress" 
+			\item[4.] Complete → mark done → start next
+			\item[5.] Continue until all complete
+		\end{itemize}
+		
+		\textbf{Key Rules:}
+		\begin{itemize}
+			\item Never batch completions
+			\item One active task only
+			\item Clear, actionable items
+		\end{itemize}
+	\end{columns}
+\end{frame}
+
 \begin{frame}{TODO List: Dynamic Task Management}
 	\begin{columns}
 		\column{0.5\textwidth}
@@ -869,14 +930,13 @@ claude-code "fix the bug in main.py"
 \end{frame}
 
 \begin{frame}[fragile]{Test Case: Scientific Computing (99\%)}
-	\textbf{Task:} Read and understand complex numerical solver
+	\textbf{Task:} Understand complex numerical package: GPAW (electronic structure calculation) 300K+ lines of code
 	
 	\begin{block}{Claude Code Performance}
 		\begin{itemize}
-			\item $\checkmark$ Identified algorithm structure
-			\item $\checkmark$ Explained mathematical foundations
-			\item $\checkmark$ Found optimization opportunities
-			\item $\checkmark$ Generated comprehensive documentation
+			\item $\checkmark$ Trace functions and classes without Go to Definition
+			\item $\checkmark$ Connect mathematical derivations and code implementation
+			\item $\checkmark$ Analyze the implementation efficiency
 		\end{itemize}
 	\end{block}
 	
