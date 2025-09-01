@@ -10,6 +10,7 @@
 \usepackage{geometry}
 % Removed algorithmic packages to avoid conflicts
 \usepackage{graphicx}
+\usepackage{hyperref}
 \usepackage{subcaption}
 \usepackage{tikz}
 % \usepackage{physics} % Removed due to conflicts with essay-def
@@ -18,8 +19,9 @@
 \usepackage{essay-def}
 % Configure itemize for beamer
 \newcommand{\JX}[1]{{\color{blue}{$^{\text{JX}}$[#1]}}}
-\setbeamertemplate{itemize item}{$\circ$}
-\setbeamertemplate{itemize subitem}{\textbullet}
+\setbeamertemplate{itemize item}{\textbullet}
+\setbeamertemplate{itemize subitem}{--}
+\setbeamertemplate{itemize subsubitem}{*}
 \usepackage[version=4]{mhchem}
 \geometry{left=1cm,right=1cm}
 
@@ -27,6 +29,9 @@
 \definecolor{highlight}{RGB}{220, 20, 60}
 \definecolor{codegreen}{RGB}{0, 128, 0}
 \definecolor{codepurple}{RGB}{128, 0, 128}
+
+% Define styled hyperlink command
+\newcommand{\styhref}[2]{\href{#1}{\textcolor{highlight}{\underline{#2}}}}
 
 % Code listing style
 \lstset{
@@ -36,12 +41,20 @@
   stringstyle=\color{codepurple},
   breaklines=true,
   frame=single,
-  backgroundcolor=\color{gray!5}
+  backgroundcolor=\color{gray!5},
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  tabsize=4,
+  keepspaces=true,
+  columns=flexible,
+  xleftmargin=0pt,
+  xrightmargin=0pt
 }
 
-\title[AI Agents]{AI Agents: From Tool Use to Intelligent Systems}
+\title[AI Agents]{AI Agents Review}
 \subtitle{21 Days with Claude Code}
-\author[J. Zhao \& CC]{Jiaxi Zhao (NUS) \& Claude Code (Anthropic)}
+\author[J. Zhao \& CC]{Zhao Jiaxi (NUS) \& Claude Code (Anthropic)}
 \date[\today]{\today}
 
 \begin{document}
@@ -67,6 +80,7 @@
 \end{frame}
 
 \begin{frame}{What is an Agent?}
+	% TODO: this slide is a bit wordy
 	\begin{block}{Formal Definition (Russell \& Norvig)}
 		"An agent is anything that perceives its \textbf{environment} through sensors and acts upon that environment through \textbf{actuators}."
 	\end{block}
@@ -77,10 +91,10 @@
 		\column{0.5\textwidth}
 		\textbf{Key Characteristics:}
 		\begin{itemize}
-			\item {\color{highlight}\textbf{Autonomy}}: Acts independently
-			\item {\color{highlight}\textbf{Perception}}: Senses environment
-			\item {\color{highlight}\textbf{Action}}: Changes environment
-			\item {\color{highlight}\textbf{Goal-directed}}: Works toward objectives
+			\item {\color{highlight}Autonomy}: Acts independently
+			\item {\color{highlight}Perception}: Senses environment
+			\item {\color{highlight}Action}: Changes environment
+			\item {\color{highlight}Goal-directed}: Works toward objectives
 		\end{itemize}
 		
 		\column{0.5\textwidth}
@@ -105,12 +119,12 @@
 	\begin{columns}
 		\column{\textwidth}
 		\begin{itemize}
-			\item {\color{highlight}\textbf{Anthropological perspective}}: Tool use marks cognitive revolution
+			\item {\color{highlight}Anthropological perspective}: Tool use marks cognitive revolution
 			\begin{itemize}
 				\item Stone tools $\rightarrow$ Agriculture $\rightarrow$ Writing systems
 				\item Cognitive leap: from reactive to proactive behavior
 			\end{itemize}
-			\item {\color{highlight}\textbf{AI parallel}}: From language generation to action
+			\item {\color{highlight}AI parallel}: From language generation to action
 			\begin{itemize}
 				\item GPT-3 (2020): Pure text generation
 				\item WebGPT (2021): Web browsing capability
@@ -123,8 +137,8 @@
 
 \begin{frame}{Eliminating Hallucination Through Grounding}
 	\begin{itemize}
-		\item {\color{highlight}\textbf{Problem}}: LLMs generate plausible but incorrect information
-		\item {\color{highlight}\textbf{Solution}}: Ground responses in external tools and data
+		\item {\color{highlight}Problem}: LLMs generate plausible but incorrect information
+		\item {\color{highlight}Solution}: Ground responses in external tools and data
 	\end{itemize}
 	
 	\begin{columns}
@@ -150,7 +164,7 @@
 	\vspace{0.5cm}
 	
 	\begin{center}
-		\textbf{Key Insight:} {\color{highlight}Grounding in external tools eliminates hallucination}
+		\textbf{Key Insight:} Grounding in external tools eliminates hallucination
 	\end{center}
 \end{frame}
 
@@ -164,22 +178,20 @@
 			\node[rectangle, draw, fill=green!20, minimum width=2cm] (web) at (4,2) {Web Search};
 			\node[rectangle, draw, fill=green!20, minimum width=2cm] (code) at (4,0) {Code Exec};
 			\node[rectangle, draw, fill=green!20, minimum width=2cm] (db) at (4,-2) {Database};
-			\node[rectangle, draw, fill=green!20, minimum width=2cm] (api) at (-4,1) {APIs};
-			\node[rectangle, draw, fill=green!20, minimum width=2cm] (file) at (-4,-1) {File System};
+			\node[rectangle, draw, fill=green!20, minimum width=2cm] (file) at (-4,0) {File System};
 			
 			% Arrows
 			\draw[<->, thick] (agent) -- (web) node[midway, above] {query};
 			\draw[<->, thick] (agent) -- (code) node[midway, above] {execute};
 			\draw[<->, thick] (agent) -- (db) node[midway, above] {retrieve};
-			\draw[<->, thick] (agent) -- (api) node[midway, above] {call};
 			\draw[<->, thick] (agent) -- (file) node[midway, above] {read/write};
 		\end{tikzpicture}
 	\end{center}
 	
 	\begin{itemize}
-		\item {\color{highlight}\textbf{Perception}}: Read from environment (search, query, read)
-		\item {\color{highlight}\textbf{Action}}: Modify environment (write, execute, call)
-		\item {\color{highlight}\textbf{Learning}}: Adapt based on feedback
+		\item {\color{highlight}Perception}: Read from environment (search, query, read)
+		\item {\color{highlight}Action}: Modify environment (write, execute, call)
+		\item {\color{highlight}Learning}: Adapt based on feedback
 	\end{itemize}
 \end{frame}
 
@@ -236,9 +248,9 @@
 	\vspace{0.5cm}
 	
 	\begin{itemize}
-		\item {\color{highlight}\textbf{State}}: Current context + tool outputs
-		\item {\color{highlight}\textbf{Action}}: Tool calls + text generation
-		\item {\color{highlight}\textbf{Reward}}: Task success + human feedback
+		\item {\color{highlight}State}: Current context + tool outputs
+		\item {\color{highlight}Action}: Tool calls + text generation
+		\item {\color{highlight}Reward}: Task success + human feedback
 	\end{itemize}
 	
 	\vspace{0.5cm}
@@ -262,7 +274,7 @@
 			Error Recovery & Manual & Manual & Semi-auto & Semi-auto \\
 			Task Complexity & Simple & Medium & Complex & Complex \\
 			\hline
-			\textbf{Example} & ChatGPT & Plugins & ReAct & Claude Code \\
+			\textbf{Example} & ChatGPT & Plugins & Claude Code & ??? \\
 			\hline
 		\end{tabular}
 	\end{center}
@@ -270,10 +282,10 @@
 	\vspace{0.5cm}
 	
 	\begin{itemize}
-		\item {\color{highlight}\textbf{Prompting Era}} (2020-2022): Chain-of-thought, few-shot learning
-		\item {\color{highlight}\textbf{Tool Use Era}} (2022-2024): Function calling, structured outputs
-		\item {\color{highlight}\textbf{Early Agent Era}} (2024-2025): Planning, memory, basic workflows
-		\item {\color{highlight}\textbf{Future}} (2025+): Enhanced reliability, domain specialization
+		\item {\color{highlight}Prompting Era} (2020-2022): Chain-of-thought, few-shot learning
+		\item {\color{highlight}Tool Use Era} (2022-2024): Function calling, structured outputs
+		\item {\color{highlight}Early Agent Era} (2024-2025): Planning, memory, basic workflows
+		\item {\color{highlight}Future} (2025+): Enhanced reliability, domain specialization
 	\end{itemize}
 	
 \end{frame}
@@ -291,15 +303,13 @@
 	\end{center}
 \end{frame}
 
-\begin{frame}[fragile]{Tool Use Mechanism: From Text to Action}
+\begin{frame}[fragile]{Tool Use Mechanism: System prompts v.s. Function calling}
 	\begin{block}{Pattern Recognition for Tool Calls}
 		LLMs output text $\rightarrow$ System recognizes patterns $\rightarrow$ Triggers tool execution
 	\end{block}
-	
-	\begin{columns}
-		\column{0.5\textwidth}
+
 		\textbf{OpenAI Function Calling:}
-		\begin{lstlisting}[basicstyle=\tiny]
+\begin{lstlisting}
 {
   "role": "assistant",
   "content": null,
@@ -308,64 +318,34 @@
     "arguments": "{\"location\": \"SF\"}"
   }
 }
-		\end{lstlisting}
-		
-		\column{0.5\textwidth}
-		\textbf{ReAct Format:}
-		\begin{lstlisting}[basicstyle=\tiny]
-Thought: I need to search for weather in San Francisco
-Action: Search[San Francisco weather]
-Observation: Current weather in San Francisco is 72F, sunny
-Thought: I now have the weather information needed
-		\end{lstlisting}
-	\end{columns}
+\end{lstlisting}
 	
 	\vspace{0.3cm}
 	\begin{itemize}
-		\item {\color{highlight}\textbf{JSON Schema}}: Structured output for reliable parsing,
-		Claude's tool use format
-		\item {\color{highlight}\textbf{XML Tags}}: Better prompt readability and 
+		\item {\color{highlight}JSON Schema}: Structured output for reliable parsing (Claude's tool use format)
+		\item {\color{highlight}XML Tags}: Better prompt readability and flexibility
 	\end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]{MCP: Model Context Protocol}
-	\begin{columns}
-		\column{0.6\textwidth}
 		\begin{itemize}
-			\item {\color{highlight}\textbf{Standardized protocol}} for LLM-tool communication
-			\item {\color{highlight}\textbf{Key Components}}:
+			\item {\color{highlight}Standardized protocol} for LLM-tool communication that separates tools from AI agents
+			\item {\color{highlight}Key Components}:
 			\begin{itemize}
-				\item Resource discovery
-				\item Tool registration
+				\item MCP server (calls tools), agent (MCP client)
+				\item Tool registration and discovery
 				\item Execution sandbox
 				\item Result formatting
 			\end{itemize}
-			\item {\color{highlight}\textbf{Benefits}}:
+			\item {\color{highlight}Benefits}:
 			\begin{itemize}
 				\item Tool interoperability
 				\item Security isolation
 				\item Consistent interfaces
 			\end{itemize}
+			\item More info: \styhref{https://www.bilibili.com/video/BV1aeLqzUE6L/?spm_id_from=333.337.search-card.all.click&vd_source=33f55e2440bef2f106246ccd65bf1daed}{Bilibili Video}
 		\end{itemize}
-		
-		\column{0.4\textwidth}
-		\begin{lstlisting}[language=python, basicstyle=\tiny]
-# MCP Tool Definition
-@mcp_tool
-def search(query: str) -> str:
-    """Search the web"""
-    return web_api.search(query)
 
-# Auto-registered with LLM
-tools = discover_tools()
-llm.register(tools)
-		\end{lstlisting}
-	\end{columns}
-	
-	\vspace{0.3cm}
-	\begin{block}{MCP in Claude Code}
-		Dynamically loads environment-specific tools at runtime, enabling IDE integration, file system access, and custom tool extensions
-	\end{block}
 \end{frame}
 
 \begin{frame}{Agentic Workflows}
@@ -397,14 +377,14 @@ llm.register(tools)
 	\begin{columns}
 		\column{0.5\textwidth}
 		\begin{itemize}
-			\item {\color{highlight}\textbf{Planning}}: Task decomposition
-			\item {\color{highlight}\textbf{Execution}}: Tool calls, actions
+			\item {\color{highlight}Planning}: Task decomposition
+			\item {\color{highlight}Execution}: Tool calls, actions
 		\end{itemize}
 		
 		\column{0.5\textwidth}
 		\begin{itemize}
-			\item {\color{highlight}\textbf{Reflection}}: Self-critique
-			\item {\color{highlight}\textbf{Memory}}: Context persistence
+			\item {\color{highlight}Reflection}: Self-critique
+			\item {\color{highlight}Memory}: Context persistence
 		\end{itemize}
 	\end{columns}
 \end{frame}
@@ -427,15 +407,15 @@ llm.register(tools)
 	\vspace{0.5cm}
 	
 	\begin{itemize}
-		\item {\color{highlight}\textbf{Imitation Learning}}: Learn from human demonstrations
+		\item {\color{highlight}Imitation Learning}: Learn from human demonstrations
 		\begin{itemize}
 			\item WebGPT: 6K demonstrations of web browsing
 		\end{itemize}
-		\item {\color{highlight}\textbf{Reinforcement Learning}}: Optimize for task rewards
+		\item {\color{highlight}Reinforcement Learning}: Optimize for task rewards
 		\begin{itemize}
 			\item RLHF for preference alignment
 		\end{itemize}
-		\item {\color{highlight}\textbf{Self-improvement}}: Generate and learn from own data
+		\item {\color{highlight}Self-improvement}: Generate and learn from own data
 		\begin{itemize}
 			\item Toolformer: Self-supervised API call insertion
 		\end{itemize}
@@ -447,11 +427,11 @@ llm.register(tools)
 		\column{0.5\textwidth}
 		\textbf{LangChain:}
 		\begin{itemize}
-			\item {\color{highlight}Chain-based} (DAG) architecture
+			\item Chain-based architecture
 			\item Sequential, linear workflows
 			\item High-level abstractions
 		\end{itemize}
-		\begin{lstlisting}[language=python, basicstyle=\tiny]
+		\begin{lstlisting}[language=python]
 from langchain.chains import LLMChain
 from langchain.llms import OpenAI
 
@@ -461,16 +441,16 @@ chain = LLMChain(
     memory=ConversationBufferMemory()
 )
 result = chain.run(query)
-		\end{lstlisting}
+\end{lstlisting}
 		
 		\column{0.5\textwidth}
 		\textbf{LangGraph:}
 		\begin{itemize}
-			\item {\color{highlight}Graph-based} with cycles
+			\item Graph-based with cycles
 			\item Stateful, complex workflows
 			\item Low-level control
 		\end{itemize}
-		\begin{lstlisting}[language=python, basicstyle=\tiny]
+		\begin{lstlisting}[language=python]
 from langgraph.graph import StateGraph
 
 workflow = StateGraph(state_schema)
@@ -479,14 +459,8 @@ workflow.add_node("act", action_node)
 workflow.add_edge("plan", "act")
 workflow.add_conditional_edges("act", should_continue)
 app = workflow.compile()
-		\end{lstlisting}
+\end{lstlisting}
 	\end{columns}
-	
-	\vspace{0.3cm}
-	\begin{block}{Sources}
-		\footnotesize
-		LangChain Documentation (2024), LangGraph Documentation (langchain-ai.github.io/langgraph), "LangGraph: A new way to build agents" (LangChain Blog, 2024)
-	\end{block}
 \end{frame}
 
 % ==========================
@@ -501,11 +475,151 @@ app = workflow.compile()
 	\end{center}
 \end{frame}
 
-\begin{frame}{ReAct: Synergizing Reasoning and Acting}
-	\begin{columns}
-		\column{0.6\textwidth}
-		\textbf{Key Innovation:} Interleaved reasoning traces and actions
+\begin{frame}{WebGPT: First Large-Scale Web-Browsing LLM}
 		
+		\begin{itemize}
+			\item Text-based browser environment
+			\item Imitation learning from humans: 6K human demonstrations
+			\item RLHF for alignment: 20K preference comparisons
+			\item Performing rejection sampling against a reward model:
+			{\color{highlight}56\%} preferred over humans, {\color{highlight}69\%} vs Reddit answers
+		\item Provides factual answers with citations
+		\end{itemize}
+	\begin{figure}
+		\includegraphics[width=0.7\textwidth]{fig/WebGPT.jpg}
+	\end{figure}
+	\footnotetext[1]{\footnotesize Nakano, Reiichiro, et al. "WebGPT: Browser-assisted question-answering with human feedback." arXiv preprint arXiv:2112.09332, OpenAI, December 2021.}
+\end{frame}
+
+
+\begin{frame}{Toolformer: Self-Supervised Tool Learning}
+	\textbf{Self-Supervised Training:}
+		\begin{itemize}
+			\item[•] {\color{highlight}Step 1:} Sample potential API call positions
+			\item[•] {\color{highlight}Step 2:} Execute calls and compute $L_i^+$, $L_i^-$
+			\item[•] {\color{highlight}Step 3:} Filter useful calls: $L_i^+ < L_i^- - \tau$
+			\item[•] {\color{highlight}Step 4:} Fine-tune on filtered dataset
+		\end{itemize}
+	\begin{figure}
+		\includegraphics[width=\textwidth]{fig/Toolformer.jpg}
+	\end{figure}
+\end{frame}
+
+
+\begin{frame}{Toolformer: Self-Supervised Tool Learning}
+	\textbf{Weighted Cross-Entropy Loss:}
+	$$L_i(z) = -\sum_{j=i}^{n} w_{j-i} \log P_M(x_j | z, x_{1:j-1})$$
+	
+	\textbf{Filtering Criterion:}
+	\begin{align}
+		L_i^+ &= L_i(e(c_i, r_i)) \\
+		L_i^- &= \min(L_i(\epsilon), L_i(e(c_i, \epsilon)))
+	\end{align}
+	
+	\textit{Where:} $c_i$ = API call, $r_i$ = response, $e(\cdot)$ = embedding
+		
+	\textbf{Key Insight:}
+		API calls are kept only if they {\color{highlight}reduce prediction loss} for future tokens
+
+		\textbf{Limitations:}
+	\begin{itemize}
+		\item Cannot learn tool usage in chains
+	\end{itemize}
+
+	\vspace{0.2cm}
+	\footnotetext[2]{\footnotesize Schick, Timo, et al. "Toolformer: Language Models Can Teach Themselves to Use Tools." arXiv preprint arXiv:2302.04761, Meta AI, February 2023.}
+\end{frame}
+
+
+% \begin{frame}[fragile]{MemGPT: Virtual Context Management}
+% 	\begin{columns}
+% 		\column{0.5\textwidth}
+% 		\textbf{OS-Inspired Memory Hierarchy:}
+% 		\begin{itemize}
+% 			\item {\color{highlight}Main context}: Active working memory
+% 			\item {\color{highlight}External storage}: Unlimited capacity
+% 			\item {\color{highlight}Paging}: Move data between tiers
+% 		\end{itemize}
+		
+% 		\begin{block}{Memory Operations}
+% 			\footnotesize
+% 			\begin{lstlisting}
+% # Page fault - need external data
+% if not in_context(info):
+%     page = load_from_storage(info)
+%     evict_lru_page()
+%     add_to_context(page)
+% \end{lstlisting}
+% 		\end{block}
+		
+% 		\column{0.5\textwidth}
+% 		\begin{center}
+% 			\begin{tikzpicture}[scale=0.6]
+% 				\node[rectangle, draw, fill=red!20] (ctx) at (0,2) {Context (8K)};
+% 				\node[rectangle, draw, fill=yellow!20] (cache) at (0,0) {Cache (100K)};
+% 				\node[rectangle, draw, fill=green!20] (disk) at (0,-2) {Storage ($\infty$)};
+				
+% 				\draw[<->, thick] (ctx) -- (cache);
+% 				\draw[<->, thick] (cache) -- (disk);
+% 			\end{tikzpicture}
+% 		\end{center}
+		
+% 		\textbf{Applications:}
+% 		\begin{itemize}
+% 			\item Document analysis beyond context
+% 			\item Multi-session conversations
+% 			\item Persistent agent memory
+% 		\end{itemize}
+% 	\end{columns}
+	
+% 	\vspace{0.3cm}
+% 	\footnotetext[3]{\footnotesize Packer, Charles, et al. "MemGPT: Towards LLMs as Operating Systems." arXiv preprint arXiv:2310.08560, October 2023.}
+% \end{frame}
+
+
+\begin{frame}{ReAct Framework: Synergizing Reasoning and Acting}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\textbf{Traditional Action-Only Loop:}
+		\begin{center}
+			\begin{tikzpicture}[scale=0.6]
+				% Simple loop
+				\node[rectangle, draw, fill=blue!20] (agent) at (0,2) {Agent};
+				\node[rectangle, draw, fill=green!20] (env) at (0,0) {Environment};
+				
+				\draw[->, thick] (agent) to[bend left=30] node[right] {Action} (env);
+				\draw[->, thick] (env) to[bend left=30] node[left] {Observation} (agent);
+			\end{tikzpicture}
+		\end{center}
+		
+		\column{0.5\textwidth}
+		\textbf{ReAct Framework:}
+		\begin{center}
+			\begin{tikzpicture}[scale=0.55]
+				% ReAct cycle
+				\node[rectangle, draw, fill=yellow!20] (thought) at (0,3) {Thought};
+				\node[rectangle, draw, fill=blue!20] (action) at (2.5,1.5) {Action};
+				\node[rectangle, draw, fill=green!20] (obs) at (0,0) {Observation};
+				
+				\draw[->, thick] (thought) -- (action) node[midway, above right] {\footnotesize reason};
+				\draw[->, thick] (action) -- (obs) node[midway, below right] {\footnotesize execute};
+				\draw[->, thick] (obs) -- (thought) node[midway, left] {\footnotesize update};
+			\end{tikzpicture}
+		\end{center}
+		
+	\end{columns}
+	\vspace{0.3cm}
+	\textbf{Key Innovation:} Interleaved reasoning traces and actions via few-shot in-context examples
+		
+		\begin{itemize}
+			\item Uses a frozen language model (PaLM-540B) with few-shot in-context examples
+			\item Baselines: Standard (w/o reasoning + observation), CoT (w/o observation + action), ACT (w/o reasoning)
+		\end{itemize}
+	
+	\footnotetext[3]{\footnotesize Yao, Shunyu, et al. "ReAct: Synergizing Reasoning and Acting in Language Models." International Conference on Learning Representations (ICLR), 2023.}
+\end{frame}
+
+\begin{frame}{ReAct: Example Trace}
 		\begin{block}{ReAct Trace Example}
 			\footnotesize
 			\texttt{Question: What is the elevation of Mt. Everest?}\\
@@ -519,197 +633,15 @@ app = workflow.compile()
 			\texttt{Answer: 8,849 meters}
 		\end{block}
 		
-		\column{0.4\textwidth}
 		\textbf{Results:}
 		\begin{itemize}
-			\item HotpotQA: {\color{highlight}27\% improvement}
-			\item ALFWorld: {\color{highlight}34\% over RL baselines}
-			\item WebShop: {\color{highlight}10\% improvement}
+			\item HotpotQA: {\color{highlight}27\% improvement}, ALFWorld: {\color{highlight}34\% over RL baselines},
+			WebShop: {\color{highlight}10\% improvement}
 			\item Reduces error propagation in multi-hop QA
 		\end{itemize}
-		
-		\textbf{Key Insights:}
-		\begin{itemize}
-			\item Reasoning guides action selection
-			\item Actions ground reasoning in reality
-			\item Language as both thought and action space
-		\end{itemize}
-	\end{columns}
-	
-	\vspace{0.2cm}
-	\small
-	Yao et al., ICLR 2023
 \end{frame}
 
-\begin{frame}[fragile]{MemGPT: Virtual Context Management}
-	\begin{columns}
-		\column{0.5\textwidth}
-		\textbf{OS-Inspired Memory Hierarchy:}
-		\begin{itemize}
-			\item {\color{highlight}Main context}: Active working memory
-			\item {\color{highlight}External storage}: Unlimited capacity
-			\item {\color{highlight}Paging}: Move data between tiers
-		\end{itemize}
-		
-		\begin{block}{Memory Operations}
-			\footnotesize
-			\begin{lstlisting}[basicstyle=\tiny]
-# Page fault - need external data
-if not in_context(info):
-    page = load_from_storage(info)
-    evict_lru_page()
-    add_to_context(page)
-			\end{lstlisting}
-		\end{block}
-		
-		\column{0.5\textwidth}
-		\begin{center}
-			\begin{tikzpicture}[scale=0.6]
-				\node[rectangle, draw, fill=red!20] (ctx) at (0,2) {Context (8K)};
-				\node[rectangle, draw, fill=yellow!20] (cache) at (0,0) {Cache (100K)};
-				\node[rectangle, draw, fill=green!20] (disk) at (0,-2) {Storage ($\infty$)};
-				
-				\draw[<->, thick] (ctx) -- (cache);
-				\draw[<->, thick] (cache) -- (disk);
-			\end{tikzpicture}
-		\end{center}
-		
-		\textbf{Applications:}
-		\begin{itemize}
-			\item Document analysis beyond context
-			\item Multi-session conversations
-			\item Persistent agent memory
-		\end{itemize}
-	\end{columns}
-	
-	\vspace{0.3cm}
-	\small
-	Packer et al., October 2023
-\end{frame}
 
-\begin{frame}{Toolformer: Self-Supervised Tool Learning}
-	\textbf{Core Innovation:} LLMs teach themselves when and how to use tools
-	
-	\begin{columns}
-		\column{0.5\textwidth}
-		\begin{block}{API Call Format}
-			\footnotesize
-			\texttt{The weather is <API>}\\
-			\texttt{weather("New York")}\\
-			\texttt{</API> 72°F today}
-		\end{block}
-		
-		\textbf{Training Process:}
-		\begin{itemize}
-			\item[1.] Sample API calls positions
-			\item[2.] Execute and evaluate utility
-			\item[3.] Fine-tune on useful calls
-		\end{itemize}
-		
-		\column{0.5\textwidth}
-		\textbf{Tools Integrated:}
-		\begin{itemize}
-			\item Calculator
-			\item QA System
-			\item Search Engines
-			\item Translation
-			\item Calendar
-		\end{itemize}
-		
-		\textbf{Results:}
-		\begin{itemize}
-			\item {\color{highlight}Zero-shot} improvements across tasks
-			\item Maintains language generation ability
-			\item Self-supervised learning approach
-		\end{itemize}
-	\end{columns}
-	
-	\vspace{0.3cm}
-	\small
-	Schick et al., Meta AI, February 2023
-\end{frame}
-
-\begin{frame}{WebGPT: Browser-Assisted QA}
-	\begin{columns}
-		\column{0.6\textwidth}
-		\textbf{First large-scale web-browsing LLM}
-		
-		\begin{itemize}
-			\item Text-based browser environment
-			\item Imitation learning from humans
-			\item Reference-backed answers
-		\end{itemize}
-		
-		\begin{block}{Browser Actions}
-			\small
-			\begin{itemize}
-				\item \texttt{search(query)}
-				\item \texttt{click(link)}
-				\item \texttt{quote(text)}
-				\item \texttt{scroll()}
-				\item \texttt{back()}
-			\end{itemize}
-		\end{block}
-		
-		\column{0.4\textwidth}
-		\textbf{Training Data:}
-		\begin{itemize}
-			\item 6K human demonstrations
-			\item 20K preference comparisons
-			\item RLHF for alignment
-		\end{itemize}
-		
-		\textbf{Performance:}
-		\begin{itemize}
-			\item {\color{highlight}56\%} preferred over humans
-			\item {\color{highlight}69\%} vs Reddit answers
-			\item Factual answers with citations
-		\end{itemize}
-	\end{columns}
-	
-	\vspace{0.3cm}
-	\small
-	Nakano et al., OpenAI, December 2021
-\end{frame}
-
-\begin{frame}{Comparative Analysis}
-	\begin{center}
-		\small
-		\begin{tabular}{|l|c|c|c|c|}
-			\hline
-			\textbf{Method} & \textbf{Memory} & \textbf{Tools} & \textbf{Training} & \textbf{Key Innovation} \\
-			\hline
-			ReAct & Limited & External & Few-shot & Reasoning traces \\
-			MemGPT & {\color{highlight}Unlimited} & Basic & N/A & Virtual memory \\
-			Toolformer & Limited & {\color{highlight}5 types} & Self-supervised & Auto tool learning \\
-			WebGPT & Limited & Browser & {\color{highlight}RLHF} & Web grounding \\
-			AutoGPT & Short+Long & Extensible & None & {\color{highlight}Self-prompting} \\
-			\hline
-		\end{tabular}
-	\end{center}
-	
-	\vspace{0.5cm}
-	
-	\textbf{Current Trends:}
-	\begin{columns}
-		\column{0.5\textwidth}
-		\begin{itemize}
-			\item Multi-agent systems
-			\item Continuous learning
-			\item Tool creation
-		\end{itemize}
-		
-		\column{0.5\textwidth}
-		\begin{itemize}
-			\item Code generation agents
-			\item Embodied agents
-			\item Scientific discovery
-		\end{itemize}
-	\end{columns}
-	
-	\vspace{0.3cm}
-	\textbf{Open Challenges:} Reliability, safety, evaluation metrics, cost
-\end{frame}
 
 % ==========================
 % Section 4: Case Study - Claude Code (15 pages)
@@ -724,13 +656,12 @@ if not in_context(info):
 \end{frame}
 
 \begin{frame}[fragile]{Claude Code: Introduction}
-	\begin{columns}
-		\column{0.6\textwidth}
 		\textbf{What is Claude Code?}
 		\begin{itemize}
-			\item {\color{highlight}Anthropic's official CLI} for Claude, an AI-powered coding assistant
-			\item Release in Feb 2025
-			\item Source code is available at: https://github.com/anthropics/claude-code with obfuscated code
+			\item Anthropic's official CLI for Claude, an AI-powered coding assistant
+		\item Released in February 2025
+			\item Terminal-based, similar to OpenAI's Codex \& Google's Gemini CLI, different from Cursor and Windsurf
+			\item \styhref{https://github.com/anthropics/claude-code}{Source code} available (partially obfuscated)
 		\end{itemize}
 		
 		\textbf{Models Used:}
@@ -739,7 +670,6 @@ if not in_context(info):
 			\item Sonnet 4 (main agent) 
 			\item Opus 4.1 (complex tasks)
 		\end{itemize}
-	\end{columns}
 \end{frame}
 
 \begin{frame}{Architecture: Multi-Agent System}
@@ -755,9 +685,6 @@ if not in_context(info):
 			
 			% Context Manager
 			\node[rectangle, draw, fill=yellow!20, minimum width=2cm] (context) at (0,-2) {Context Manager};
-			
-			% Tools
-			\node[rectangle, draw, fill=gray!20] (tools) at (-4,-2) {Tools};
 			\node[rectangle, draw, fill=gray!20] (memory) at (4,-2) {Memory};
 			
 			% Connections
@@ -770,9 +697,9 @@ if not in_context(info):
 	\end{center}
 	
 	\begin{itemize}
-		\item {\color{highlight}\textbf{Main Agent}}: Orchestrates overall task
-		\item {\color{highlight}\textbf{Sub-agents}}: Handle specific subtasks in isolation
-		\item {\color{highlight}\textbf{Context Manager}}: Optimizes token usage
+		\item {\color{highlight}Main Agent}: Orchestrates overall task
+		\item {\color{highlight}Sub-agents}: Handle specific subtasks in isolation
+		\item {\color{highlight}Context Manager}: Optimizes token usage
 	\end{itemize}
 \end{frame}
 
@@ -794,16 +721,16 @@ if not in_context(info):
 	\begin{columns}
 		\column{0.5\textwidth}
 		\begin{itemize}
-			\item {\color{highlight}Proactive}: Use TODO lists
-			\item {\color{highlight}Defensive}: Follow conventions
-			\item {\color{highlight}Efficient}: Batch operations
+			\item Proactive: Use TODO lists
+			\item Defensive: Follow conventions
+			\item Efficient: Batch operations
 		\end{itemize}
 		
 		\column{0.5\textwidth}
 		\begin{itemize}
-			\item {\color{highlight}Safe}: Never commit without asking
-			\item {\color{highlight}Clear}: Explain complex commands
-			\item {\color{highlight}Adaptive}: Learn from context
+			\item Safe: Never commit without asking
+			\item Clear: Explain complex commands
+			\item Adaptive: Learn from context
 		\end{itemize}
 	\end{columns}
 	
@@ -845,7 +772,7 @@ if not in_context(info):
 \begin{frame}[fragile]{TODO List: How It Works}
 	\textbf{Core Mechanism:}
 	\begin{itemize}
-		\item {\color{highlight}\textbf{Proactive Creation}}: Agent creates TODO list for complex tasks (3+ steps)
+		\item {\color{highlight}\textbf{Proactive Creation}}: Agent creates TODO list for complex tasks (2+ steps)
 		\item {\color{highlight}\textbf{Real-time Updates}}: Status changes as work progresses
 		\item {\color{highlight}\textbf{Atomic Operations}}: Each task marked complete immediately upon finish
 	\end{itemize}
@@ -854,7 +781,7 @@ if not in_context(info):
 		\column{0.5\textwidth}
 		\begin{block}{JSON Structure}
 			\footnotesize
-			\begin{lstlisting}[basicstyle=\tiny]
+			\begin{lstlisting}
 {
   "todos": [
     {
@@ -869,7 +796,7 @@ if not in_context(info):
     }
   ]
 }
-			\end{lstlisting}
+\end{lstlisting}
 		\end{block}
 		
 		\column{0.5\textwidth}
@@ -880,13 +807,6 @@ if not in_context(info):
 			\item[3.] Exactly ONE task "in\_progress" 
 			\item[4.] Complete → mark done → start next
 			\item[5.] Continue until all complete
-		\end{itemize}
-		
-		\textbf{Key Rules:}
-		\begin{itemize}
-			\item Never batch completions
-			\item One active task only
-			\item Clear, actionable items
 		\end{itemize}
 	\end{columns}
 \end{frame}
@@ -929,134 +849,126 @@ if not in_context(info):
 	\end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{Test Case: Scientific Computing (99\%)}
-	\textbf{Task:} Understand complex numerical package: GPAW (electronic structure calculation) 300K+ lines of code
+\begin{frame}[fragile]{Test Case: Read Scientific Code (99\%)}
+	\textbf{Task:} Understand complex numerical package GPAW (electronic structure calculation, 300K+ lines of code)
 	
-	\begin{block}{Claude Code Performance}
 		\begin{itemize}
 			\item $\checkmark$ Trace functions and classes without Go to Definition
 			\item $\checkmark$ Connect mathematical derivations and code implementation
 			\item $\checkmark$ Analyze the implementation efficiency
 		\end{itemize}
-	\end{block}
-	
-	\begin{lstlisting}[language=python, basicstyle=\tiny]
-# Claude correctly identified spectral method
-def spectral_solver(u, dt, nu):
-    """Solve 2D Navier-Stokes using FFT"""
-    u_hat = fft2(u)
-    # Claude: "Using semi-implicit time stepping 
-    # for stability with explicit nonlinear terms"
-    nonlinear = compute_nonlinear(u)
-    u_hat = (u_hat + dt * fft2(nonlinear)) / (1 + nu * dt * k2)
-    return ifft2(u_hat)
-	\end{lstlisting}
-\end{frame}
 
-\begin{frame}[fragile]{Test Case: Environment Setup (99\%)}
-	\textbf{Task:} Modify Docker configuration for ML pipeline
-	
-	\begin{columns}
-		\column{0.5\textwidth}
-		\begin{block}{Original Dockerfile}
-			\footnotesize
-			\begin{lstlisting}[basicstyle=\tiny]
-FROM python:3.8
-RUN pip install numpy
-CMD ["python", "app.py"]
-			\end{lstlisting}
-		\end{block}
-		
-		\column{0.5\textwidth}
-		\begin{block}{Claude's Modification}
-			\footnotesize
-			\begin{lstlisting}[basicstyle=\tiny]
-FROM python:3.8-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
-CMD ["python", "-u", "app.py"]
-			\end{lstlisting}
-		\end{block}
-	\end{columns}
-	
-	\textbf{Improvements Made:}
+	\textbf{Advanced task:}
 	\begin{itemize}
-		\item Used slim image (reduced size)
-		\item Added proper layer caching
-		\item Implemented best practices
-		\item Added unbuffered output
+		\item Ask CC to implement a Poisson solver for radial functions based on multipole expansion
+		\item Status: Difficult to verify correctness and design accuracy tests
 	\end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{Test Case: Unit Testing}
-	\textbf{Task:} Write comprehensive unit tests
+\begin{frame}[fragile]{Test Case: Resolve Environment \& Docker error (99\%)}
+	\textbf{Task:} Modify Docker configuration
+	\begin{itemize}
+		\item $\checkmark$ Debug docker error
+		\item $\checkmark$ Run CC in a docker container
+		\item $\checkmark$ Perfect solution with a few iterations
+	\end{itemize}
 	
-	\begin{lstlisting}[language=python, basicstyle=\tiny]
-# Claude generated test with edge cases
-def test_matrix_operations():
-    """Test matrix multiplication with various inputs"""
-    # Test normal case
-    assert multiply([[1,2],[3,4]], [[5,6],[7,8]]) == [[19,22],[43,50]]
-    
-    # Test identity
-    I = [[1,0],[0,1]]
-    A = [[1,2],[3,4]]
-    assert multiply(A, I) == A
-    
-    # Test zero matrix
-    Z = [[0,0],[0,0]]
-    assert multiply(A, Z) == Z
-    
-    # Test dimension mismatch
-    with pytest.raises(ValueError):
-        multiply([[1,2]], [[1],[2],[3]])
-	\end{lstlisting}
+	\begin{figure}
+		\includegraphics[width=0.6\textwidth]{fig/docker1.jpg}
+	\end{figure}
+	\begin{figure}
+		\includegraphics[width=0.6\textwidth]{fig/docker2.jpg}
+	\end{figure}
+\end{frame}
+
+\begin{frame}[fragile]{Test Case: Integration Testing (90\%)}
+	\textbf{Task:} Write tests for the invertibility of normalizing flow models
+
+	\begin{itemize}
+		\item Normalizing flow implemented via \textit{distrax} with clear interface
+		\item Extremely clear instructions
+		\item $\checkmark$ Implemented the desired tests but with some code redundancy
+		\begin{lstlisting}[language=python]
+# Claude generated test
+def test_rqs_identity_composition(self):
+    """Test that forward * inverse = identity for RQS transformation."""
+    # initialization of the NF...
+
+def test_rqs_inverse_forward_composition(self):
+    """Test that inverse * forward = identity for RQS transformation."""
+    # initialization of the NF...
+
+def test_rqs_jacobian_consistency(self):
+    """Test that the Jacobian of the forward mapping is consistent."""
+    # initialization of the NF...
+\end{lstlisting}
+		\item $\checkmark$ Generated several meaningful new test cases
+		\item See more in \styhref{https://github.com/jiaxi98/cnf\_ot/commit/c993a744042e0e4e4593c40b24b8b898c1a0688c}{CC test},
+		\styhref{https://github.com/jiaxi98/cnf\_ot/commit/064a69bd308613d9c93d34b637a445601387acb4}{refactor test}
+	\end{itemize}
 	
 	{\color{highlight}Key: Clear interface + complete instructions = High success}
 \end{frame}
 
-\begin{frame}{Test Case: Debug NS Solver (40\%)}
+\begin{frame}{Test Case: Debug NS Solver (20\%)}
 	\textbf{Task:} Debug hand-written spectral solver for 2D Navier-Stokes
-	
-	\textbf{Challenges Encountered:}
 	\begin{itemize}
-		\item {\color{red}$\times$} Complex aliasing errors
-		\item {\color{red}$\times$} Numerical stability issues  
-		\item {\color{orange}$\triangle$} Identified problem areas
-		\item {\color{red}$\times$} Could not fix without domain expertise
+		\item $\checkmark$ Figure out the incorrect patterns of the temporal
+		correlation functions
+		\item {\color{red}$\times$} Failed to identify incorrect real-valued FFT (rfft) treatment
+		$\Longrightarrow$ Required self-correction based on human feedback
+		\item {\color{red}$\times$} Failed to identify incorrect dealiasing treatment
+		$\Longrightarrow$ Required self-correction based on human feedback
 	\end{itemize}
-	
-	\textbf{Lesson:} Claude Code struggles with:
+	\begin{figure}
+		\includegraphics[width=0.48\textwidth]{fig/ns.png}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{Test Case: Hydra + Ray Training Configuration (0\%)}
+	\textbf{Task:} Set up Hydra + Ray for multi-run experiments
 	\begin{itemize}
-		\item Deep domain-specific knowledge
-		\item Numerical analysis subtleties
-		\item Complex debugging requiring intuition
+		\item Personal codebase with a relative training interface file train\_jax.py
+		\item Clear config system that support hydra multi-run experiments
+		\item Integrated with Ray for distributed training (1 run per GPU)
+		\item {\color{red}$\times$} Generated overly complex configuration files
+		\item {\color{red}$\times$} Cannot configure multiple runs with separate GPUs
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{Test Case: Hydra Configuration (20\%)}
-	\textbf{Task:} Set up Hydra for multi-run experiments
+
+\begin{frame}{Performance Summary}
+	\begin{center}
+		\begin{tabular}{|l|c|p{5cm}|}
+			\hline
+			\textbf{Task Type} & \textbf{Score} & \textbf{Key Factors} \\
+			\hline
+			Code Reading & {\color{green}99\%} & Pattern recognition, documentation \\
+			Environment Setup & {\color{green}99\%} & Standard practices, clear goals \\
+			Integration Testing & {\color{green}90\%} & Clear interfaces, specifications \\
+			Complex Debug & {\color{orange}20\%} & Needs domain expertise \\
+			Framework Config & {\color{red}0\%} & Limited training data \\
+			Novel Algorithms & {\color{red}N/A} & Beyond current capabilities \\
+			\hline
+		\end{tabular}
+	\end{center}
 	
-	\textbf{Issues:}
-	\begin{itemize}
-		\item {\color{red}$\times$} Misunderstood Hydra's configuration structure
-		\item {\color{red}$\times$} Generated incorrect sweep syntax
-		\item {\color{red}$\times$} Failed to handle composition properly
-	\end{itemize}
+	\vspace{0.5cm}
 	
-	\textbf{Root Cause:}
-	\begin{itemize}
-		\item Limited training data on Hydra
-		\item Complex configuration inheritance
-		\item Framework-specific patterns
-	\end{itemize}
+	\textbf{Key Takeaway:}
+	\begin{center}
+		\large
+		{\color{highlight}Claude Code is a powerful amplifier for human developers,}\\
+		{\color{highlight}not a replacement for domain expertise}
+	\end{center}
 \end{frame}
+
 
 \begin{frame}{Claude Code as a Tool for Humans}
 	\textbf{Key Insight:} {\color{highlight}Dramatically lowers barriers} for many tasks
 	
+	\vspace{0.5cm}
+
 	\begin{columns}
 		\column{0.5\textwidth}
 		\textbf{Before Claude Code:}
@@ -1089,54 +1001,22 @@ def test_matrix_operations():
 	\end{block}
 \end{frame}
 
-\begin{frame}{Lessons from Claude Code}
-	\textbf{Architectural Insights:}
-	\begin{itemize}
-		\item {\color{highlight}Multi-agent} design scales better than monolithic
-		\item {\color{highlight}Context management} is crucial for long tasks
-		\item {\color{highlight}TODO lists} provide structure and visibility
-	\end{itemize}
-	
-	\textbf{Practical Implications:}
-	\begin{itemize}
-		\item Works best with {\color{highlight}clear specifications}
-		\item Excels at {\color{highlight}well-defined tasks}
-		\item Struggles with {\color{highlight}domain-specific expertise}
-	\end{itemize}
-	
-	\textbf{Future Directions:}
-	\begin{itemize}
-		\item Better memory systems (MemGPT-style)
-		\item Improved error recovery
-		\item Domain-specific fine-tuning
-		\item Multi-modal capabilities (diagrams, UI)
-	\end{itemize}
-\end{frame}
 
-\begin{frame}{Performance Summary}
-	\begin{center}
-		\begin{tabular}{|l|c|p{5cm}|}
-			\hline
-			\textbf{Task Type} & \textbf{Score} & \textbf{Key Factors} \\
-			\hline
-			Code Reading & {\color{green}99\%} & Pattern recognition, documentation \\
-			Environment Setup & {\color{green}99\%} & Standard practices, clear goals \\
-			Unit Testing & {\color{green}95\%} & Clear interfaces, specifications \\
-			Complex Debug & {\color{orange}40\%} & Needs domain expertise \\
-			Framework Config & {\color{red}20\%} & Limited training data \\
-			Novel Algorithms & {\color{red}N/A} & Beyond current capabilities \\
-			\hline
-		\end{tabular}
-	\end{center}
-	
-	\vspace{0.5cm}
-	
-	\textbf{Key Takeaway:}
-	\begin{center}
-		\large
-		{\color{highlight}Claude Code is a powerful amplifier for human developers,}\\
-		{\color{highlight}not a replacement for domain expertise}
-	\end{center}
+\begin{frame}{Personal Thoughts}
+		\begin{itemize}
+			\item Optimization over the space of orthogonal matrices
+			\begin{equation*}
+				\begin{aligned}
+				\mathbf{X} & \overset{\text{qr}}{\to} \mathbf{Q} \mathbf{R} \rightarrow L(\mathbf{Q}) \qquad (reparametrization trick)	\\
+				\mathcal{L}_{\lambda}(\mathbf{X}) & = \mathcal{L}(\mathbf{X}) + \lambda \left\| \mathbf{X}\mathbf{X}^T - \mathbf{I} \right\|_2^2
+				\qquad (\text{penalty method})
+				\end{aligned}
+			\end{equation*}
+			\item Neural network training with equivariant constraint: special architecture design
+			enforces the equivariance, e.g. e3nn; Penalty method or data augmentation
+			\item Desired properties of LLM agents: Predefined workflow for agent system; Prompt engineering
+		\end{itemize}
+
 \end{frame}
 
 
@@ -1150,4 +1030,4 @@ def test_matrix_operations():
 	\end{center}
 \end{frame}
 
-\end{document}
+\end{document}Context persistence
